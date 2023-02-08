@@ -104,7 +104,7 @@ const mySwitch = () => {
 };
 </script>
 
-<style scope>
+<style scoped>
 /* 去除input的轮廓 */
 input {
     outline: none;
