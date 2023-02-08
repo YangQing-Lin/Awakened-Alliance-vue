@@ -15,6 +15,9 @@ export class PlayGround extends AcGameObject {
         this.players = [];
         this.virtual_map_width = 3;  // 虚拟地图大小改成相对大小
         this.virtual_map_height = this.virtual_map_width; // 正方形地图，方便画格子
+        // 画布中心在虚拟地图上的相对位置
+        this.ctx_x = 0.5 * this.width / this.scale;
+        this.ctx_y = 0.5 * this.height / this.scale;
 
         this.game_map = new GameMap(this, this.canvas);
 
@@ -29,12 +32,30 @@ export class PlayGround extends AcGameObject {
         this.re_calculate_cx_cy(player.x, player.y);
         this.focus_player = player;
 
-        for (let i = 0; i < 10; i++) {
-            this.players.push(new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05, this.get_random_color(), this.height * 0.3, "robot"));
-        }
+        // for (let i = 0; i < 10; i++) {
+        //     this.players.push(new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
+        // }
+
     }
 
-    // 根据玩家位置确定画布相对于虚拟地图的偏移量
+    // 根据各个元素在虚拟地图上的相对位置计算在画布上的相对位置
+    // 返回值是相对大小，以屏幕高度为单位1，所以在使用的时候要乘上this.scale
+    my_calculate_relative_position_x(x) {
+        return x - this.ctx_x + 0.5 * this.width / this.scale;
+    }
+    my_calculate_relative_position_y(y) {
+        return y - this.ctx_y + 0.5 * this.height / this.scale;
+    }
+
+    my_calculate_tx(x) {
+        return (x - 0.5 * this.width) / this.scale + this.ctx_x;
+    }
+    my_calculate_ty(y) {
+        return (y - 0.5 * this.height) / this.scale + this.ctx_y;
+    }
+
+
+    // 根据各个元素在虚拟地图上的相对位置计算在画布上的相对位置
     re_calculate_cx_cy(x, y) {
         // 计算物体相对于屏幕中心的坐标
         this.cx = x - 0.5 * this.width / this.scale;
@@ -50,7 +71,7 @@ export class PlayGround extends AcGameObject {
     }
 
     append_player() {
-        this.players.push(new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05, this.get_random_color(), this.height * 0.3, "robot"));
+        this.players.push(new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
     }
 
     get_random_color() {
@@ -79,6 +100,12 @@ export class PlayGround extends AcGameObject {
 
     update() {
         this.resize();
+
+        if (this.focus_player) {
+            this.ctx_x = this.focus_player.x;
+            this.ctx_y = this.focus_player.y;
+        }
+
         this.render();
     }
 

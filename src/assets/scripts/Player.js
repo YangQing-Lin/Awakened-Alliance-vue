@@ -1,4 +1,5 @@
-import { isMemoSame } from "vue";
+import { isMemoSame, readonly } from "vue";
+import { routeLocationKey } from "vue-router";
 import { AcGameObject } from "./AcGameObject";
 import { Particle } from "./Particle";
 import { FireBall } from "./skill/FireBall";
@@ -19,11 +20,11 @@ export class Player extends AcGameObject {
         this.character = is_me;
 
         this.health = 100;
-        this.eps = 0.1;
+        this.eps = 0.001;
         this.directions = [];  // 用户的操作列表
         this.rand_directions = [];  // 给机器人用的随机操作列表
-        this.clientX = 0;  // 鼠标的实时位置
-        this.clientY = 0;
+        this.tx = 0;  // 鼠标的实时位置
+        this.ty = 0;
         this.friction = 0.9;  // 摩擦力
         this.spent_time = 0;
     }
@@ -34,8 +35,8 @@ export class Player extends AcGameObject {
         if (this.is_me === "me") {
             this.add_listening_events();
         } else if (this.is_me === "robot") {
-            let tx = Math.random() * this.playground.width;
-            let ty = Math.random() * this.playground.height;
+            let tx = Math.random() * this.playground.virtual_map_width;
+            let ty = Math.random() * this.playground.virtual_map_height;
             this.move_to(tx, ty);
 
             for (let i = 0; i < 4; i++) {
@@ -43,6 +44,13 @@ export class Player extends AcGameObject {
                 this.rand_directions.push(Math.round(Math.random() * 4));
             }
         }
+    }
+
+    move_to(tx, ty) {
+        this.move_length = this.get_dist(this.x, this.y, tx, ty);
+        let angle = Math.atan2(ty - this.y, tx - this.x);
+        this.vx = Math.cos(angle);
+        this.vy = Math.sin(angle);
     }
 
     add_listening_events() {
@@ -98,10 +106,15 @@ export class Player extends AcGameObject {
         });
 
         this.ctx.canvas.addEventListener('mousedown', e => {
-            if (this.directions.includes("fireball") === false) {
+            // 鼠标左键·
+            if (e.which === 1 && this.directions.includes("fireball") === false) {
                 this.directions.push("fireball");
-                this.clientX = e.clientX;
-                this.clientY = e.clientY;
+                this.tx = this.playground.my_calculate_tx(e.clientX);
+                this.ty = this.playground.my_calculate_ty(e.clientY);
+                // 鼠标点击在地图外面将无效
+                // if (this.tx < 0 || this.tx > this.playground.virtual_map_width || this.ty < 0 || this.ty > this.playground.virtual_map_height) {
+                //     return ;
+                // }
             }
             e.preventDefault();
         });
@@ -112,25 +125,24 @@ export class Player extends AcGameObject {
         })
 
         this.ctx.canvas.addEventListener('mousemove', e => {
-            this.clientX = e.clientX;
-            this.clientY = e.clientY;
+            this.tx = this.playground.my_calculate_tx(e.clientX);
+            this.ty = this.playground.my_calculate_ty(e.clientY);
         })
     }
 
     shoot_fireball(tx, ty) {
-        let x = this.x, y = this.y;
         let radius = this.playground.height * 0.01;
         let angle = Math.atan2(ty - this.y, tx - this.x);
         let vx = Math.cos(angle), vy = Math.sin(angle);
         let color = "orange";
-        let speed = this.playground.height * 0.5;
-        let move_length = this.playground.height * 1.5;
-        new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length, 10);
+        let speed = this.playground.height * 0.5 / this.playground.scale;
+        let move_length = this.playground.height * 1.5 / this.playground.scale;
+        new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 10);
     }
 
     scan_skills(directions) {
         if (directions.includes("fireball")) {
-            this.shoot_fireball(this.clientX, this.clientY);
+            this.shoot_fireball(this.tx, this.ty);
         }
     }
 
@@ -139,13 +151,6 @@ export class Player extends AcGameObject {
         let dx = x1 - x2;
         let dy = y1 - y2;
         return Math.sqrt(dx * dx + dy * dy);
-    }
-
-    move_to(tx, ty) {
-        this.move_length = this.get_dist(this.x, this.y, tx, ty);
-        let angle = Math.atan2(ty - this.y, tx - this.x);
-        this.vx = Math.cos(angle);
-        this.vy = Math.sin(angle);
     }
 
     move_toward(directions) {
@@ -202,7 +207,7 @@ export class Player extends AcGameObject {
         this.playground.append_player();
     }
 
-    // 从directions中清除所有operation值的操作
+    // 从directions中清除所有operation对应的操作
     from_directions_clean(operation) {
         for (let i = 0; i < this.directions.length; i++) {
             if (this.directions[i] === operation) {
@@ -232,8 +237,8 @@ export class Player extends AcGameObject {
             this.move_length = 0;
             this.vx = this.vy = 0;
             // 永不停歇
-            let tx = Math.random() * this.playground.width;
-            let ty = Math.random() * this.playground.height;
+            let tx = Math.random() * this.playground.virtual_map_width;
+            let ty = Math.random() * this.playground.virtual_map_height;
             this.move_to(tx, ty);
         } else {
             let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
@@ -255,9 +260,9 @@ export class Player extends AcGameObject {
             this.scan_skills(this.directions);
         }
 
-        if (this.character === "me" && this.playground.focus_player === this) {
-            this.playground.re_calculate_cx_cy(this.x, this.y);
-        }
+        // if (this.character === "me" && this.playground.focus_player === this) {
+        //     this.playground.re_calculate_cx_cy(this.x, this.y);
+        // }
         this.render();
 
         // 如果是玩家，并且正在被聚焦，修改background的 (cx, cy)
@@ -272,21 +277,14 @@ export class Player extends AcGameObject {
     }
 
     render() {
-        if (this.character === "me") {
-            // 把虚拟地图中的坐标换算成canvas中的坐标
-            let scale = this.playground.scale;
-            let ctx_x = this.x - this.playground.cx, ctx_y = this.y - this.playground.cy;
+        // 把虚拟地图中的坐标换算成canvas中的坐标
+        let scale = this.playground.scale;
+        let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
+        let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
 
-            this.ctx.beginPath();
-            this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius, 0, Math.PI * 2, false);
-            this.ctx.fillStyle = this.color;
-            this.ctx.fill();
-        } else {
-            this.ctx.beginPath();
-            this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-            this.ctx.fillStyle = this.color;
-            this.ctx.fill();
-        }
-
+        this.ctx.beginPath();
+        this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius, 0, Math.PI * 2, false);
+        this.ctx.fillStyle = this.color;
+        this.ctx.fill();
     }
 }

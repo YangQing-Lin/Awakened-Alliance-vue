@@ -23,7 +23,9 @@ export class Grass extends AcGameObject {
 
     render() {
         let scale = this.playground.scale;
-        let ctx_x = this.x - this.playground.cx, ctx_y = this.y - this.playground.cy;
+        // let ctx_x = this.x - this.playground.cx, ctx_y = this.y - this.playground.cy;
+        let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
+        let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
         let cx = ctx_x + this.l * 0.5, cy = ctx_y + this.l * 0.5; // grid的中心坐标
         // 处于屏幕范围外，则不渲染
         if (cx * scale < -0.2 * this.playground.width ||

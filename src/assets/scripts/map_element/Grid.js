@@ -11,12 +11,18 @@ export class Grid extends AcGameObject {
         this.x = this.i * this.cube_side_len;
         this.y = this.j * this.cube_side_len;
 
+        // 相对画布的坐标
+        this.relative_position_x = 0;
+        this.relative_position_y = 0;
+
         this.stroke_color = stroke_color;
         this.has_grass = false; // 格子上有草否
         this.is_poisoned = false; // 格子是否在毒圈
         this.fill_color = "rgb(210, 222, 238)";
 
         this.grass_color = "rgb(213, 198, 76)"; // grass yellow
+
+        this.con_flag = true;
     }
 
     start() { }
@@ -31,7 +37,9 @@ export class Grid extends AcGameObject {
 
     render() {
         let scale = this.playground.scale;
-        let ctx_x = this.x - this.playground.cx, ctx_y = this.y - this.playground.cy;
+        // let ctx_x = this.x - this.playground.cx, ctx_y = this.y - this.playground.cy;
+        let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
+        let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
         let cx = ctx_x + this.cube_side_len * 0.5, cy = ctx_y + this.cube_side_len * 0.5; // grid的中心坐标
         // 处于屏幕范围外，则不渲染
         if (cx * scale < -0.2 * this.playground.width ||

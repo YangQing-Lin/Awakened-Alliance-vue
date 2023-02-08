@@ -15,7 +15,7 @@ export class FireBall extends AcGameObject {
         this.move_length = move_length;
         this.damage = damage;
 
-        this.eps = 0.1;
+        this.eps = 0.001;
         this.ctx = this.playground.ctx;
     }
 
@@ -65,8 +65,12 @@ export class FireBall extends AcGameObject {
     }
 
     render() {
+        let scale = this.playground.scale;
+        let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
+        let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
+
         this.ctx.beginPath();
-        this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius, 0, Math.PI * 2, false);
         this.ctx.fillStyle = this.color;
         this.ctx.fill();
     }
