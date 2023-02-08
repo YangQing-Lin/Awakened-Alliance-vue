@@ -1,3 +1,4 @@
+import { isMemoSame } from "vue";
 import { AcGameObject } from "./AcGameObject";
 import { Particle } from "./Particle";
 import { FireBall } from "./skill/FireBall";
@@ -15,6 +16,7 @@ export class Player extends AcGameObject {
         this.color = color;
         this.speed = speed;
         this.is_me = is_me;
+        this.character = is_me;
 
         this.health = 100;
         this.eps = 0.1;
@@ -239,7 +241,6 @@ export class Player extends AcGameObject {
             this.y += this.vy * moved;
             this.move_length -= moved;
         }
-        this.render();
     }
 
     late_update() {
@@ -250,16 +251,42 @@ export class Player extends AcGameObject {
         } else {
             this.x += this.vx * this.timedelta / 1000;
             this.y += this.vy * this.timedelta / 1000;
-            this.render();
             this.move_toward(this.directions);
             this.scan_skills(this.directions);
+        }
+
+        if (this.character === "me" && this.playground.focus_player === this) {
+            this.playground.re_calculate_cx_cy(this.x, this.y);
+        }
+        this.render();
+
+        // 如果是玩家，并且正在被聚焦，修改background的 (cx, cy)
+        // if (this.character === "me" && this.playground.focus_player === this) {
+        //     this.playground.re_calculate_cx_cy(this.x, this.y);
+        // }
+        if (this.character === "me" && this.playground.console_flag) {
+            this.playground.console_flag = false;
+            console.log(this.x, this.y);
+            // console.log("cube side len: ", this.playground.game_map.cube_side_len);
         }
     }
 
     render() {
-        this.ctx.beginPath();
-        this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        this.ctx.fillStyle = this.color;
-        this.ctx.fill();
+        if (this.character === "me") {
+            // 把虚拟地图中的坐标换算成canvas中的坐标
+            let scale = this.playground.scale;
+            let ctx_x = this.x - this.playground.cx, ctx_y = this.y - this.playground.cy;
+
+            this.ctx.beginPath();
+            this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius, 0, Math.PI * 2, false);
+            this.ctx.fillStyle = this.color;
+            this.ctx.fill();
+        } else {
+            this.ctx.beginPath();
+            this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            this.ctx.fillStyle = this.color;
+            this.ctx.fill();
+        }
+
     }
 }

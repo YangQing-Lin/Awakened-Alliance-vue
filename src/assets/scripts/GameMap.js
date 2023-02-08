@@ -91,10 +91,8 @@ export class GameMap extends AcGameObject {
     }
 
     render() {
-        // this.ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
-        // this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
-        // this.ctx.fillStyle = "rgb(136, 188, 194)";
-        // this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+        this.ctx.fillStyle = "rgb(136, 188, 194)";
+        this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
 }
