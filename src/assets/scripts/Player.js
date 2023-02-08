@@ -131,7 +131,7 @@ export class Player extends AcGameObject {
     }
 
     shoot_fireball(tx, ty) {
-        let radius = this.playground.height * 0.01;
+        let radius = this.playground.height * 0.01 / this.playground.scale;
         let angle = Math.atan2(ty - this.y, tx - this.x);
         let vx = Math.cos(angle), vy = Math.sin(angle);
         let color = "orange";
@@ -179,14 +179,13 @@ export class Player extends AcGameObject {
     // 玩家被攻击（伤害角度暂时用不到）
     is_attacked(angle, damage) {
         for (let i = 0; i < 15 + Math.random() * 10; i++) {
-            let x = this.x, y = this.y;
             let radius = this.radius * Math.random() * 0.1;
-            let angle = Math.PI * 23 * Math.random();
+            let angle = Math.PI * 2 * Math.random();
             let vx = Math.cos(angle), vy = Math.sin(angle);
             let color = this.color;
             let speed = this.speed * 4;  // 控制粒子的射速（间接控制射程）
             let move_length = this.radius * Math.random() * 5;  // 控制粒子射程
-            new Particle(this.playground, x, y, radius, vx, vy, color, speed, move_length);
+            new Particle(this.playground, this.x, this.y, radius, vx, vy, color, speed, move_length);
         }
 
         this.health -= damage;
@@ -269,11 +268,6 @@ export class Player extends AcGameObject {
         // if (this.character === "me" && this.playground.focus_player === this) {
         //     this.playground.re_calculate_cx_cy(this.x, this.y);
         // }
-        if (this.character === "me" && this.playground.console_flag) {
-            this.playground.console_flag = false;
-            console.log(this.x, this.y);
-            // console.log("cube side len: ", this.playground.game_map.cube_side_len);
-        }
     }
 
     render() {
@@ -283,7 +277,7 @@ export class Player extends AcGameObject {
         let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
 
         this.ctx.beginPath();
-        this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius, 0, Math.PI * 2, false);
+        this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
         this.ctx.fillStyle = this.color;
         this.ctx.fill();
     }

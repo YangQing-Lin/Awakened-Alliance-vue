@@ -27,14 +27,14 @@ export class PlayGround extends AcGameObject {
     start() {
         this.resize();
 
-        let player = new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05, "white", this.height * 0.3 / this.scale, "me");
+        let player = new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me");
         this.players.push(player);
         this.re_calculate_cx_cy(player.x, player.y);
         this.focus_player = player;
 
-        // for (let i = 0; i < 10; i++) {
-        //     this.players.push(new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
-        // }
+        for (let i = 0; i < 10; i++) {
+            this.players.push(new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
+        }
 
     }
 
@@ -71,7 +71,7 @@ export class PlayGround extends AcGameObject {
     }
 
     append_player() {
-        this.players.push(new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
+        this.players.push(new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
     }
 
     get_random_color() {
