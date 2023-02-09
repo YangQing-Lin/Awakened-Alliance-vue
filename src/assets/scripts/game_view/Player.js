@@ -106,11 +106,13 @@ export class Player extends AcGameObject {
         });
 
         this.ctx.canvas.addEventListener('mousedown', e => {
+            // 获取canvas左上角在整个屏幕上的坐标（主要用在acapp小窗口上，WEB端canvas左上角就是屏幕左上角）
+            const rect = this.ctx.canvas.getBoundingClientRect();
             // 鼠标左键·
             if (e.which === 1 && this.directions.includes("fireball") === false) {
                 this.directions.push("fireball");
-                this.tx = this.playground.my_calculate_tx(e.clientX);
-                this.ty = this.playground.my_calculate_ty(e.clientY);
+                this.tx = this.playground.my_calculate_tx(e.clientX - rect.left);
+                this.ty = this.playground.my_calculate_ty(e.clientY - rect.top);
                 // 鼠标点击在地图外面将无效
                 // if (this.tx < 0 || this.tx > this.playground.virtual_map_width || this.ty < 0 || this.ty > this.playground.virtual_map_height) {
                 //     return ;
@@ -125,8 +127,9 @@ export class Player extends AcGameObject {
         })
 
         this.ctx.canvas.addEventListener('mousemove', e => {
-            this.tx = this.playground.my_calculate_tx(e.clientX);
-            this.ty = this.playground.my_calculate_ty(e.clientY);
+            const rect = this.ctx.canvas.getBoundingClientRect();
+            this.tx = this.playground.my_calculate_tx(e.clientX - rect.left);
+            this.ty = this.playground.my_calculate_ty(e.clientY - rect.top);
         })
     }
 
