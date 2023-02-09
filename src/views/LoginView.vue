@@ -21,8 +21,9 @@
                     ref="registerFormRef"
                     :model="registerForm"
                     :rules="rules"
+                    label-width="5px"
                 >
-                    <el-form-item>
+                    <el-form-item prop="username" label=" ">
                         <el-input
                             type="text"
                             placeholder="用户名"
@@ -30,7 +31,7 @@
                             v-model="loginForm.username"
                         />
                     </el-form-item>
-                    <el-form-item>
+                    <el-form-item prop="password" label=" ">
                         <el-input
                             type="password"
                             placeholder="密码"
@@ -38,7 +39,7 @@
                             v-model="loginForm.password"
                         />
                     </el-form-item>
-                    <el-form-item>
+                    <el-form-item prop="confirmPassword" label=" ">
                         <el-input
                             type="password"
                             placeholder="确认密码"
@@ -61,8 +62,13 @@
                     <h1>登录</h1>
                 </div>
                 <!-- 输入框盒子 -->
-                <el-form ref="loginFormRef" :model="loginForm" :rules="rules">
-                    <el-form-item>
+                <el-form
+                    ref="loginFormRef"
+                    :model="loginForm"
+                    :rules="rules"
+                    label-width="5px"
+                >
+                    <el-form-item prop="username" label=" ">
                         <el-input
                             type="text"
                             placeholder="用户名"
@@ -70,7 +76,7 @@
                             v-model="loginForm.username"
                         />
                     </el-form-item>
-                    <el-form-item>
+                    <el-form-item prop="password" label=" ">
                         <el-input
                             type="password"
                             placeholder="密码"
@@ -121,7 +127,7 @@ const rules = reactive({
         },
     ],
     confirmPassword: [
-        { required: true, message: "请输入密码", trigger: "blur" },
+        { required: true, message: "请再次输入密码", trigger: "blur" },
         {
             min: 3,
             max: 5,
