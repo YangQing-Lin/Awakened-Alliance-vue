@@ -175,6 +175,26 @@ input {
     );
 }
 
+span {
+    position: absolute;
+    z-index: 0;
+    bottom: 0;
+    border-radius: 50%;
+    /* 径向渐变 */
+    background: radial-gradient(
+        circle at 72% 28%,
+        #fff 3px,
+        #ff7edf 8%,
+        #5b5b5b,
+        #aad7f9 100%
+    );
+    /* 泡泡内阴影 */
+    box-shadow: inset 0 0 6px #fff, inset 3px 0 6px #eaf5fc,
+        inset 2px -2px 10px #efcde6, inset 0 0 60px #f9f6de, 0 0 20px #fff;
+    /* 动画 */
+    animation: myMove 4s linear infinite;
+}
+
 /* 最外层的大盒子 */
 .box {
     width: 1050px;
@@ -291,6 +311,7 @@ input {
 
 .el-form-item {
     width: 65%;
+    height: 5vh;
 }
 
 /* 输入框 */
@@ -299,7 +320,6 @@ input {
     height: 40px;
     margin-bottom: 20px;
     text-indent: 10px;
-    border: 1px solid #fff;
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 120px;
     /* 增加磨砂质感 */
