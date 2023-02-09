@@ -20,7 +20,7 @@
                 <el-form
                     ref="registerFormRef"
                     :model="registerForm"
-                    :rules="rules"
+                    :rules="inputRules"
                     label-width="5px"
                 >
                     <el-form-item prop="username" label=" ">
@@ -28,7 +28,7 @@
                             type="text"
                             placeholder="用户名"
                             :suffix-icon="User"
-                            v-model="loginForm.username"
+                            v-model="registerForm.username"
                         />
                     </el-form-item>
                     <el-form-item prop="password" label=" ">
@@ -36,7 +36,7 @@
                             type="password"
                             placeholder="密码"
                             :suffix-icon="Lock"
-                            v-model="loginForm.password"
+                            v-model="registerForm.password"
                         />
                     </el-form-item>
                     <el-form-item prop="confirmPassword" label=" ">
@@ -44,7 +44,7 @@
                             type="password"
                             placeholder="确认密码"
                             :suffix-icon="Lock"
-                            v-model="loginForm.confirmPassword"
+                            v-model="registerForm.confirmPassword"
                         />
                     </el-form-item>
                 </el-form>
@@ -65,7 +65,7 @@
                 <el-form
                     ref="loginFormRef"
                     :model="loginForm"
-                    :rules="rules"
+                    :rules="inputRules"
                     label-width="5px"
                 >
                     <el-form-item prop="username" label=" ">
@@ -112,16 +112,21 @@ const registerForm = reactive({
     confirmPassword: "",
 });
 
-const rules = reactive({
+const inputRules = reactive({
     username: [
         { required: true, message: "请输入用户名", trigger: "blur" },
-        { min: 3, max: 5, message: "长度应该在3-5个字符之间", trigger: "blur" },
+        {
+            min: 3,
+            max: 10,
+            message: "长度应该在3-10个字符之间",
+            trigger: "blur",
+        },
     ],
     password: [
         { required: true, message: "请输入密码", trigger: "blur" },
         {
-            min: 3,
-            max: 5,
+            min: 6,
+            max: 15,
             message: "长度应该在6-15个字符之间",
             trigger: "blur",
         },
@@ -129,8 +134,8 @@ const rules = reactive({
     confirmPassword: [
         { required: true, message: "请再次输入密码", trigger: "blur" },
         {
-            min: 3,
-            max: 5,
+            min: 6,
+            max: 15,
             message: "长度应该在6-15个字符之间",
             trigger: "blur",
         },
