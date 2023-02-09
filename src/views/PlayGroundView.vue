@@ -13,9 +13,9 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { PlayGround } from "@/assets/scripts/PlayGround";
+import { PlayGround } from "@/scripts/game_view/PlayGround";
 // import { useStore } from "vuex";
-// import { init } from "@/assets/scripts/init";
+// import { init } from "@/scripts/game_view/init";
 // import RankList from "./RankList"; // 不能加大括号
 
 export default {

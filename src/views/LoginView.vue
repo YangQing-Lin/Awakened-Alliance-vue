@@ -17,12 +17,17 @@
                     <h1>注册</h1>
                 </div>
                 <!-- 输入框盒子 -->
-                <el-form>
+                <el-form
+                    ref="registerFormRef"
+                    :model="registerForm"
+                    :rules="rules"
+                >
                     <el-form-item>
                         <el-input
                             type="text"
                             placeholder="用户名"
                             :suffix-icon="User"
+                            v-model="loginForm.username"
                         />
                     </el-form-item>
                     <el-form-item>
@@ -30,6 +35,7 @@
                             type="password"
                             placeholder="密码"
                             :suffix-icon="Lock"
+                            v-model="loginForm.password"
                         />
                     </el-form-item>
                     <el-form-item>
@@ -37,6 +43,7 @@
                             type="password"
                             placeholder="确认密码"
                             :suffix-icon="Lock"
+                            v-model="loginForm.confirmPassword"
                         />
                     </el-form-item>
                 </el-form>
@@ -54,12 +61,13 @@
                     <h1>登录</h1>
                 </div>
                 <!-- 输入框盒子 -->
-                <el-form>
+                <el-form ref="loginFormRef" :model="loginForm" :rules="rules">
                     <el-form-item>
                         <el-input
                             type="text"
                             placeholder="用户名"
                             :suffix-icon="User"
+                            v-model="loginForm.username"
                         />
                     </el-form-item>
                     <el-form-item>
@@ -67,6 +75,7 @@
                             type="password"
                             placeholder="密码"
                             :suffix-icon="Lock"
+                            v-model="loginForm.password"
                         />
                     </el-form-item>
                 </el-form>
@@ -83,7 +92,44 @@
 
 <script setup>
 import { Lock, User } from "@element-plus/icons-vue";
-const { ref } = require("@vue/reactivity");
+const { ref, reactive } = require("@vue/reactivity");
+const loginFormRef = ref("");
+const loginForm = reactive({
+    username: "",
+    password: "",
+});
+
+const registerFormRef = ref("");
+const registerForm = reactive({
+    username: "",
+    password: "",
+    confirmPassword: "",
+});
+
+const rules = reactive({
+    username: [
+        { required: true, message: "请输入用户名", trigger: "blur" },
+        { min: 3, max: 5, message: "长度应该在3-5个字符之间", trigger: "blur" },
+    ],
+    password: [
+        { required: true, message: "请输入密码", trigger: "blur" },
+        {
+            min: 3,
+            max: 5,
+            message: "长度应该在6-15个字符之间",
+            trigger: "blur",
+        },
+    ],
+    confirmPassword: [
+        { required: true, message: "请输入密码", trigger: "blur" },
+        {
+            min: 3,
+            max: 5,
+            message: "长度应该在6-15个字符之间",
+            trigger: "blur",
+        },
+    ],
+});
 
 const preRef = ref("");
 const imgList = ref([
