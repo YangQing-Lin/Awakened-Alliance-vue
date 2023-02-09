@@ -3,13 +3,13 @@ import { GameMap } from "./GameMap";
 import { Player } from "./Player";
 
 export class PlayGround extends AcGameObject {
-    constructor(canvas, ctx, root) {
+    constructor(canvas, ctx, div) {
         super();
         this.canvas = canvas;
         this.ctx = ctx;
-        this.root = root;
-        this.width = this.root.clientWidth;
-        this.height = this.root.clientHeight;
+        this.div = div;
+        this.width = this.div.clientWidth;
+        this.height = this.div.clientHeight;
 
         this.scale = this.height;
         this.players = [];
@@ -84,10 +84,10 @@ export class PlayGround extends AcGameObject {
     }
 
     resize() {
-        this.ctx.canvas.width = this.root.clientWidth;
-        this.ctx.canvas.height = this.root.clientHeight;
-        this.width = this.root.clientWidth;
-        this.height = this.root.clientHeight;
+        this.ctx.canvas.width = this.div.clientWidth;
+        this.ctx.canvas.height = this.div.clientHeight;
+        this.width = this.div.clientWidth;
+        this.height = this.div.clientHeight;
     }
 
     win() {

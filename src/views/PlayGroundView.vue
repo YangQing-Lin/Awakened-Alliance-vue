@@ -14,6 +14,7 @@
 <script>
 import { ref, onMounted } from "vue";
 import { PlayGround } from "@/assets/scripts/game_view/PlayGround";
+import { Settings } from "@/assets/scripts/login_view/Settings";
 // import { useStore } from "vuex";
 // import { init } from "@/assets/scripts/game_view/init";
 // import RankList from "./RankList"; // 不能加大括号
@@ -27,13 +28,15 @@ export default {
         let div = ref(null);
         let canvas = ref(null);
         // const store = useStore();
-        let game_map = null;
+        let playground = null;
+        let settings = null;
 
         // init(store);
 
         // 当组件被成功挂载之后执行
         onMounted(() => {
-            game_map = new PlayGround(
+            // settings = new Settings();
+            playground = new PlayGround(
                 canvas,
                 canvas.value.getContext("2d"),
                 div.value
@@ -42,7 +45,7 @@ export default {
         });
 
         const restart = () => {
-            game_map.restart();
+            playground.restart();
         };
 
         // const show_ranklist = () => {
