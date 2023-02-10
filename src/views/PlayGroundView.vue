@@ -3,9 +3,9 @@
         <div ref="div" class="game-map-div">
             <canvas ref="canvas" tabindex="0"></canvas>
             <div class="operation" v-if="$store.state.restart">
-                <button @click="restart">开始游戏</button>
-                <button @click="show_ranklist">排行榜</button>
-                <!-- <button @click="show_ranklist">排行榜</button> -->
+                <button @click="restart()">开始游戏</button>
+                <button @click="show_ranklist()">排行榜</button>
+                <button @click="logout_on_remote()">登出</button>
             </div>
             <RankList v-if="$store.state.ranklist" />
         </div>
@@ -20,6 +20,7 @@ import { useStore } from "vuex";
 import { useSizeProp } from "element-plus";
 import { init } from "@/assets/scripts/game_view/init";
 import RankList from "@/components/RankList"; // 不能加大括号
+import $ from "jquery";
 
 export default {
     name: "PlayGround",
@@ -29,7 +30,6 @@ export default {
     setup: () => {
         let div = ref(null);
         let canvas = ref(null);
-        // const store = useStore();
         let playground = null;
         let settings = null;
         const store = useStore();
@@ -38,7 +38,7 @@ export default {
 
         // 当组件被成功挂载之后执行
         onMounted(() => {
-            // settings = new Settings();
+            settings = new Settings(store);
             playground = new PlayGround(
                 canvas,
                 canvas.value.getContext("2d"),
@@ -55,11 +55,30 @@ export default {
             store.commit("updateRanklist", true);
         };
 
+        const logout_on_remote = () => {
+            if (store.state.platform === "ACAPP") {
+                return false;
+            }
+
+            $.ajax({
+                url: "https://app4689.acapp.acwing.com.cn:4436/settings/logout/",
+                type: "GET",
+                success: function (resp) {
+                    if (resp.result === "success") {
+                        console.log("成功登出账号");
+                        // 登出成功就刷新页面
+                        // location.reload();
+                    }
+                },
+            });
+        };
+
         return {
             div,
             canvas,
             restart,
             show_ranklist,
+            logout_on_remote,
         };
     },
 };
@@ -96,8 +115,7 @@ div.operation {
     margin: 0 0.5vh;
 }
 
-button {
-    position: absolute;
+.operation > button {
     background-color: #0d6efd;
     border: solid 0;
     border-radius: 5px;
@@ -105,6 +123,6 @@ button {
     color: white;
     padding: 3vh;
     cursor: pointer;
-    margin: 2vh 0.5vh;
+    margin: 0 0.5vh;
 }
 </style>

@@ -27,6 +27,12 @@ export class Player extends AcGameObject {
         this.ty = 0;
         this.friction = 0.9;  // 摩擦力
         this.spent_time = 0;
+
+        if (this.is_me === "me") {
+            console.log(this.playground.store.state);
+            this.img = new Image();
+            this.img.src = this.playground.store.state.photo;
+        }
     }
 
     start() {
@@ -292,9 +298,19 @@ export class Player extends AcGameObject {
         let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
         let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
 
-        this.ctx.beginPath();
-        this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
-        this.ctx.fillStyle = this.color;
-        this.ctx.fill();
+        if (this.is_me === "me") {
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
+            this.ctx.stroke();
+            this.ctx.clip();
+            this.ctx.drawImage(this.img, (ctx_x - this.radius) * scale, (ctx_y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
+            this.ctx.restore();
+        } else {
+            this.ctx.beginPath();
+            this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
+            this.ctx.fillStyle = this.color;
+            this.ctx.fill();
+        }
     }
 }

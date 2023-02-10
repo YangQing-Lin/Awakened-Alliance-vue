@@ -10,6 +10,9 @@ export default createStore({
         access: "",
         refresh: "",
         ranklist: false,
+        username: "",
+        photo: "",
+        platform: "WEB",
     },
     getters: {
     },
@@ -33,6 +36,15 @@ export default createStore({
         },
         updateRanklist: (state, ranklist) => {
             state.ranklist = ranklist;
+        },
+        udpateUsername: (state, username) => {
+            state.username = username;
+        },
+        updatePhoto: (state, photo) => {
+            state.photo = photo;
+        },
+        updatePlatform: (state, platform) => {
+            state.platform = platform;
         },
     },
     actions: {

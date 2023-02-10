@@ -50,7 +50,7 @@
                 </el-form>
                 <!-- 按钮盒子 -->
                 <div class="btn-box">
-                    <button>注册</button>
+                    <button @click="register_on_remote()">注册</button>
                     <!-- 绑定点击事件 -->
                     <p @click="mySwitch()">已有账号?去登录</p>
                 </div>
@@ -87,7 +87,7 @@
                 </el-form>
                 <!-- 按钮盒子 -->
                 <div class="btn-box">
-                    <button>登录</button>
+                    <button @click="login_on_remote()">登录</button>
                     <!-- 绑定点击事件 -->
                     <p @click="mySwitch()">没有账号?去注册</p>
                 </div>
@@ -98,6 +98,8 @@
 
 <script setup>
 import { Lock, User } from "@element-plus/icons-vue";
+import $ from "jquery";
+
 const { ref, reactive } = require("@vue/reactivity");
 const loginFormRef = ref("");
 const loginForm = reactive({
@@ -158,6 +160,57 @@ const mySwitch = () => {
         preRef.value.style.transform = "translatex(0%)";
     }
     flag.value = !flag.value;
+};
+
+// 在远程服务器上登录
+const login_on_remote = () => {
+    let username = loginForm.username;
+    let password = loginForm.password;
+
+    $.ajax({
+        url: "https://app4689.acapp.acwing.com.cn:4436/settings/login/",
+        type: "GET",
+        data: {
+            username: username,
+            password: password,
+        },
+        success: function (resp) {
+            if (resp.result === "success") {
+                console.log("成功登录");
+                // 刷新网页
+                // location.reload();
+            } else {
+                console.log(resp.result);
+            }
+        },
+    });
+};
+
+// 在远程服务器上注册
+const register_on_remote = () => {
+    let username = registerForm.username;
+    let password = registerForm.password;
+    let confirmPassword = registerForm.confirmPassword;
+
+    $.ajax({
+        url: "https://app4689.acapp.acwing.com.cn:4436/settings/register/",
+        type: "GET",
+        data: {
+            username: username,
+            password: password,
+            password_confirm: confirmPassword,
+        },
+        success: function (resp) {
+            console.log(resp);
+            if (resp.result === "success") {
+                // 注册成功之后直接刷新页面
+                console.log("注册成功");
+                // location.reload();
+            } else {
+                console.log(resp.result);
+            }
+        },
+    });
 };
 </script>
 
