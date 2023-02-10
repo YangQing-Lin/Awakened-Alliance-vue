@@ -1,6 +1,7 @@
 import { AcGameObject } from "./AcGameObject";
 import { GameMap } from "./GameMap";
 import { Player } from "./Player";
+import $ from 'jquery';
 
 export class PlayGround extends AcGameObject {
     constructor(canvas, ctx, div, store) {
@@ -23,7 +24,6 @@ export class PlayGround extends AcGameObject {
 
         this.game_map = new GameMap(this, this.canvas);
 
-        this.console_flag = true;
     }
 
     start() {
@@ -97,8 +97,23 @@ export class PlayGround extends AcGameObject {
         this.height = this.div.clientHeight;
     }
 
-    win() {
+    // 更新分数到服务器
+    update_score() {
+        console.log("playground update_score accesstoken:", this.store.state.access);
+        $.ajax({
+            url: "https://app4689.acapp.acwing.com.cn:4436/update_score/",
+            type: "post",
+            data: {
+                score: this.store.state.score,
+            },
+            headers: {
+                'Authorization': "Bearer " + this.store.state.access,
+            },
+        });
+    }
 
+    win() {
+        this.update_score();
     }
 
     lose() {
@@ -114,6 +129,7 @@ export class PlayGround extends AcGameObject {
         }
 
         this.store.commit('updateRestart', true);
+        this.update_score();
     }
 
     restart() {

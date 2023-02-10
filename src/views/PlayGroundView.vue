@@ -2,13 +2,12 @@
     <div class="playground">
         <div ref="div" class="game-map-div">
             <canvas ref="canvas" tabindex="0"></canvas>
-            <div class="operation">
-                <button v-if="$store.state.restart" @click="restart">
-                    开始游戏
-                </button>
+            <div class="operation" v-if="$store.state.restart">
+                <button @click="restart">开始游戏</button>
+                <button @click="show_ranklist">排行榜</button>
                 <!-- <button @click="show_ranklist">排行榜</button> -->
             </div>
-            <!-- <RankList v-if="$store.state.ranklist" /> -->
+            <RankList v-if="$store.state.ranklist" />
         </div>
     </div>
 </template>
@@ -19,13 +18,13 @@ import { PlayGround } from "@/assets/scripts/game_view/PlayGround";
 import { Settings } from "@/assets/scripts/login_view/Settings";
 import { useStore } from "vuex";
 import { useSizeProp } from "element-plus";
-// import { init } from "@/assets/scripts/game_view/init";
-// import RankList from "./RankList"; // 不能加大括号
+import { init } from "@/assets/scripts/game_view/init";
+import RankList from "@/components/RankList"; // 不能加大括号
 
 export default {
     name: "PlayGround",
     components: {
-        // RankList,
+        RankList,
     },
     setup: () => {
         let div = ref(null);
@@ -35,7 +34,7 @@ export default {
         let settings = null;
         const store = useStore();
 
-        // init(store);
+        init(store);
 
         // 当组件被成功挂载之后执行
         onMounted(() => {
@@ -52,15 +51,15 @@ export default {
             playground.restart();
         };
 
-        // const show_ranklist = () => {
-        //     store.commit("updateRanklist", true);
-        // };
+        const show_ranklist = () => {
+            store.commit("updateRanklist", true);
+        };
 
         return {
             div,
             canvas,
             restart,
-            // show_ranklist,
+            show_ranklist,
         };
     },
 };
@@ -106,5 +105,6 @@ button {
     color: white;
     padding: 3vh;
     cursor: pointer;
+    margin: 2vh 0.5vh;
 }
 </style>

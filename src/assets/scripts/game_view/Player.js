@@ -19,7 +19,7 @@ export class Player extends AcGameObject {
         this.is_me = is_me;
         this.character = is_me;
 
-        this.health = 100;
+        this.health = 20;
         this.eps = 0.001;
         this.directions = [];  // 用户的操作列表
         this.rand_directions = [];  // 给机器人用的随机操作列表
