@@ -3,8 +3,10 @@
         <div ref="div" class="game-map-div">
             <canvas ref="canvas" tabindex="0"></canvas>
             <div class="operation">
-                <!-- <button @click="restart">开始游戏</button>
-            <button @click="show_ranklist">排行榜</button> -->
+                <button v-if="$store.state.restart" @click="restart">
+                    开始游戏
+                </button>
+                <!-- <button @click="show_ranklist">排行榜</button> -->
             </div>
             <!-- <RankList v-if="$store.state.ranklist" /> -->
         </div>
@@ -15,7 +17,8 @@
 import { ref, onMounted } from "vue";
 import { PlayGround } from "@/assets/scripts/game_view/PlayGround";
 import { Settings } from "@/assets/scripts/login_view/Settings";
-// import { useStore } from "vuex";
+import { useStore } from "vuex";
+import { useSizeProp } from "element-plus";
 // import { init } from "@/assets/scripts/game_view/init";
 // import RankList from "./RankList"; // 不能加大括号
 
@@ -30,6 +33,7 @@ export default {
         // const store = useStore();
         let playground = null;
         let settings = null;
+        const store = useStore();
 
         // init(store);
 
@@ -39,8 +43,8 @@ export default {
             playground = new PlayGround(
                 canvas,
                 canvas.value.getContext("2d"),
-                div.value
-                // store
+                div.value,
+                store
             );
         });
 
@@ -91,5 +95,16 @@ div.operation {
     padding: 3vh;
     cursor: pointer;
     margin: 0 0.5vh;
+}
+
+button {
+    position: absolute;
+    background-color: #0d6efd;
+    border: solid 0;
+    border-radius: 5px;
+    font-size: 3vh;
+    color: white;
+    padding: 3vh;
+    cursor: pointer;
 }
 </style>

@@ -3,16 +3,18 @@ import { GameMap } from "./GameMap";
 import { Player } from "./Player";
 
 export class PlayGround extends AcGameObject {
-    constructor(canvas, ctx, div) {
+    constructor(canvas, ctx, div, store) {
         super();
         this.canvas = canvas;
         this.ctx = ctx;
         this.div = div;
+        this.store = store;
         this.width = this.div.clientWidth;
         this.height = this.div.clientHeight;
 
         this.scale = this.height;
         this.players = [];
+        this.fireballs = [];
         this.virtual_map_width = 3;  // 虚拟地图大小改成相对大小
         this.virtual_map_height = this.virtual_map_width; // 正方形地图，方便画格子
         // 画布中心在虚拟地图上的相对位置
@@ -27,16 +29,16 @@ export class PlayGround extends AcGameObject {
     start() {
         this.resize();
 
-        let player = new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me");
-        this.players.push(player);
-        this.re_calculate_cx_cy(player.x, player.y);
-        this.focus_player = player;
+        // let player = new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me");
+        // this.players.push(player);
+        // this.re_calculate_cx_cy(player.x, player.y);
+        // this.focus_player = player;
 
-        for (let i = 0; i < 20; i++) {
-            let rand_x = Math.random() * this.virtual_map_width;
-            let rand_y = Math.random() * this.virtual_map_height;
-            this.players.push(new Player(this, rand_x, rand_y, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
-        }
+        // for (let i = 0; i < 20; i++) {
+        //     let rand_x = Math.random() * this.virtual_map_width;
+        //     let rand_y = Math.random() * this.virtual_map_height;
+        //     this.players.push(new Player(this, rand_x, rand_y, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
+        // }
 
     }
 
@@ -76,6 +78,11 @@ export class PlayGround extends AcGameObject {
         let rand_x = Math.random() * this.virtual_map_width;
         let rand_y = Math.random() * this.virtual_map_height;
         this.players.push(new Player(this, rand_x, rand_y, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
+
+        const score = this.store.state.score + 1;
+        this.store.commit('updateScore', score);
+        this.store.commit('updateRecord', score);
+        console.log("[score]:", this.store.state.score, "[record]:", this.store.state.record);
     }
 
     get_random_color() {
@@ -95,11 +102,35 @@ export class PlayGround extends AcGameObject {
     }
 
     lose() {
+        while (this.fireballs.length > 0) {
+            this.fireballs[0].destroy();
+        }
+        while (this.players.length > 0) {
+            this.players[0].destroy();
+            if (this.players.length > 100) {
+                console.log("player too much");
+                break;
+            }
+        }
 
+        this.store.commit('updateRestart', true);
     }
 
     restart() {
+        for (let i = 0; i < 20; i++) {
+            let rand_x = Math.random() * this.virtual_map_width;
+            let rand_y = Math.random() * this.virtual_map_height;
+            this.players.push(new Player(this, rand_x, rand_y, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
+        }
 
+        this.store.commit('updateScore', 0);
+        let player = new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me");
+        this.players.push(player);
+        this.re_calculate_cx_cy(player.x, player.y);
+        this.focus_player = player;
+
+        this.store.commit('updateRestart', false);
+        this.ctx.canvas.focus();
     }
 
     update() {

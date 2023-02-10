@@ -66,6 +66,14 @@ export class FireBall extends AcGameObject {
         this.destroy();
     }
 
+    on_destroy() {
+        for (let i = 0; i < this.playground.fireballs.length; i++) {
+            if (this.playground.fireballs[i] === this) {
+                this.playground.fireballs.splice(i, 1);
+            }
+        }
+    }
+
     render() {
         let scale = this.playground.scale;
         let ctx_x = this.playground.my_calculate_relative_position_x(this.x);

@@ -49,7 +49,7 @@ export class Grid extends AcGameObject {
             return;
         }
         this.render_grid(ctx_x, ctx_y, scale);
-        if (this.has_grass) {
+        if (this.has_grass && this.playground.players.length > 0) {
             let player = this.playground.players[0];
             if (player.character === "me" && this.get_manhattan_dist(this.x + this.cube_side_len / 2, this.y + this.cube_side_len / 2, player.x, player.y) < 1.5 * this.cube_side_len)
                 this.grass_color = "rgba(213, 198, 76, 0.3)";

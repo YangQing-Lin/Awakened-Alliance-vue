@@ -140,7 +140,8 @@ export class Player extends AcGameObject {
         let color = "orange";
         let speed = this.playground.height * 0.5 / this.playground.scale;
         let move_length = this.playground.height * 1.5 / this.playground.scale;
-        new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 10);
+        let fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 10);
+        this.playground.fireballs.push(fireball);
     }
 
     scan_skills(directions) {
@@ -193,9 +194,20 @@ export class Player extends AcGameObject {
 
         this.health -= damage;
         if (this.health <= 0) {
-            this.destroy();
+            this.lose();
             return false;
         }
+    }
+
+    lose() {
+        // 死一个新加入一个
+        if (this.is_me === "me") {
+            this.playground.lose();
+        } else {
+            this.playground.append_player();
+        }
+
+        this.destroy();
     }
 
     on_destroy() {
@@ -204,9 +216,6 @@ export class Player extends AcGameObject {
                 this.playground.players.splice(i, 1);
             }
         }
-
-        // 死一个新加入一个
-        this.playground.append_player();
     }
 
     // 从directions中清除所有operation对应的操作
@@ -251,6 +260,10 @@ export class Player extends AcGameObject {
     }
 
     late_update() {
+        if (this.playground.store.state.restart) {
+            return;
+        }
+
         this.spent_time += this.timedelta / 1000;
 
         if (this.is_me === "robot") {
