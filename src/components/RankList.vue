@@ -23,6 +23,9 @@ export default {
         $.ajax({
             url: "https://app4689.acapp.acwing.com.cn:4436/get_ranklist/",
             type: "get",
+            headers: {
+                Authorization: "Bearer " + store.state.access,
+            },
             success: (resp) => {
                 console.log(resp);
                 const new_players = [];

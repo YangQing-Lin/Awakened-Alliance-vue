@@ -99,7 +99,6 @@ export class PlayGround extends AcGameObject {
 
     // 更新分数到服务器
     update_score() {
-        console.log("playground update_score accesstoken:", this.store.state.access);
         $.ajax({
             url: "https://app4689.acapp.acwing.com.cn:4436/update_score/",
             type: "post",
