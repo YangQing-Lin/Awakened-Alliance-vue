@@ -52,6 +52,10 @@ export class Player extends AcGameObject {
         }
     }
 
+    resize() {
+
+    }
+
     move_to(tx, ty) {
         this.move_length = this.get_dist(this.x, this.y, tx, ty);
         let angle = Math.atan2(ty - this.y, tx - this.x);
