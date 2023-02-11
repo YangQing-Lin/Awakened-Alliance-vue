@@ -98,6 +98,7 @@
 
 <script setup>
 import { Lock, User } from "@element-plus/icons-vue";
+import { useStore } from "vuex";
 import $ from "jquery";
 
 const { ref, reactive } = require("@vue/reactivity");
@@ -163,25 +164,25 @@ const mySwitch = () => {
 };
 
 // 在远程服务器上登录
+const store = useStore();
 const login_on_remote = () => {
     let username = loginForm.username;
     let password = loginForm.password;
 
     $.ajax({
-        url: "https://app4689.acapp.acwing.com.cn:4436/settings/login/",
-        type: "GET",
+        url: "https://app4689.acapp.acwing.com.cn:4436/api/token/",
+        type: "post",
         data: {
             username: username,
             password: password,
         },
-        success: function (resp) {
-            if (resp.result === "success") {
-                console.log("成功登录");
-                // 刷新网页
-                // location.reload();
-            } else {
-                console.log(resp.result);
-            }
+        success: (resp) => {
+            console.log("获取令牌成功", resp);
+            store.commit("updateAccess", resp.access);
+            store.commit("updateRefresh", resp.refresh);
+        },
+        error: () => {
+            console.log("用户名或密码错误");
         },
     });
 };
