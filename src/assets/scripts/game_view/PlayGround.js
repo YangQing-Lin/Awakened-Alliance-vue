@@ -53,10 +53,7 @@ export class PlayGround extends AcGameObject {
         this.ctx.canvas.height = this.div.clientHeight;
         this.width = this.div.clientWidth;
         this.height = this.div.clientHeight;
-
-        if (this.game_map) {
-            this.game_map.resize();
-        }
+        this.scale = this.height;
     }
 
     // 根据各个元素在虚拟地图上的相对位置计算在画布上的相对位置

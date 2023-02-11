@@ -26,11 +26,6 @@ export class GameMap extends AcGameObject {
         this.generate_grass();
     }
 
-    resize() {
-        this.width = this.playground.width;
-        this.height = this.playground.height;
-    }
-
     get_random_color() {
         let colors = ['#00FFFF', '#00FF7F', '#8A2BE2', '#CD2990', '#7FFF00', '#FFDAB9', '#FF6437', '#CD853F'];
         return colors[Math.floor(Math.random() * 6)];
