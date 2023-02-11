@@ -15,14 +15,11 @@ export class Grid extends AcGameObject {
         this.relative_position_x = 0;
         this.relative_position_y = 0;
 
-        this.stroke_color = stroke_color;
+        this.stroke_color = stroke_color;  // 网格线的颜色
         this.has_grass = false; // 格子上有草否
         this.is_poisoned = false; // 格子是否在毒圈
-        this.fill_color = "rgb(210, 222, 238)";
 
-        this.grass_color = "rgb(213, 198, 76)"; // grass yellow
-
-        this.con_flag = true;
+        this.grass_color = "rgb(213, 198, 76)"; // 黄色玻璃（草丛的功能）
     }
 
     start() { }
@@ -37,10 +34,10 @@ export class Grid extends AcGameObject {
 
     render() {
         let scale = this.playground.scale;
-        // let ctx_x = this.x - this.playground.cx, ctx_y = this.y - this.playground.cy;
         let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
         let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
         let cx = ctx_x + this.cube_side_len * 0.5, cy = ctx_y + this.cube_side_len * 0.5; // grid的中心坐标
+
         // 处于屏幕范围外，则不渲染
         if (cx * scale < -0.2 * this.playground.width ||
             cx * scale > 1.2 * this.playground.width ||
@@ -48,7 +45,10 @@ export class Grid extends AcGameObject {
             cy * scale > 1.2 * this.playground.height) {
             return;
         }
+
         this.render_grid(ctx_x, ctx_y, scale);
+
+        // 玩家进入草丛之后草丛颜色变浅
         if (this.has_grass && this.playground.players.length > 0) {
             let player = this.playground.players[0];
             if (player.character === "me" && this.get_manhattan_dist(this.x + this.cube_side_len / 2, this.y + this.cube_side_len / 2, player.x, player.y) < 1.5 * this.cube_side_len)

@@ -79,6 +79,14 @@ export class FireBall extends AcGameObject {
         let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
         let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
 
+        if (ctx_x < -0.1 * this.playground.width / scale ||
+            ctx_x > 1.1 * this.playground.width / scale ||
+            ctx_y < -0.1 * this.playground.height / scale ||
+            ctx_y > 1.1 * this.playground.height / scale) {
+
+            return;
+        }
+
         this.ctx.beginPath();
         this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
         this.ctx.fillStyle = this.color;

@@ -71,23 +71,23 @@ export class Player extends AcGameObject {
             // }
 
             // 操作方式：wasd / 上下左右
-            if (e.key === 'w' || e.key === 'ArrowUp') {
+            if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
                 // 保证不会重复输入，后面的完全清楚只是保险起见
                 if (this.directions.includes(0) === false) {
                     this.directions.push(0);
                 }
                 e.preventDefault();  // 取消默认行为
-            } else if (e.key === 'd' || e.key === 'ArrowRight') {
+            } else if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') {
                 if (this.directions.includes(1) === false) {
                     this.directions.push(1);
                 }
                 e.preventDefault();  // 取消默认行为
-            } else if (e.key === 's' || e.key === 'ArrowDown') {
+            } else if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
                 if (this.directions.includes(2) === false) {
                     this.directions.push(2);
                 }
                 e.preventDefault();  // 取消默认行为
-            } else if (e.key === 'a' || e.key === 'ArrowLeft') {
+            } else if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
                 if (this.directions.includes(3) === false) {
                     this.directions.push(3);
                 }
@@ -96,16 +96,16 @@ export class Player extends AcGameObject {
         });
 
         this.ctx.canvas.addEventListener('keyup', e => {
-            if (e.key === 'w' || e.key === 'ArrowUp') {
+            if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
                 this.from_directions_clean(0);
                 e.preventDefault();  // 取消默认行为
-            } else if (e.key === 'd' || e.key === 'ArrowRight') {
+            } else if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') {
                 this.from_directions_clean(1);
                 e.preventDefault();  // 取消默认行为
-            } else if (e.key === 's' || e.key === 'ArrowDown') {
+            } else if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
                 this.from_directions_clean(2);
                 e.preventDefault();  // 取消默认行为
-            } else if (e.key === 'a' || e.key === 'ArrowLeft') {
+            } else if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
                 this.from_directions_clean(3);
                 e.preventDefault();  // 取消默认行为
             }
@@ -297,6 +297,15 @@ export class Player extends AcGameObject {
         let scale = this.playground.scale;
         let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
         let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
+
+        if (ctx_x < -0.2 * this.playground.width / scale ||
+            ctx_x > 1.2 * this.playground.width / scale ||
+            ctx_y < -0.2 * this.playground.height / scale ||
+            ctx_y > 1.2 * this.playground.height / scale) {
+            if (this.character != "me") { // 一个隐藏的bug，如果是玩家自己并且return，会导致技能图标渲染不出来
+                return;
+            }
+        }
 
         if (this.is_me === "me") {
             this.ctx.save();

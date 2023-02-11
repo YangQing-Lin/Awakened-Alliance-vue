@@ -64,6 +64,8 @@ export class GameMap extends AcGameObject {
                     continue;
                 if ((grass_y[i] === 9 || grass_y[i] === 10) && (grass_x[j] === 3 || grass_x[j] === 4 || grass_x[j] === 15 || grass_x[j] === 16))
                     continue;
+
+                // 根据坐标将对应的grid改成grass，不需要用到Grass.js
                 this.grids[grass_y[i] * this.nx + grass_x[j]].has_grass = true;
             }
         }
