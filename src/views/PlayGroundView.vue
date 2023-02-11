@@ -6,7 +6,6 @@
                 <button @click="restart()">开始游戏</button>
                 <button @click="show_ranklist()">排行榜</button>
                 <button @click="logout_on_remote_jwt()">登出</button>
-                <button @click="getinfo_web()">仅获取登录信息</button>
             </div>
             <RankList v-if="$store.state.ranklist" />
         </div>
@@ -37,11 +36,11 @@ export default {
         // let settings = null;
         const store = useStore();
 
+        // 检查登录状态，成功登陆后初始化store
         init(store);
 
         // 当组件被成功挂载之后执行
         onMounted(() => {
-            confirm_login_status();
             // settings = new Settings(store);
             playground = new PlayGround(
                 canvas,
@@ -90,66 +89,6 @@ export default {
             });
         };
 
-        // 确认账号的登录状态
-        const confirm_login_status = () => {
-            // 如果Cookies里面没有refresh，就说明还未登录或登陆状态过期，使用router跳转到登陆界面
-            if (!Cookies.get("refresh")) {
-                router.push("/login");
-                return false;
-            }
-
-            // 设置每4.5分钟自动更新access
-            // （这个函数调用多次会多次更新，刷新后才会失效，所以尽量只在进入页面后调用一次）
-            set_auto_refresh_jwt_token();
-
-            // 登录成功后获取账号信息
-            getinfo_web();
-        };
-
-        // 用jwt的token从服务器上获取username和photo信息
-        const getinfo_web = () => {
-            $.ajax({
-                url: "https://app4689.acapp.acwing.com.cn:4436/settings/getinfo_jwt/",
-                type: "get",
-                data: {
-                    platform: store.state.platform,
-                },
-                headers: {
-                    Authorization: "Bearer " + Cookies.get("access"),
-                },
-                success: function (resp) {
-                    if (resp.result === "success") {
-                        store.commit("udpateUsername", resp.username);
-                        store.commit("updatePhoto", resp.photo);
-                        // 跳转到游戏界面
-                        // outer.hide();
-                        // outer.root.menu.show();
-                    } else {
-                        console.log("jwt还未登录");
-                    }
-                },
-                error: () => {
-                    console.log("jwt登录报错");
-                },
-            });
-        };
-
-        // 每4.5分钟使用refresh获得新的access token
-        const set_auto_refresh_jwt_token = () => {
-            setInterval(() => {
-                $.ajax({
-                    url: "https://app4689.acapp.acwing.com.cn:4436/api/token/refresh/",
-                    type: "post",
-                    data: {
-                        refresh: Cookies.get("refresh"),
-                    },
-                    success: (resp) => {
-                        console.log("new access:", resp.access);
-                    },
-                });
-            }, 4.5 * 60 * 1000);
-        };
-
         return {
             div,
             canvas,
@@ -157,7 +96,6 @@ export default {
             show_ranklist,
             logout_on_remote,
             logout_on_remote_jwt,
-            getinfo_web,
         };
     },
 };
