@@ -50,7 +50,9 @@
                 </el-form>
                 <!-- 按钮盒子 -->
                 <div class="btn-box">
-                    <button @click="register_on_remote()">注册</button>
+                    <button @click="register_on_remote_jwt(registerForm)">
+                        注册
+                    </button>
                     <!-- 绑定点击事件 -->
                     <p @click="mySwitch()">已有账号?去登录</p>
                 </div>
@@ -87,8 +89,9 @@
                 </el-form>
                 <!-- 按钮盒子 -->
                 <div class="btn-box">
-                    <button @click="login_on_remote_jwt()">登录</button>
-                    <button @click="console_message()">输出信息</button>
+                    <button @click="login_on_remote_jwt(loginForm)">
+                        登录
+                    </button>
                     <!-- 绑定点击事件 -->
                     <p @click="mySwitch()">没有账号?去注册</p>
                 </div>
@@ -99,12 +102,12 @@
 
 <script setup>
 import { Lock, User } from "@element-plus/icons-vue";
-import { useStore } from "vuex";
-import router from "@/router";
-import $ from "jquery";
-import Cookies from "js-cookie";
-
+import {
+    login_on_remote_jwt,
+    register_on_remote_jwt,
+} from "@/assets/scripts/login_view/login";
 const { ref, reactive } = require("@vue/reactivity");
+
 const loginFormRef = ref("");
 const loginForm = reactive({
     username: "",
@@ -164,80 +167,6 @@ const mySwitch = () => {
         preRef.value.style.transform = "translatex(0%)";
     }
     flag.value = !flag.value;
-};
-
-// 在远程服务器上登录
-const store = useStore();
-const console_message = () => {
-    console.log("console message");
-    console.log(
-        "access/refresh:",
-        Cookies.get("access"),
-        Cookies.get("refresh")
-    );
-    console.log("username/photo:", store.state.username, store.state.photo);
-};
-// 调用服务器接口，通过用户名和密码登录，获得的access和refresh存到cookie里
-const login_on_remote_jwt = () => {
-    let username = loginForm.username;
-    let password = loginForm.password;
-    console.log(username, password);
-
-    $.ajax({
-        url: "https://app4689.acapp.acwing.com.cn:4436/api/token/",
-        type: "post",
-        data: {
-            username: username,
-            password: password,
-        },
-        success: (resp) => {
-            console.log(resp);
-            // 设置Cookie有效期为4.5分钟
-            let expires_time = new Date(new Date() * 1 + 4.5 * 60 * 1000);
-            Cookies.set("access", resp.access, {
-                expires: expires_time,
-            });
-            // 设置Cookie有效期为14.5天
-            Cookies.set("refresh", resp.refresh, { expires: 14.5 });
-
-            // 获取到获取到新的access和refresh之后直接跳转到游戏界面
-            // 在游戏界面会自动使用access获取各个用户信息
-            router.push("/playground");
-
-            // 获取到新的access和refresh之后用它们获取username和photo
-            // getinfo_web();
-        },
-        error: () => {
-            console.log("用户名或密码错误");
-        },
-    });
-};
-
-// 在远程服务器上注册
-const register_on_remote = () => {
-    let username = registerForm.username;
-    let password = registerForm.password;
-    let confirmPassword = registerForm.confirmPassword;
-
-    $.ajax({
-        url: "https://app4689.acapp.acwing.com.cn:4436/settings/register/",
-        type: "GET",
-        data: {
-            username: username,
-            password: password,
-            password_confirm: confirmPassword,
-        },
-        success: function (resp) {
-            console.log(resp);
-            if (resp.result === "success") {
-                // 注册成功之后直接刷新页面
-                console.log("注册成功");
-                // location.reload();
-            } else {
-                console.log(resp.result);
-            }
-        },
-    });
 };
 </script>
 
