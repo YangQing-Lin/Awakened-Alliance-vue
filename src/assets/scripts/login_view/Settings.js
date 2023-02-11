@@ -14,7 +14,7 @@ export class Settings {
     }
 
     start() {
-        this.getinfo();
+        // this.getinfo();
     }
 
     // 打开注册界面

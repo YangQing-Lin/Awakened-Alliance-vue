@@ -2,6 +2,7 @@ import { AcGameObject } from "./AcGameObject";
 import { GameMap } from "./GameMap";
 import { Player } from "./Player";
 import $ from 'jquery';
+import Cookies from "js-cookie";
 
 export class PlayGround extends AcGameObject {
     constructor(canvas, ctx, div, store) {
@@ -106,7 +107,7 @@ export class PlayGround extends AcGameObject {
                 score: this.store.state.score,
             },
             headers: {
-                'Authorization': "Bearer " + this.store.state.access,
+                'Authorization': "Bearer " + Cookies.get("access"),
             },
         });
     }

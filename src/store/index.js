@@ -7,8 +7,6 @@ export default createStore({
         record: 0,
         restart: true,
         AcWingOS: "AcWingOS",
-        access: "",
-        refresh: "",
         ranklist: false,
         username: "",
         photo: "",
@@ -27,12 +25,6 @@ export default createStore({
         },
         updateRestart: (state, restart) => {
             state.restart = restart;
-        },
-        updateAccess: (state, access) => {
-            state.access = access;
-        },
-        updateRefresh: (state, refresh) => {
-            state.refresh = refresh;
         },
         updateRanklist: (state, ranklist) => {
             state.ranklist = ranklist;

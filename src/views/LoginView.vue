@@ -87,7 +87,8 @@
                 </el-form>
                 <!-- 按钮盒子 -->
                 <div class="btn-box">
-                    <button @click="login_on_remote()">登录</button>
+                    <button @click="login_on_remote_jwt()">登录</button>
+                    <button @click="console_message()">输出信息</button>
                     <!-- 绑定点击事件 -->
                     <p @click="mySwitch()">没有账号?去注册</p>
                 </div>
@@ -99,7 +100,9 @@
 <script setup>
 import { Lock, User } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
+import router from "@/router";
 import $ from "jquery";
+import Cookies from "js-cookie";
 
 const { ref, reactive } = require("@vue/reactivity");
 const loginFormRef = ref("");
@@ -165,9 +168,20 @@ const mySwitch = () => {
 
 // 在远程服务器上登录
 const store = useStore();
-const login_on_remote = () => {
+const console_message = () => {
+    console.log("console message");
+    console.log(
+        "access/refresh:",
+        Cookies.get("access"),
+        Cookies.get("refresh")
+    );
+    console.log("username/photo:", store.state.username, store.state.photo);
+};
+// 调用服务器接口，通过用户名和密码登录，获得的access和refresh存到cookie里
+const login_on_remote_jwt = () => {
     let username = loginForm.username;
     let password = loginForm.password;
+    console.log(username, password);
 
     $.ajax({
         url: "https://app4689.acapp.acwing.com.cn:4436/api/token/",
@@ -177,9 +191,21 @@ const login_on_remote = () => {
             password: password,
         },
         success: (resp) => {
-            console.log("获取令牌成功", resp);
-            store.commit("updateAccess", resp.access);
-            store.commit("updateRefresh", resp.refresh);
+            console.log(resp);
+            // 设置Cookie有效期为4.5分钟
+            let expires_time = new Date(new Date() * 1 + 4.5 * 60 * 1000);
+            Cookies.set("access", resp.access, {
+                expires: expires_time,
+            });
+            // 设置Cookie有效期为14.5天
+            Cookies.set("refresh", resp.refresh, { expires: 14.5 });
+
+            // 获取到获取到新的access和refresh之后直接跳转到游戏界面
+            // 在游戏界面会自动使用access获取各个用户信息
+            router.push("/playground");
+
+            // 获取到新的access和refresh之后用它们获取username和photo
+            // getinfo_web();
         },
         error: () => {
             console.log("用户名或密码错误");

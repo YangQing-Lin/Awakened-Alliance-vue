@@ -14,6 +14,7 @@
 import { ref } from "vue";
 import $ from "jquery";
 import { useStore } from "vuex";
+import Cookies from "js-cookie";
 
 export default {
     name: "RankList",
@@ -24,7 +25,7 @@ export default {
             url: "https://app4689.acapp.acwing.com.cn:4436/get_ranklist/",
             type: "get",
             headers: {
-                Authorization: "Bearer " + store.state.access,
+                Authorization: "Bearer " + Cookies.get("access"),
             },
             success: (resp) => {
                 console.log(resp);
