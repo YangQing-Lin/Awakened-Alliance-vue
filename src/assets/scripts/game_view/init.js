@@ -35,23 +35,31 @@ export const init = (store) => {
 
     // 每4.5分钟使用refresh获得新的access_token
     const set_auto_refresh_jwt_token = () => {
-        setInterval(() => {
-            $.ajax({
-                url: "https://app4689.acapp.acwing.com.cn:4436/api/token/refresh/",
-                type: "post",
-                data: {
-                    refresh: Cookies.get("refresh"),
-                },
-                success: (resp) => {
-                    // 设置Cookie有效期为4.5分钟
-                    let expires_time = new Date(new Date() * 1 + 4.5 * 60 * 1000);
-                    Cookies.set("access", resp.access, {
-                        expires: expires_time,
-                    });
-                },
-            });
-        }, 4.5 * 60 * 1000);
+        // 先执行一次，然后设置4.5分钟的自动更新
+        refresh_jwt_token();
+        setInterval(refresh_jwt_token, 4.5 * 60 * 1000);
     };
+
+    const refresh_jwt_token = () => {
+        $.ajax({
+            url: "https://app4689.acapp.acwing.com.cn:4436/api/token/refresh/",
+            type: "post",
+            data: {
+                refresh: Cookies.get("refresh"),
+            },
+            success: (resp) => {
+                console.log("access刷新成功:", resp.access);
+                // 设置Cookie有效期为4.5分钟
+                let expires_time = new Date(new Date() * 1 + 4.5 * 60 * 1000);
+                Cookies.set("access", resp.access, {
+                    expires: expires_time,
+                });
+            },
+            error: () => {
+                console.log("access刷新失败");
+            }
+        });
+    }
 
     // 用jwt的token从服务器上获取username和photo信息
     const getinfo_web = () => {
@@ -98,9 +106,6 @@ export const init = (store) => {
                             });
                             // 设置Cookie有效期为14.5天
                             Cookies.set("refresh", resp.refresh, { expires: 14.5 });
-
-                            // 每4.5分钟使用refresh获得新的access_token
-                            set_auto_refresh_jwt_token();
                         }
                     });
                 }

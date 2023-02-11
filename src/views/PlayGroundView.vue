@@ -117,6 +117,14 @@ export default {
     align-items: center;
 }
 
+/* canvas居中，不过上面已经居中了，所以这里不需要 */
+/* .game-map-div > canvas {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50, -50%);
+} */
+
 div.operation {
     position: absolute;
 }

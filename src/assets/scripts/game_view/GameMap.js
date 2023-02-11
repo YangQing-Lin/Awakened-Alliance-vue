@@ -27,8 +27,8 @@ export class GameMap extends AcGameObject {
     }
 
     resize() {
-        this.ctx.canvas.width = this.playground.width;
-        this.ctx.canvas.height = this.playground.height;
+        this.width = this.playground.width;
+        this.height = this.playground.height;
     }
 
     get_random_color() {

@@ -29,6 +29,11 @@ export class PlayGround extends AcGameObject {
 
     start() {
         this.resize();
+        let outer = this;
+        $(window).resize(function () {
+            outer.resize();
+            console.log("window.resize()");
+        });
 
         // let player = new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me");
         // this.players.push(player);
@@ -41,6 +46,17 @@ export class PlayGround extends AcGameObject {
         //     this.players.push(new Player(this, rand_x, rand_y, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
         // }
 
+    }
+
+    resize() {
+        this.ctx.canvas.width = this.div.clientWidth;
+        this.ctx.canvas.height = this.div.clientHeight;
+        this.width = this.div.clientWidth;
+        this.height = this.div.clientHeight;
+
+        if (this.game_map) {
+            this.game_map.resize();
+        }
     }
 
     // 根据各个元素在虚拟地图上的相对位置计算在画布上的相对位置
@@ -89,13 +105,6 @@ export class PlayGround extends AcGameObject {
     get_random_color() {
         let colors = ["red", "pink", "grey", "green", "lightblue", "lightgreen", "yellow", "orange", "gold"];
         return colors[Math.floor(Math.random() * colors.length)];
-    }
-
-    resize() {
-        this.ctx.canvas.width = this.div.clientWidth;
-        this.ctx.canvas.height = this.div.clientHeight;
-        this.width = this.div.clientWidth;
-        this.height = this.div.clientHeight;
     }
 
     // 更新分数到服务器
@@ -150,8 +159,6 @@ export class PlayGround extends AcGameObject {
     }
 
     update() {
-        this.resize();
-
         if (this.focus_player) {
             this.ctx_x = this.focus_player.x;
             this.ctx_y = this.focus_player.y;
