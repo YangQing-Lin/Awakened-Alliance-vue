@@ -27,6 +27,10 @@ export class Player extends AcGameObject {
         this.ty = 0;
         this.friction = 0.9;  // 摩擦力
         this.spent_time = 0;
+        this.last_clientX = 0;  // 暂存e.clientX和e.clientY，用于在鼠标不动的时候也能更新相对位置
+        this.last_clientY = 0;
+        this.last_rect_left = 0;
+        this.last_rect_top = 0;  // 暂存rect.left和rect.top，用于计算AcWingOS小窗模式的鼠标位置
 
         if (this.is_me === "me") {
             console.log(this.playground.store.state);
@@ -69,7 +73,6 @@ export class Player extends AcGameObject {
             // if (this.store.state.restart) {
             //     return;
             // }
-
             // 操作方式：wasd / 上下左右
             if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
                 // 保证不会重复输入，后面的完全清楚只是保险起见
@@ -112,13 +115,11 @@ export class Player extends AcGameObject {
         });
 
         this.ctx.canvas.addEventListener('mousedown', e => {
-            // 获取canvas左上角在整个屏幕上的坐标（主要用在acapp小窗口上，WEB端canvas左上角就是屏幕左上角）
-            const rect = this.ctx.canvas.getBoundingClientRect();
+            this.save_clientX_clientY_rectLeft_rectRight(e);
             // 鼠标左键·
             if (e.which === 1 && this.directions.includes("fireball") === false) {
                 this.directions.push("fireball");
-                this.tx = this.playground.my_calculate_tx(e.clientX - rect.left);
-                this.ty = this.playground.my_calculate_ty(e.clientY - rect.top);
+                this.my_calculate_tx_ty();
                 // 鼠标点击在地图外面将无效
                 // if (this.tx < 0 || this.tx > this.playground.virtual_map_width || this.ty < 0 || this.ty > this.playground.virtual_map_height) {
                 //     return ;
@@ -128,14 +129,16 @@ export class Player extends AcGameObject {
         });
 
         this.ctx.canvas.addEventListener('mouseup', e => {
+            this.save_clientX_clientY_rectLeft_rectRight(e);
             this.from_directions_clean("fireball");
             e.preventDefault();
         })
 
+        // 鼠标移动的时候重新计算绝对位置
+        // （但是这会产生一个bug：鼠标不动玩家移动会造成攻击位置错误，所以在需要攻击的时候也要重新计算）
         this.ctx.canvas.addEventListener('mousemove', e => {
-            const rect = this.ctx.canvas.getBoundingClientRect();
-            this.tx = this.playground.my_calculate_tx(e.clientX - rect.left);
-            this.ty = this.playground.my_calculate_ty(e.clientY - rect.top);
+            this.save_clientX_clientY_rectLeft_rectRight(e);
+            this.my_calculate_tx_ty();
         })
     }
 
@@ -152,8 +155,26 @@ export class Player extends AcGameObject {
 
     scan_skills(directions) {
         if (directions.includes("fireball")) {
+            // this.my_calculate_tx_ty();
             this.shoot_fireball(this.tx, this.ty);
         }
+    }
+
+    // 将监听事件里的位置临时变量存储到玩家的类中，用于后续计算
+    save_clientX_clientY_rectLeft_rectRight(e) {
+        this.last_clientX = e.clientX;
+        this.last_clientY = e.clientY;
+
+        // 获取canvas左上角在整个屏幕上的坐标（主要用在acapp小窗口上，WEB端canvas左上角就是屏幕左上角）
+        const rect = this.ctx.canvas.getBoundingClientRect();
+        this.last_rect_left = rect.left;
+        this.last_rect_top = rect.top;
+    }
+
+    // 使用监听事件里的相对坐标计算在虚拟地图中的绝对坐标
+    my_calculate_tx_ty() {
+        this.tx = this.playground.my_calculate_tx(this.last_clientX - this.last_rect_left);
+        this.ty = this.playground.my_calculate_ty(this.last_clientY - this.last_rect_top);
     }
 
     // 计算两点间欧几里得距离

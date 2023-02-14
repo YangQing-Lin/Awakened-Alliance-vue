@@ -65,6 +65,7 @@ export class PlayGround extends AcGameObject {
         return y - this.ctx_y + 0.5 * this.height / this.scale;
     }
 
+    // 通过玩家鼠标的点击位置计算在虚拟地图中的对应位置
     my_calculate_tx(x) {
         return (x - 0.5 * this.width) / this.scale + this.ctx_x;
     }
