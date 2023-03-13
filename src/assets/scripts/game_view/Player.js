@@ -5,7 +5,7 @@ import { Particle } from "./Particle";
 import { FireBall } from "./skill/FireBall";
 
 export class Player extends AcGameObject {
-    constructor(playground, x, y, radius, color, speed, is_me) {
+    constructor(playground, x, y, radius, color, speed, character, username, photo) {
         super();
         this.playground = playground;
         this.ctx = this.playground.ctx;
@@ -16,8 +16,9 @@ export class Player extends AcGameObject {
         this.radius = radius;
         this.color = color;
         this.speed = speed;
-        this.is_me = is_me;
-        this.character = is_me;
+        this.character = character;
+        this.username = username;
+        this.photo = photo;
 
         this.health = 20;
         this.eps = 0.001;
@@ -32,19 +33,19 @@ export class Player extends AcGameObject {
         this.last_rect_left = 0;
         this.last_rect_top = 0;  // 暂存rect.left和rect.top，用于计算AcWingOS小窗模式的鼠标位置
 
-        if (this.is_me === "me") {
-            console.log(this.playground.store.state);
+        if (this.character === "me") {
             this.img = new Image();
-            this.img.src = this.playground.store.state.photo;
+            this.img.src = this.photo;
         }
     }
 
     start() {
         this.ctx.canvas.focus();
 
-        if (this.is_me === "me") {
+        // 机器人的运动和玩家的不一样，玩家是通过键盘操作指定移动方向，机器人是直线移动到随机的坐标点
+        if (this.character === "me") {
             this.add_listening_events();
-        } else if (this.is_me === "robot") {
+        } else if (this.character === "robot") {
             let tx = Math.random() * this.playground.virtual_map_width;
             let ty = Math.random() * this.playground.virtual_map_height;
             this.move_to(tx, ty);
@@ -228,7 +229,7 @@ export class Player extends AcGameObject {
 
     lose() {
         // 死一个新加入一个
-        if (this.is_me === "me") {
+        if (this.character === "me") {
             this.playground.lose();
         } else {
             this.playground.append_player();
@@ -274,7 +275,7 @@ export class Player extends AcGameObject {
         if (this.move_length < this.eps) {
             this.move_length = 0;
             this.vx = this.vy = 0;
-            // 永不停歇
+            // 机器人的运动永不停歇
             let tx = Math.random() * this.playground.virtual_map_width;
             let ty = Math.random() * this.playground.virtual_map_height;
             this.move_to(tx, ty);
@@ -293,7 +294,7 @@ export class Player extends AcGameObject {
 
         this.spent_time += this.timedelta / 1000;
 
-        if (this.is_me === "robot") {
+        if (this.character === "robot") {
             this.robot_update();
         } else {
             this.x += this.vx * this.timedelta / 1000;
@@ -328,7 +329,7 @@ export class Player extends AcGameObject {
             }
         }
 
-        if (this.is_me === "me") {
+        if (this.character !== "robot") {
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);

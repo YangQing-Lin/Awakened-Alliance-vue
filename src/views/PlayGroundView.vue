@@ -3,7 +3,8 @@
         <div ref="div" class="game-map-div">
             <canvas ref="canvas" tabindex="0"></canvas>
             <div class="operation" v-if="$store.state.restart">
-                <button @click="restart()">开始游戏</button>
+                <button @click="restart('single mode')">开始游戏</button>
+                <button @click="restart('multi mode')">联机对战</button>
                 <button @click="show_ranklist()">排行榜</button>
                 <button @click="logout_on_remote_jwt()">登出</button>
             </div>
@@ -50,8 +51,8 @@ export default {
             );
         });
 
-        const restart = () => {
-            playground.restart();
+        const restart = (mode_name) => {
+            playground.restart(mode_name);
         };
 
         const show_ranklist = () => {
