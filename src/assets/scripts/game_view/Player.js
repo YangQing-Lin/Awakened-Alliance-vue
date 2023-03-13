@@ -162,7 +162,7 @@ export class Player extends AcGameObject {
     // 根据uuid来删除火球
     destroy_fireball(uuid) {
         for (let i = 0; i < this.playground.fireballs.length; i++) {
-            let fireball = this.fireballs[i];
+            let fireball = this.playground.fireballs[i];
             if (fireball.uuid === uuid) {
                 fireball.destroy();
                 break;
@@ -246,6 +246,14 @@ export class Player extends AcGameObject {
             this.lose();
             return false;
         }
+    }
+
+    // 收到有人被攻击的广播（并不一定是窗口的主人被攻击）
+    receive_attack(x, y, angle, damage, ball_uuid, attacker) {
+        attacker.destroy_fireball(ball_uuid);
+        this.x = x;
+        this.y = y;
+        this.is_attacked(angle, damage);
     }
 
     lose() {
