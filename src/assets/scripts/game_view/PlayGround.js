@@ -159,7 +159,6 @@ export class PlayGround extends AcGameObject {
             }
 
         } else if (mode_name === "multi mode") {
-            console.log("in multi mode");
             this.mps = new MultiPlayerSocket(this);  // 创建连接
             this.mps.uuid = this.players[0].uuid;  // 将连接的uuid设置为玩家的uuid，方便之后分辨窗口归属
 

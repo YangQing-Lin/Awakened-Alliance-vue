@@ -6,7 +6,6 @@ import Cookies from "js-cookie";
 const login_on_remote_jwt = (loginForm, username, password) => {
     username = username || loginForm.username;
     password = password || loginForm.password;
-    console.log(username, password);
 
     $.ajax({
         url: "https://app4689.acapp.acwing.com.cn:4436/api/token/",
@@ -16,7 +15,6 @@ const login_on_remote_jwt = (loginForm, username, password) => {
             password: password,
         },
         success: (resp) => {
-            console.log(resp);
             // 设置Cookie有效期为4.5分钟
             let expires_time = new Date(new Date() * 1 + 4.5 * 60 * 1000);
             Cookies.set("access", resp.access, {
@@ -53,9 +51,7 @@ const register_on_remote_jwt = (registerForm) => {
             password_confirm: confirmPassword,
         },
         success: (resp) => {
-            console.log(resp);
             if (resp.result === "success") {
-                console.log("注册成功");
                 login_on_remote_jwt("", username, password);
             } else {
                 console.log("注册失败：", resp.result);

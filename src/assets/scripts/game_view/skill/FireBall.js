@@ -66,10 +66,12 @@ export class FireBall extends AcGameObject {
         this.destroy();
     }
 
+    // 在删除自己的时候要把所有的引用也删掉
     on_destroy() {
         for (let i = 0; i < this.playground.fireballs.length; i++) {
             if (this.playground.fireballs[i] === this) {
                 this.playground.fireballs.splice(i, 1);
+                break;
             }
         }
     }

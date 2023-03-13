@@ -52,6 +52,7 @@ export default {
         });
 
         const restart = (mode_name) => {
+            store.commit("updateModeName", mode_name);
             playground.restart(mode_name);
         };
 
@@ -73,21 +74,25 @@ export default {
 
         // 早期的登出，需要调用服务器对应的接口
         const logout_on_remote = () => {
-            if (store.state.platform === "ACAPP") {
-                return false;
+            if (
+                store.state.platform === "ACAPP" &&
+                store.state.AcWingOS !== "AcWingOS"
+            ) {
+                // 调用acwing的窗口关闭函数
+                store.state.AcWingOS.api.window.close();
+            } else {
+                $.ajax({
+                    url: "https://app4689.acapp.acwing.com.cn:4436/settings/logout/",
+                    type: "GET",
+                    success: function (resp) {
+                        if (resp.result === "success") {
+                            console.log("成功登出账号");
+                            // 登出成功就刷新页面
+                            // location.reload();
+                        }
+                    },
+                });
             }
-
-            $.ajax({
-                url: "https://app4689.acapp.acwing.com.cn:4436/settings/logout/",
-                type: "GET",
-                success: function (resp) {
-                    if (resp.result === "success") {
-                        console.log("成功登出账号");
-                        // 登出成功就刷新页面
-                        // location.reload();
-                    }
-                },
-            });
         };
 
         return {

@@ -23,6 +23,9 @@ export class Player extends AcGameObject {
         this.health = 20;
         this.eps = 0.001;
         this.directions = [];  // 用户的操作列表
+        this.last_directions_length = 0;  // 操作列表的长度（每当directions长度更改的时候向后端发送数据，长度不变就不发送，降低服务器压力）
+        this.skill_directions = [];  // 用户的技能操作列表
+        this.last_skill_directions_length = 0;
         this.rand_directions = [];  // 给机器人用的随机操作列表
         this.tx = 0;  // 鼠标的实时位置
         this.ty = 0;
@@ -101,16 +104,16 @@ export class Player extends AcGameObject {
 
         this.ctx.canvas.addEventListener('keyup', e => {
             if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
-                this.from_directions_clean(0);
+                this.from_directions_clean(this.directions, 0);
                 e.preventDefault();  // 取消默认行为
             } else if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') {
-                this.from_directions_clean(1);
+                this.from_directions_clean(this.directions, 1);
                 e.preventDefault();  // 取消默认行为
             } else if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
-                this.from_directions_clean(2);
+                this.from_directions_clean(this.directions, 2);
                 e.preventDefault();  // 取消默认行为
             } else if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
-                this.from_directions_clean(3);
+                this.from_directions_clean(this.directions, 3);
                 e.preventDefault();  // 取消默认行为
             }
         });
@@ -118,8 +121,8 @@ export class Player extends AcGameObject {
         this.ctx.canvas.addEventListener('mousedown', e => {
             this.save_clientX_clientY_rectLeft_rectRight(e);
             // 鼠标左键·
-            if (e.which === 1 && this.directions.includes("fireball") === false) {
-                this.directions.push("fireball");
+            if (e.which === 1 && this.skill_directions.includes("fireball") === false) {
+                this.skill_directions.push("fireball");
                 this.my_calculate_tx_ty();
                 // 鼠标点击在地图外面将无效
                 // if (this.tx < 0 || this.tx > this.playground.virtual_map_width || this.ty < 0 || this.ty > this.playground.virtual_map_height) {
@@ -131,7 +134,7 @@ export class Player extends AcGameObject {
 
         this.ctx.canvas.addEventListener('mouseup', e => {
             this.save_clientX_clientY_rectLeft_rectRight(e);
-            this.from_directions_clean("fireball");
+            this.from_directions_clean(this.skill_directions, "fireball");
             e.preventDefault();
         })
 
@@ -152,12 +155,30 @@ export class Player extends AcGameObject {
         let move_length = this.playground.height * 1.5 / this.playground.scale;
         let fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 10);
         this.playground.fireballs.push(fireball);
+
+        return fireball;
+    }
+
+    // 根据uuid来删除火球
+    destroy_fireball(uuid) {
+        for (let i = 0; i < this.playground.fireballs.length; i++) {
+            let fireball = this.fireballs[i];
+            if (fireball.uuid === uuid) {
+                fireball.destroy();
+                break;
+            }
+        }
     }
 
     scan_skills(directions) {
         if (directions.includes("fireball")) {
             // this.my_calculate_tx_ty();
-            this.shoot_fireball(this.tx, this.ty);
+            let fireball = this.shoot_fireball(this.tx, this.ty);
+
+            if (this.playground.store.state.mode_name === "multi mode") {
+                this.playground.mps.send_shoot_fireball(fireball.uuid, this.tx, this.ty);
+                console.log("send shoot fireball");
+            }
         }
     }
 
@@ -242,15 +263,16 @@ export class Player extends AcGameObject {
         for (let i = 0; i < this.playground.players.length; i++) {
             if (this.playground.players[i] === this) {
                 this.playground.players.splice(i, 1);
+                break;
             }
         }
     }
 
     // 从directions中清除所有operation对应的操作
-    from_directions_clean(operation) {
-        for (let i = 0; i < this.directions.length; i++) {
-            if (this.directions[i] === operation) {
-                this.directions.splice(i, 1);
+    from_directions_clean(directions, operation) {
+        for (let i = 0; i < directions.length; i++) {
+            if (directions[i] === operation) {
+                directions.splice(i, 1);
                 i--;
             }
         }
@@ -297,10 +319,8 @@ export class Player extends AcGameObject {
         if (this.character === "robot") {
             this.robot_update();
         } else {
-            this.x += this.vx * this.timedelta / 1000;
-            this.y += this.vy * this.timedelta / 1000;
-            this.move_toward(this.directions);
-            this.scan_skills(this.directions);
+            this.update_move();
+            this.update_attack();
         }
 
         // if (this.character === "me" && this.playground.focus_player === this) {
@@ -312,6 +332,39 @@ export class Player extends AcGameObject {
         // if (this.character === "me" && this.playground.focus_player === this) {
         //     this.playground.re_calculate_cx_cy(this.x, this.y);
         // }
+    }
+
+    update_move() {
+        this.x += this.vx * this.timedelta / 1000;
+        this.y += this.vy * this.timedelta / 1000;
+
+        // 只有当前操作数组的长度改变时才会调用里面的操作，下面技能数组同理
+        if (this.last_directions_length !== this.directions.length) {
+            this.move_toward(this.directions);
+            if (this.playground.store.state.mode_name === "multi mode") {
+                // *************************************************************************************
+                // 前后端传输消息的整个流程：
+                // 玩家在进行操作的时候首先判断当前是多人游戏模式，于是调用mps相应的函数
+                // mps的相关逻辑在multiplayer.js里，这会调用相应的send_move_toward函数开始向后端发送数据
+                // 其中'event'字段的作用就是为了在后端完成路由
+                // 后端用async def receive(self, text_data)函数对接收到的信息进行路由，跳转到对应的后端move_toward函数
+                // 后端move_toward函数会将消息广播给组里的所有人，其他人通过async def group_send_event(self, data)函数将信息发送给每个人对应的前端
+                // 前端在multiplayer.js里通过receive()函数的this.ws.onmessage接收后端发来的信息，并进行路由
+                // *************************************************************************************
+                this.playground.mps.send_move_toward(this.directions);
+                console.log("send move toward");
+            }
+
+            this.last_directions_length = this.directions.length;
+        }
+    }
+
+    update_attack() {
+        if (this.last_skill_directions_length !== this.skill_directions.length) {
+            this.scan_skills(this.skill_directions);
+
+            this.last_skill_directions_length = this.skill_directions.length;
+        }
     }
 
     render() {

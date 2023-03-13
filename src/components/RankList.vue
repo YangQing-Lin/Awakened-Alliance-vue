@@ -28,7 +28,6 @@ export default {
                 Authorization: "Bearer " + Cookies.get("access"),
             },
             success: (resp) => {
-                console.log(resp);
                 const new_players = [];
                 new_players.push(resp.me, ...resp.all);
                 let id = 0;

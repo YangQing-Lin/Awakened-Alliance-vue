@@ -37,7 +37,6 @@ export class Settings {
                 platform: outer.store.state.platform,
             },
             success: function (resp) {
-                console.log("Settings resp:", resp.result);
                 if (resp.result === "success") {
                     console.log("已经登陆");
                     // outer.hide();

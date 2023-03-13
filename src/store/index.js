@@ -11,6 +11,7 @@ export default createStore({
         username: "",
         photo: "",
         platform: "WEB",
+        mode_name: "single mode",
     },
     getters: {
     },
@@ -37,6 +38,9 @@ export default createStore({
         },
         updatePlatform: (state, platform) => {
             state.platform = platform;
+        },
+        updateModeName: (state, mode_name) => {
+            state.mode_name = mode_name;
         },
     },
     actions: {
