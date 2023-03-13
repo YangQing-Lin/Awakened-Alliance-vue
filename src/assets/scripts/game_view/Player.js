@@ -33,7 +33,7 @@ export class Player extends AcGameObject {
         this.last_rect_left = 0;
         this.last_rect_top = 0;  // 暂存rect.left和rect.top，用于计算AcWingOS小窗模式的鼠标位置
 
-        if (this.character === "me") {
+        if (this.character !== "robot") {
             this.img = new Image();
             this.img.src = this.photo;
         }
