@@ -1,6 +1,7 @@
 import { AcGameObject } from "./AcGameObject";
 import { GameMap } from "./GameMap";
 import { Player } from "./Player";
+import { MultiPlayerSocket } from "./socket/multiplayer";
 import $ from 'jquery';
 import Cookies from "js-cookie";
 
@@ -140,6 +141,16 @@ export class PlayGround extends AcGameObject {
     }
 
     restart(mode_name) {
+        let outer = this;
+        this.store.commit('updateScore', 0);
+        let player = new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
+        this.players.push(player);
+        this.re_calculate_cx_cy(player.x, player.y);
+        this.focus_player = player;
+
+        this.store.commit('updateRestart', false);
+        this.ctx.canvas.focus();
+
         if (mode_name === "single mode") {
             for (let i = 0; i < 20; i++) {
                 let rand_x = Math.random() * this.virtual_map_width;
@@ -147,25 +158,14 @@ export class PlayGround extends AcGameObject {
                 this.players.push(new Player(this, rand_x, rand_y, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
             }
 
-            this.store.commit('updateScore', 0);
-            let player = new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
-            this.players.push(player);
-            this.re_calculate_cx_cy(player.x, player.y);
-            this.focus_player = player;
-
-            this.store.commit('updateRestart', false);
-            this.ctx.canvas.focus();
         } else if (mode_name === "multi mode") {
             console.log("in multi mode");
+            this.mps = new MultiPlayerSocket(this);
 
-            this.store.commit('updateScore', 0);
-            let player = new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
-            this.players.push(player);
-            this.re_calculate_cx_cy(player.x, player.y);
-            this.focus_player = player;
-
-            this.store.commit('updateRestart', false);
-            this.ctx.canvas.focus();
+            // 当连接创建成功时发送消息
+            this.mps.ws.onopen = function () {
+                outer.mps.send_create_player();
+            };
         }
     }
 
