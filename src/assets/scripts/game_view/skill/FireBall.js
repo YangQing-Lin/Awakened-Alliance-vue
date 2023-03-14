@@ -11,7 +11,8 @@ export class FireBall extends AcGameObject {
         this.vy = vy;
         this.radius = radius;
         this.color = color;
-        this.speed = speed;
+        this.color = "red";
+        this.speed = speed * 2;
         this.move_length = move_length;
         this.damage = damage;
 

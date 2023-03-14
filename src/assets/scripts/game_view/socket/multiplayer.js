@@ -28,11 +28,13 @@ export class MultiPlayerSocket {
                 // 后端通过wss连接要求前端创建新的玩家，于是这里调用相应的创建玩家的函数
                 outer.receive_create_player(uuid, data.username, data.photo);
             } else if (event === "move_toward") {
-                outer.receive_move_toward(uuid, data.directions);
+                outer.receive_move_toward(uuid, data.directions_array);
             } else if (event === "shoot_fireball") {
                 outer.receive_shoot_fireball(uuid, data.ball_uuid, data.tx, data.ty);
             } else if (event === "attack") {
                 outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
+            } else if (event === "blink") {
+                outer.receive_blink(uuid, data.tx, data.ty);
             }
         };
     }
@@ -79,17 +81,22 @@ export class MultiPlayerSocket {
 
     send_move_toward(directions) {
         let outer = this;
+        // 因为JSON.stringify()无法将Set()对象转换为字符串（转换后会丢失所有内容）
+        // 所以需要先用[...directions]将Set()对象解包并转换成数组的形式，然后才能转换成字符串
+        // 在接收其他窗口数据的时候将字符串转换为数组，再new Set(array)即可
+        let directions_array = [...directions];
         this.ws.send(JSON.stringify({
             'event': "move_toward",
             'uuid': outer.uuid,
-            'directions': directions,
+            'directions_array': directions_array,
         }));
     }
 
-    receive_move_toward(uuid, directions) {
+    receive_move_toward(uuid, directions_array) {
         let player = this.get_player(uuid);
 
         if (player) {
+            let directions = new Set(directions_array);
             player.move_toward(directions);
         }
     }
@@ -136,6 +143,23 @@ export class MultiPlayerSocket {
         let attackee = this.get_player(attackee_uuid);
         if (attacker && attackee) {
             attackee.receive_attack(x, y, angle, damage, ball_uuid, attacker);
+        }
+    }
+
+    send_blink(tx, ty) {
+        let outer = this;
+        this.ws.send(JSON.stringify({
+            'event': "blink",
+            'uuid': outer.uuid,
+            'tx': tx,
+            'ty': ty,
+        }))
+    }
+
+    receive_blink(uuid, tx, ty) {
+        let player = this.get_player(uuid);
+        if (player) {
+            player.blink(tx, ty);
         }
     }
 }

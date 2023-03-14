@@ -1,6 +1,7 @@
 import { tagEmits } from 'element-plus';
 import { createStore } from 'vuex'
 
+// game_state: waiting -> fighting -> over
 export default createStore({
     state: {
         score: 0,
@@ -12,6 +13,7 @@ export default createStore({
         photo: "",
         platform: "WEB",
         mode_name: "single mode",
+        game_state: "waiting",
     },
     getters: {
     },
@@ -41,6 +43,9 @@ export default createStore({
         },
         updateModeName: (state, mode_name) => {
             state.mode_name = mode_name;
+        },
+        updateGameState: (state, game_state) => {
+            state.game_state = game_state;
         },
     },
     actions: {

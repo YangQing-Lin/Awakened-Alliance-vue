@@ -22,11 +22,12 @@ export class Player extends AcGameObject {
 
         this.health = 20;
         this.eps = 0.001;
-        this.directions = [];  // 用户的操作列表
-        this.last_directions_length = 0;  // 操作列表的长度（每当directions长度更改的时候向后端发送数据，长度不变就不发送，降低服务器压力）
-        this.skill_directions = [];  // 用户的技能操作列表
-        this.last_skill_directions_length = 0;
-        this.rand_directions = [];  // 给机器人用的随机操作列表
+        this.directions = new Set();  // 用户的操作列表
+        this.last_directions_size = 0;  // 操作列表的长度（每当directions长度更改的时候向后端发送数据，长度不变就不发送，降低服务器压力）
+        this.skill_directions = new Set();  // 用户的技能操作列表
+        this.last_skill_directions_size = 0;
+        this.cur_skill = null;
+        this.rand_directions = new Set();  // 给机器人用的随机操作列表
         this.tx = 0;  // 鼠标的实时位置
         this.ty = 0;
         this.friction = 0.9;  // 摩擦力
@@ -40,9 +41,29 @@ export class Player extends AcGameObject {
             this.img = new Image();
             this.img.src = this.photo;
         }
+
+        if (this.character === "me") {
+            this.base_fireball_coldtime = 1;  // 冷却时间，单位：秒
+            this.fireball_coldtime = this.base_fireball_coldtime;
+            this.fireball_img = new Image();
+            this.fireball_img.src = "https://cdn.acwing.com/media/article/image/2021/12/02/1_9340c86053-fireball.png";
+
+            this.base_blink_coldtime = 3;
+            this.blink_coldtime = this.base_blink_coldtime;
+            this.blink_img = new Image();
+            this.blink_img.src = "https://cdn.acwing.com/media/article/image/2021/12/02/1_daccabdc53-blink.png";
+        }
     }
 
     start() {
+        if (this.playground.store.state.mode_name === "multi mode") {
+            this.playground.notice_board.add();
+            if (this.playground.notice_board.player_count >= 3) {
+                this.playground.store.commit('updateGameState', "fighting");
+                this.playground.notice_board.write("Fighting");
+            }
+        }
+
         this.ctx.canvas.focus();
 
         // 机器人的运动和玩家的不一样，玩家是通过键盘操作指定移动方向，机器人是直线移动到随机的坐标点
@@ -53,10 +74,11 @@ export class Player extends AcGameObject {
             let ty = Math.random() * this.playground.virtual_map_height;
             this.move_to(tx, ty);
 
-            for (let i = 0; i < 4; i++) {
-                // Math.round(Math.random())：随机生成0和1
-                this.rand_directions.push(Math.round(Math.random() * 4));
-            }
+            // 机器人使用的移动方法是随机一个目的地坐标，方向向量集合暂时用不到
+            // for (let i = 0; i < 4; i++) {
+            //     // Math.round(Math.random())：随机生成0和1
+            //     this.rand_directions.add(Math.round(Math.random() * 4));
+            // }
         }
     }
 
@@ -74,56 +96,63 @@ export class Player extends AcGameObject {
         });
 
         this.ctx.canvas.addEventListener('keydown', e => {
-            // if (this.store.state.restart) {
-            //     return;
-            // }
+            // 非对战状态无法进行操作
+            if (this.playground.store.state.game_state !== "fighting") {
+                return false;
+            }
             // 操作方式：wasd / 上下左右
             if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
                 // 保证不会重复输入，后面的完全清楚只是保险起见
-                if (this.directions.includes(0) === false) {
-                    this.directions.push(0);
-                }
+                this.directions.add(0);
                 e.preventDefault();  // 取消默认行为
             } else if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') {
-                if (this.directions.includes(1) === false) {
-                    this.directions.push(1);
-                }
+                this.directions.add(1);
                 e.preventDefault();  // 取消默认行为
             } else if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
-                if (this.directions.includes(2) === false) {
-                    this.directions.push(2);
-                }
+                this.directions.add(2);
                 e.preventDefault();  // 取消默认行为
             } else if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
-                if (this.directions.includes(3) === false) {
-                    this.directions.push(3);
-                }
+                this.directions.add(3);
                 e.preventDefault();  // 取消默认行为
+            } else if (e.key === 'f' || e.key === 'F') {
+                if (this.blink_coldtime < this.eps) {
+                    this.cur_skill = this.cur_skill === "blink" ? null : "blink";
+                }
+                console.log(this.cur_skill);
             }
         });
 
         this.ctx.canvas.addEventListener('keyup', e => {
             if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
-                this.from_directions_clean(this.directions, 0);
+                this.directions.delete(0);
                 e.preventDefault();  // 取消默认行为
             } else if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') {
-                this.from_directions_clean(this.directions, 1);
+                this.directions.delete(1);
                 e.preventDefault();  // 取消默认行为
             } else if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
-                this.from_directions_clean(this.directions, 2);
+                this.directions.delete(2);
                 e.preventDefault();  // 取消默认行为
             } else if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
-                this.from_directions_clean(this.directions, 3);
+                this.directions.delete(3);
                 e.preventDefault();  // 取消默认行为
             }
         });
 
         this.ctx.canvas.addEventListener('mousedown', e => {
+            // 非对战状态无法进行操作
+            if (this.playground.store.state.game_state !== "fighting") {
+                return false;
+            }
             this.save_clientX_clientY_rectLeft_rectRight(e);
             // 鼠标左键·
-            if (e.which === 1 && this.skill_directions.includes("fireball") === false) {
-                this.skill_directions.push("fireball");
+            if (e.which === 1) {
                 this.my_calculate_tx_ty();
+                if (this.cur_skill === null) {
+                    this.start_shoot_fireball();
+                } else if (this.cur_skill === "blink") {
+                    this.start_blink();
+                    this.cur_skill = null;
+                }
                 // 鼠标点击在地图外面将无效
                 // if (this.tx < 0 || this.tx > this.playground.virtual_map_width || this.ty < 0 || this.ty > this.playground.virtual_map_height) {
                 //     return ;
@@ -134,7 +163,7 @@ export class Player extends AcGameObject {
 
         this.ctx.canvas.addEventListener('mouseup', e => {
             this.save_clientX_clientY_rectLeft_rectRight(e);
-            this.from_directions_clean(this.skill_directions, "fireball");
+            this.skill_directions.delete("fireball");
             e.preventDefault();
         })
 
@@ -144,19 +173,6 @@ export class Player extends AcGameObject {
             this.save_clientX_clientY_rectLeft_rectRight(e);
             this.my_calculate_tx_ty();
         })
-    }
-
-    shoot_fireball(tx, ty) {
-        let radius = this.playground.height * 0.01 / this.playground.scale;
-        let angle = Math.atan2(ty - this.y, tx - this.x);
-        let vx = Math.cos(angle), vy = Math.sin(angle);
-        let color = "orange";
-        let speed = this.playground.height * 0.5 / this.playground.scale;
-        let move_length = this.playground.height * 1.5 / this.playground.scale;
-        let fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 10);
-        this.playground.fireballs.push(fireball);
-
-        return fireball;
     }
 
     // 根据uuid来删除火球
@@ -171,15 +187,55 @@ export class Player extends AcGameObject {
     }
 
     scan_skills(directions) {
-        if (directions.includes("fireball")) {
-            // this.my_calculate_tx_ty();
+        console.log("scan_skills(directions)");
+    }
+
+    start_blink() {
+        if (this.blink_coldtime < this.eps) {
+            this.blink(this.tx, this.ty);
+            this.blink_coldtime = this.base_blink_coldtime;
+
+            if (this.playground.store.state.mode_name === "multi mode") {
+                this.playground.mps.send_blink(this.tx, this.ty);
+                console.log("send blink");
+            }
+        }
+    }
+
+    blink(tx, ty) {
+        // TODO
+        let d = this.get_dist(this.x, this.y, tx, ty);
+        console.log("d: ", d);
+        d = Math.min(d, 0.6);
+        let angle = Math.atan2(ty - this.y, tx - this.x);
+        this.x += d * Math.cos(angle);
+        this.y += d * Math.sin(angle);
+    }
+
+    start_shoot_fireball() {
+        // 只有当火球不在CD才会成功发射
+        if (this.fireball_coldtime < this.eps) {
             let fireball = this.shoot_fireball(this.tx, this.ty);
+            this.fireball_coldtime = this.base_fireball_coldtime;
 
             if (this.playground.store.state.mode_name === "multi mode") {
                 this.playground.mps.send_shoot_fireball(fireball.uuid, this.tx, this.ty);
                 console.log("send shoot fireball");
             }
         }
+    }
+
+    shoot_fireball(tx, ty) {
+        let radius = this.playground.height * 0.01 / this.playground.scale;
+        let angle = Math.atan2(ty - this.y, tx - this.x);
+        let vx = Math.cos(angle), vy = Math.sin(angle);
+        let color = "orange";
+        let speed = this.playground.height * 0.5 / this.playground.scale;
+        let move_length = this.playground.height * 1.5 / this.playground.scale;
+        let fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 10);
+        this.playground.fireballs.push(fireball);
+
+        return fireball;
     }
 
     // 将监听事件里的位置临时变量存储到玩家的类中，用于后续计算
@@ -207,17 +263,17 @@ export class Player extends AcGameObject {
     }
 
     move_toward(directions) {
-        if (directions.includes(0) && !directions.includes(2)) {
+        if (directions.has(0) && !directions.has(2)) {
             this.vy = -this.speed;
-        } else if (!directions.includes(0) && directions.includes(2)) {
+        } else if (!directions.has(0) && directions.has(2)) {
             this.vy = this.speed;
         } else {
             this.vy = 0;
         }
 
-        if (directions.includes(1) && !directions.includes(3)) {
+        if (directions.has(1) && !directions.has(3)) {
             this.vx = this.speed;
-        } else if (!directions.includes(1) && directions.includes(3)) {
+        } else if (!directions.has(1) && directions.has(3)) {
             this.vx = -this.speed;
         } else {
             this.vx = 0;
@@ -276,15 +332,15 @@ export class Player extends AcGameObject {
         }
     }
 
-    // 从directions中清除所有operation对应的操作
-    from_directions_clean(directions, operation) {
-        for (let i = 0; i < directions.length; i++) {
-            if (directions[i] === operation) {
-                directions.splice(i, 1);
-                i--;
-            }
-        }
-    }
+    // 从directions中清除所有operation对应的操作（使用Set()之后就用不到了）
+    // from_directions_clean(directions, operation) {
+    //     for (let i = 0; i < directions.length; i++) {
+    //         if (directions[i] === operation) {
+    //             directions.splice(i, 1);
+    //             i--;
+    //         }
+    //     }
+    // }
 
     auto_shoot_fireball() {
         let players = this.playground.players;
@@ -317,6 +373,14 @@ export class Player extends AcGameObject {
         }
     }
 
+    update_coldtime() {
+        this.fireball_coldtime -= this.timedelta / 1000;
+        this.fireball_coldtime = Math.max(this.fireball_coldtime, 0);
+
+        this.blink_coldtime -= this.timedelta / 1000;
+        this.blink_coldtime = Math.max(this.blink_coldtime, 0);
+    }
+
     late_update() {
         if (this.playground.store.state.restart) {
             return;
@@ -327,6 +391,10 @@ export class Player extends AcGameObject {
         if (this.character === "robot") {
             this.robot_update();
         } else {
+            // 只有当角色是自己并且游戏是对战状态才会更新技能冷却时间
+            if (this.character === "me" && this.playground.store.state.game_state === "fighting") {
+                this.update_coldtime();
+            }
             this.update_move();
             this.update_attack();
         }
@@ -347,7 +415,7 @@ export class Player extends AcGameObject {
         this.y += this.vy * this.timedelta / 1000;
 
         // 只有当前操作数组的长度改变时才会调用里面的操作，下面技能数组同理
-        if (this.last_directions_length !== this.directions.length) {
+        if (this.last_directions_size !== this.directions.size) {
             this.move_toward(this.directions);
             if (this.playground.store.state.mode_name === "multi mode") {
                 // *************************************************************************************
@@ -363,16 +431,59 @@ export class Player extends AcGameObject {
                 console.log("send move toward");
             }
 
-            this.last_directions_length = this.directions.length;
+            this.last_directions_size = this.directions.size;
         }
     }
 
     update_attack() {
-        if (this.last_skill_directions_length !== this.skill_directions.length) {
+        if (this.last_skill_directions_size !== this.skill_directions.size) {
             this.scan_skills(this.skill_directions);
 
-            this.last_skill_directions_length = this.skill_directions.length;
+            this.last_skill_directions_size = this.skill_directions.size;
         }
+    }
+
+    render_skill_coldtime() {
+        let x = 0.6, y = 0.9;
+        let r = 0.04;
+        let scale = this.playground.scale;
+
+        // 绘制火球图片
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(x * scale, y * scale, r * scale, 0, Math.PI * 2, false);
+        this.ctx.stroke();
+        this.ctx.clip();
+        this.ctx.drawImage(this.fireball_img, (x - r) * scale, (y - r) * scale, r * 2 * scale, r * 2 * scale);
+        this.ctx.restore();
+        // 绘制蒙板
+        if (this.fireball_coldtime > 0) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(x * scale, y * scale);
+            this.ctx.arc(x * scale, y * scale, r * scale, 0 - Math.PI / 2, Math.PI * 2 * (1 - this.fireball_coldtime / this.base_fireball_coldtime) - Math.PI / 2, true);
+            this.ctx.lineTo(x * scale, y * scale);
+            this.ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
+            this.ctx.fill();
+        }
+
+
+        x = 0.8, y = 0.9;
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(x * scale, y * scale, r * scale, 0, Math.PI * 2, false);
+        this.ctx.stroke();
+        this.ctx.clip();
+        this.ctx.drawImage(this.blink_img, (x - r) * scale, (y - r) * scale, r * 2 * scale, r * 2 * scale);
+        this.ctx.restore();
+        if (this.blink_coldtime > 0) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(x * scale, y * scale);
+            this.ctx.arc(x * scale, y * scale, r * scale, 0 - Math.PI / 2, Math.PI * 2 * (1 - this.blink_coldtime / this.base_blink_coldtime) - Math.PI / 2, true);
+            this.ctx.lineTo(x * scale, y * scale);
+            this.ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
+            this.ctx.fill();
+        }
+
     }
 
     render() {
@@ -403,6 +514,10 @@ export class Player extends AcGameObject {
             this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
             this.ctx.fillStyle = this.color;
             this.ctx.fill();
+        }
+
+        if (this.character === "me" && this.playground.store.state.game_state === "fighting") {
+            this.render_skill_coldtime();
         }
     }
 }

@@ -2,6 +2,7 @@ import { AcGameObject } from "./AcGameObject";
 import { GameMap } from "./GameMap";
 import { Player } from "./Player";
 import { MultiPlayerSocket } from "./socket/multiplayer";
+import { NoticeBoard } from "./NoticeBoard";
 import $ from 'jquery';
 import Cookies from "js-cookie";
 
@@ -137,6 +138,7 @@ export class PlayGround extends AcGameObject {
         }
 
         this.store.commit('updateRestart', true);
+        this.store.commit('updateGameState', "over");
         this.update_score();
     }
 
@@ -157,8 +159,9 @@ export class PlayGround extends AcGameObject {
                 let rand_y = Math.random() * this.virtual_map_height;
                 this.players.push(new Player(this, rand_x, rand_y, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
             }
-
+            this.store.commit('updateGameState', "fighting");  // 单人模式中，添加所有机器人之后要设置成“战斗模式”
         } else if (mode_name === "multi mode") {
+            this.notice_board = new NoticeBoard(this);
             this.mps = new MultiPlayerSocket(this);  // 创建连接
             this.mps.uuid = this.players[0].uuid;  // 将连接的uuid设置为玩家的uuid，方便之后分辨窗口归属
 
