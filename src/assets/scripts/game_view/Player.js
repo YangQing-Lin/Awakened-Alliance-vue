@@ -203,7 +203,6 @@ export class Player extends AcGameObject {
     }
 
     blink(tx, ty) {
-        // TODO
         let d = this.get_dist(this.x, this.y, tx, ty);
         console.log("d: ", d);
         d = Math.min(d, 0.6);
