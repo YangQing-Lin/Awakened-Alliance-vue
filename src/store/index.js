@@ -14,8 +14,9 @@ export default createStore({
         platform: "WEB",
         mode_name: "single mode",
         game_state: "waiting",
-        chatting: true,
-        playground_focusing: true,
+        chatting: false,
+        show_history: false,
+        // playground_focusing: true,
     },
     getters: {
     },
@@ -52,8 +53,11 @@ export default createStore({
         updateChatting: (state, chatting) => {
             state.chatting = chatting;
         },
-        updatePlaygroundFocusing: (state, flag) => {
-            state.playground_focusing = flag;
+        // updatePlaygroundFocusing: (state, flag) => {
+        //     state.playground_focusing = flag;
+        // },
+        updateShowHistory: (state, show_history) => {
+            state.show_history = show_history;
         },
     },
     actions: {

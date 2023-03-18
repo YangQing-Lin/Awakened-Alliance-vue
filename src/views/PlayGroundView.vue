@@ -9,7 +9,7 @@
                 <button @click="logout_on_remote_jwt()">登出</button>
             </div>
             <RankList v-if="$store.state.ranklist" />
-            <ChatField v-if="$store.state.chatting" ref="chat_field_ref" />
+            <ChatField ref="chat_field_ref" />
         </div>
     </div>
 </template>
@@ -48,15 +48,13 @@ export default {
 
         // 当组件被成功挂载之后执行
         onMounted(() => {
-            console.log(canvas);
-
             // settings = new Settings(store);
             playground = new PlayGround(
                 canvas,
                 canvas.value.getContext("2d"),
                 div.value,
                 store,
-                chat_field_ref.value.chat_field_input
+                chat_field_ref.value
             );
         });
 

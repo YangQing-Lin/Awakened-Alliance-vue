@@ -96,18 +96,15 @@ export class Player extends AcGameObject {
         });
 
         this.ctx.canvas.addEventListener('keydown', e => {
-            console.log("in player", e.key);
+            console.log("in [player]", e.key);
             if (e.key === 'Enter') {
                 if (this.playground.store.state.mode_name === "multi mode") {
-                    // this.playground.chat_field.show_input();
-                    this.playground.store.commit('updateChatting', true);
-                    this.playground.store.commit("updatePlaygroundFocusing", false);
+                    this.playground.chat_field.show_input();
                 }
                 e.preventDefault();
             } else if (e.key === 'Escape') {
                 if (this.playground.store.state.mode_name === "multi mode") {
-                    // this.playground.chat_field.hide_input();
-                    this.playground.store.commit('updateChatting', false);
+                    this.playground.chat_field.hide_input();
                 }
                 e.preventDefault();
             }

@@ -1,17 +1,24 @@
+
 <template>
     <div class="chatfield">
-        <div class="ac-game-field-history"></div>
+        <div
+            class="ac-game-chat-field-history"
+            ref="chat_field_history_ref"
+            v-show="$store.state.show_history"
+        ></div>
+
         <input
             type="text"
-            ref="chat_field_input"
+            ref="chat_field_input_ref"
             class="ac-game-chat-field-input"
-            @keydown.esc="keydownEsc"
+            v-show="$store.state.chatting"
         />
     </div>
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, Vue } from "vue";
+// import animate from "animate.css"; // 渐变效果
 import { ChatField } from "@/assets/scripts/game_view/ChatField";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
@@ -31,28 +38,22 @@ export default {
     },
     setup: (props) => {
         const store = useStore();
-        let chat_field_input = ref(null);
+        let chat_field_input_ref = ref(null);
+        let chat_field_history_ref = ref(null);
 
-        onMounted(() => {
-            chat_field_input.value.focus();
-            store.commit("updateChatting", true);
-        });
-
-        const keydownEsc = () => {
-            store.commit("updateChatting", false);
-        };
+        onMounted(() => {});
 
         return {
-            chat_field_input,
-            keydownEsc,
+            chat_field_input_ref,
+            chat_field_history_ref,
         };
     },
     methods: {
         // chat_focus() {
-        //     this.$refs.chat_field_input.focus();
+        //     this.$refs.chat_field_input_ref.focus();
         // },
         // chat_flur() {
-        //     this.$refs.chat_field_input.flur();
+        //     this.$refs.chat_field_input_ref.flur();
         // },
     },
 };
