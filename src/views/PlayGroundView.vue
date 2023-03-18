@@ -9,12 +9,13 @@
                 <button @click="logout_on_remote_jwt()">登出</button>
             </div>
             <RankList v-if="$store.state.ranklist" />
+            <ChatField v-if="$store.state.chatting" ref="chat_field_ref" />
         </div>
     </div>
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { getCurrentInstance, ref, onMounted } from "vue";
 import { PlayGround } from "@/assets/scripts/game_view/PlayGround";
 // import { Settings } from "@/assets/scripts/login_view/Settings";
 import { useStore } from "vuex";
@@ -22,6 +23,7 @@ import router from "@/router";
 import { extractTimeFormat, useSizeProp } from "element-plus";
 import { init } from "@/assets/scripts/game_view/init";
 import RankList from "@/components/RankList"; // 不能加大括号
+import ChatField from "@/components/ChatField";
 import $ from "jquery";
 import Cookies from "js-cookie";
 
@@ -29,11 +31,15 @@ export default {
     name: "PlayGround",
     components: {
         RankList,
+        ChatField,
     },
     setup: () => {
         let div = ref(null);
         let canvas = ref(null);
-        let playground = null;
+        let chat_field_ref = ref(null);
+        let playground = {
+            message: "let playground",
+        };
         // let settings = null;
         const store = useStore();
 
@@ -42,12 +48,15 @@ export default {
 
         // 当组件被成功挂载之后执行
         onMounted(() => {
+            console.log(canvas);
+
             // settings = new Settings(store);
             playground = new PlayGround(
                 canvas,
                 canvas.value.getContext("2d"),
                 div.value,
-                store
+                store,
+                chat_field_ref.value.chat_field_input
             );
         });
 
@@ -100,6 +109,7 @@ export default {
             canvas,
             restart,
             show_ranklist,
+            chat_field_ref,
             logout_on_remote,
             logout_on_remote_jwt,
         };

@@ -29,6 +29,10 @@ export class AcGameObject {
 
     }
 
+    late_late_update() {
+
+    }
+
     on_destroy() {
 
     }
@@ -60,6 +64,10 @@ const step = timestamp => {
 
     for (let obj of AC_GAME_OBJECTS) {
         obj.late_update();
+    }
+
+    for (let obj of AC_GAME_OBJECTS) {
+        obj.late_late_update();
     }
 
     last_timestamp = timestamp;

@@ -5,14 +5,16 @@ import { MultiPlayerSocket } from "./socket/multiplayer";
 import { NoticeBoard } from "./NoticeBoard";
 import $ from 'jquery';
 import Cookies from "js-cookie";
+import { ChatField } from "./ChatField";
 
 export class PlayGround extends AcGameObject {
-    constructor(canvas, ctx, div, store) {
+    constructor(canvas, ctx, div, store, chat_field_input) {
         super();
         this.canvas = canvas;
         this.ctx = ctx;
         this.div = div;
         this.store = store;
+        this.chat_field_input = chat_field_input;
         this.width = this.div.clientWidth;
         this.height = this.div.clientHeight;
 
@@ -162,6 +164,7 @@ export class PlayGround extends AcGameObject {
             this.store.commit('updateGameState', "fighting");  // 单人模式中，添加所有机器人之后要设置成“战斗模式”
         } else if (mode_name === "multi mode") {
             this.notice_board = new NoticeBoard(this);
+            this.chat_field = new ChatField(this, this.chat_field_input);
             this.mps = new MultiPlayerSocket(this);  // 创建连接
             this.mps.uuid = this.players[0].uuid;  // 将连接的uuid设置为玩家的uuid，方便之后分辨窗口归属
 
@@ -178,7 +181,16 @@ export class PlayGround extends AcGameObject {
             this.ctx_y = this.focus_player.y;
         }
 
+        this.update_focus();
         this.render();
+    }
+
+    update_focus() {
+        if (!this.store.state.playground_focusing && !this.store.state.chatting) {
+            this.store.commit("updatePlaygroundFocusing", true);
+            this.ctx.canvas.focus();
+        }
+        console.log(this.store.state.playground_focusing);
     }
 
     render() {

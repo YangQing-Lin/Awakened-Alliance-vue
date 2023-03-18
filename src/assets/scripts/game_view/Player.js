@@ -96,9 +96,25 @@ export class Player extends AcGameObject {
         });
 
         this.ctx.canvas.addEventListener('keydown', e => {
+            console.log("in player", e.key);
+            if (e.key === 'Enter') {
+                if (this.playground.store.state.mode_name === "multi mode") {
+                    // this.playground.chat_field.show_input();
+                    this.playground.store.commit('updateChatting', true);
+                    this.playground.store.commit("updatePlaygroundFocusing", false);
+                }
+                e.preventDefault();
+            } else if (e.key === 'Escape') {
+                if (this.playground.store.state.mode_name === "multi mode") {
+                    // this.playground.chat_field.hide_input();
+                    this.playground.store.commit('updateChatting', false);
+                }
+                e.preventDefault();
+            }
+
             // 非对战状态无法进行操作
             if (this.playground.store.state.game_state !== "fighting") {
-                return false;
+                return true;
             }
             // 操作方式：wasd / 上下左右
             if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
@@ -389,19 +405,20 @@ export class Player extends AcGameObject {
 
         if (this.character === "robot") {
             this.robot_update();
-        } else {
+            this.render();
+        }
+    }
+
+    late_late_update() {
+        if (this.character !== "robot") {
             // 只有当角色是自己并且游戏是对战状态才会更新技能冷却时间
             if (this.character === "me" && this.playground.store.state.game_state === "fighting") {
                 this.update_coldtime();
             }
             this.update_move();
             this.update_attack();
+            this.render();
         }
-
-        // if (this.character === "me" && this.playground.focus_player === this) {
-        //     this.playground.re_calculate_cx_cy(this.x, this.y);
-        // }
-        this.render();
 
         // 如果是玩家，并且正在被聚焦，修改background的 (cx, cy)
         // if (this.character === "me" && this.playground.focus_player === this) {
