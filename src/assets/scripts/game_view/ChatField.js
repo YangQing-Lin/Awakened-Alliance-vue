@@ -26,6 +26,7 @@ export class ChatField {
                 if (text !== "") {
                     this.chat_field_ref.chat_field_input_ref.value = "";
                     this.add_message(username, text);
+                    this.playground.mps.send_chat_message(text);
                 }
                 this.hide_input();
                 e.preventDefault();
