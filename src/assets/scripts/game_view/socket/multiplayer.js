@@ -37,7 +37,7 @@ export class MultiPlayerSocket {
             } else if (event === "blink") {
                 outer.receive_blink(uuid, data.tx, data.ty);
             } else if (event === "message") {
-                outer.receive_chat_message(uuid, data.text);
+                outer.receive_chat_message(uuid, data.username, data.text);
             }
         };
     }
@@ -166,19 +166,17 @@ export class MultiPlayerSocket {
         }
     }
 
-    send_chat_message(text) {
+    send_chat_message(username, text) {
         let outer = this;
         this.ws.send(JSON.stringify({
             'event': "message",
             'uuid': outer.uuid,
+            'username': username,
             'text': text,
         }));
     }
 
-    receive_chat_message(uuid, text) {
-        let player = this.get_player(uuid);
-        if (player) {
-            player.playground.chat_field.add_message(player.username, text);
-        }
+    receive_chat_message(uuid, username, text) {
+        this.playground.chat_field.receive_add_message(username, text);
     }
 }

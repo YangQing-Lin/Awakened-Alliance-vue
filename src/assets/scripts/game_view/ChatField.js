@@ -26,7 +26,7 @@ export class ChatField {
                 if (text !== "") {
                     this.chat_field_ref.chat_field_input_ref.value = "";
                     this.add_message(username, text);
-                    this.playground.mps.send_chat_message(text);
+                    this.playground.mps.send_chat_message(username, text);
                 }
                 this.hide_input();
                 e.preventDefault();
@@ -46,6 +46,23 @@ export class ChatField {
         this.chat_field_ref.chat_field_history_ref.append(this.render_message(message)[0]);
         // 实现消息的自动滚动
         this.chat_field_ref.chat_field_history_ref.scrollTop = this.chat_field_ref.chat_field_history_ref.scrollHeight;
+
+
+    }
+
+    receive_add_message(username, text) {
+        this.add_message(username, text);
+
+        this.show_history();
+        if (this.func_id) {
+            clearTimeout(this.func_id)
+        }
+        let outer = this;
+        this.func_id = setTimeout(function () {
+            outer.playground.store.commit('updateShowHistory', false);
+            outer.func_id = null;  // 关闭历史记录的时候顺便把监听函数id也清空了
+        }, 3000);
+        console.log(this.func_id);
     }
 
     show_history() {
@@ -76,5 +93,6 @@ export class ChatField {
             outer.playground.store.commit('updateShowHistory', false);
             outer.func_id = null;  // 关闭历史记录的时候顺便把监听函数id也清空了
         }, 3000);
+        console.log(this.func_id);
     }
 }
