@@ -14,7 +14,7 @@ export class ScoreBoard extends AcGameObject {
         this.lose_img.src = "https://cdn.acwing.com/media/article/image/2021/12/17/1_9254b5f95e-lose.png";
 
         this.start();
-        // this.win();
+        this.win();
     }
 
     start() {
@@ -27,7 +27,7 @@ export class ScoreBoard extends AcGameObject {
             return false;
         }
         this.ctx.canvas.addEventListener('mouseup', e => {
-            this.playground.show_menu();
+            this.playground.show_select_mode();
         })
     }
 

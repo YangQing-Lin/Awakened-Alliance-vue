@@ -7,6 +7,7 @@ import $ from 'jquery';
 import Cookies from "js-cookie";
 import { ChatField } from "./ChatField";
 import { ScoreBoard } from "./ScoreBoard";
+import router from "@/router";
 
 export class PlayGround extends AcGameObject {
     constructor(canvas, ctx, div, store, chat_field_ref) {
@@ -208,9 +209,9 @@ export class PlayGround extends AcGameObject {
         console.log("playground show hide DONE")
     }
 
-    show_menu() {
+    show_select_mode() {
         console.log("playground show menu");
-        this.hide();
+        router.push("/select_mode");
     }
 
     update() {
