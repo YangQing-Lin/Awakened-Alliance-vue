@@ -28,7 +28,9 @@ export default {
         // 检查登录状态，成功登陆后初始化store
         init(store);
 
-        onMounted(() => {});
+        onMounted(() => {
+            console.log("select mode Mounted");
+        });
 
         const start = (game_mode) => {
             store.commit("updateGameMode", game_mode);
