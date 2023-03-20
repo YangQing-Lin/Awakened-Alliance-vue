@@ -14,6 +14,11 @@ const routes = [
         path: '/playground',
         name: 'playground',
         component: () => import('../views/PlayGroundView.vue')
+    },
+    {
+        path: '/select_mode',
+        name: 'select_mode',
+        component: () => import('../views/SelectModeView.vue')
     }
 ]
 

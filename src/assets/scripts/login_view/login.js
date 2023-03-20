@@ -23,9 +23,9 @@ const login_on_remote_jwt = (loginForm, username, password) => {
             // 设置Cookie有效期为14.5天
             Cookies.set("refresh", resp.refresh, { expires: 14.5 });
 
-            // 获取到获取到新的access和refresh之后直接跳转到游戏界面
-            // 在游戏界面会自动使用access获取各个用户信息
-            router.push("/playground");
+            // 获取到获取到新的access和refresh之后直接跳转到模式选择界面
+            // 在模式选择界面会自动使用access获取各个用户信息
+            router.push("/select_mode");
 
             // 获取到新的access和refresh之后用它们获取username和photo
             // getinfo_web();

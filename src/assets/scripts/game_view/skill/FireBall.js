@@ -76,7 +76,7 @@ export class FireBall extends AcGameObject {
         player.is_attacked(angle, this.damage);
 
         // 调用广播函数
-        if (this.playground.store.state.mode_name === "multi mode") {
+        if (this.playground.store.state.game_mode === "multi mode") {
             this.playground.mps.send_attack(player.uuid, player.x, player.y, angle, this.damage, this.uuid);
         }
 

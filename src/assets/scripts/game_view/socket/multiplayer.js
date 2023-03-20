@@ -21,6 +21,7 @@ export class MultiPlayerSocket {
             // 将字符串信息转换成json格式
             let data = JSON.parse(e.data);
             let uuid = data.uuid;
+            // 如果收到的是自己窗口发送的消息就不需要处理
             if (uuid === outer.uuid) return false;
 
             let event = data.event;
@@ -35,6 +36,8 @@ export class MultiPlayerSocket {
                 outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
             } else if (event === "blink") {
                 outer.receive_blink(uuid, data.tx, data.ty);
+            } else if (event === "message") {
+                outer.receive_chat_message(uuid, data.username, data.text);
             }
         };
     }
@@ -161,5 +164,19 @@ export class MultiPlayerSocket {
         if (player) {
             player.blink(tx, ty);
         }
+    }
+
+    send_chat_message(username, text) {
+        let outer = this;
+        this.ws.send(JSON.stringify({
+            'event': "message",
+            'uuid': outer.uuid,
+            'username': username,
+            'text': text,
+        }));
+    }
+
+    receive_chat_message(uuid, username, text) {
+        this.playground.chat_field.receive_add_message(username, text);
     }
 }
