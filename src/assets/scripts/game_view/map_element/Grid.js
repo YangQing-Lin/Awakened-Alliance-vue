@@ -1,8 +1,9 @@
 import { AcGameObject } from "../AcGameObject";
 
 export class Grid extends AcGameObject {
-    constructor(playground, ctx, i, j, cube_side_len, stroke_color) {
+    constructor(game_map, playground, ctx, i, j, cube_side_len, stroke_color) {
         super();
+        this.game_map = game_map;
         this.playground = playground;
         this.ctx = ctx;
         this.i = i;
@@ -23,6 +24,15 @@ export class Grid extends AcGameObject {
     }
 
     start() { }
+
+    on_destroy() {
+        for (let i = 0; i < this.game_map.grids.length; i++) {
+            if (this.game_map.grids[i] === this) {
+                this.game_map.grids.splice(i, 1);
+                break;
+            }
+        }
+    }
 
     get_manhattan_dist(x1, y1, x2, y2) {
         return Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));

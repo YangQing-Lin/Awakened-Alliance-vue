@@ -56,7 +56,7 @@ export class Player extends AcGameObject {
     }
 
     start() {
-        if (this.playground.store.state.mode_name === "multi mode") {
+        if (this.playground.store.state.game_mode === "multi mode") {
             this.playground.notice_board.add();
             if (this.playground.notice_board.player_count >= 3) {
                 this.playground.store.commit('updateGameState', "fighting");
@@ -98,12 +98,12 @@ export class Player extends AcGameObject {
         this.ctx.canvas.addEventListener('keydown', e => {
             console.log("in [player]", e.key);
             if (e.key === 'Enter') {
-                if (this.playground.store.state.mode_name === "multi mode") {
+                if (this.playground.store.state.game_mode === "multi mode") {
                     this.playground.chat_field.show_input();
                 }
                 e.preventDefault();
             } else if (e.key === 'Escape') {
-                if (this.playground.store.state.mode_name === "multi mode") {
+                if (this.playground.store.state.game_mode === "multi mode") {
                     this.playground.chat_field.hide_input();
                 }
                 e.preventDefault();
@@ -208,7 +208,7 @@ export class Player extends AcGameObject {
             this.blink(this.tx, this.ty);
             this.blink_coldtime = this.base_blink_coldtime;
 
-            if (this.playground.store.state.mode_name === "multi mode") {
+            if (this.playground.store.state.game_mode === "multi mode") {
                 this.playground.mps.send_blink(this.tx, this.ty);
                 console.log("send blink");
             }
@@ -230,7 +230,7 @@ export class Player extends AcGameObject {
             let fireball = this.shoot_fireball(this.tx, this.ty);
             this.fireball_coldtime = this.base_fireball_coldtime;
 
-            if (this.playground.store.state.mode_name === "multi mode") {
+            if (this.playground.store.state.game_mode === "multi mode") {
                 this.playground.mps.send_shoot_fireball(fireball.uuid, this.tx, this.ty);
                 console.log("send shoot fireball");
             }
@@ -394,22 +394,18 @@ export class Player extends AcGameObject {
     }
 
     late_update() {
-        if (this.playground.store.state.restart) {
-            return;
-        }
-
         this.spent_time += this.timedelta / 1000;
 
-        if (this.character === "robot") {
+        if (this.character === "robot" && this.playground.store.state.game_state === "fighting") {
             this.robot_update();
             this.render();
         }
     }
 
     late_late_update() {
-        if (this.character !== "robot") {
+        if (this.character !== "robot" && this.playground.store.state.game_state === "fighting") {
             // 只有当角色是自己并且游戏是对战状态才会更新技能冷却时间
-            if (this.character === "me" && this.playground.store.state.game_state === "fighting") {
+            if (this.character === "me") {
                 this.update_coldtime();
             }
             this.update_move();
@@ -430,7 +426,7 @@ export class Player extends AcGameObject {
         // 只有当前操作数组的长度改变时才会调用里面的操作，下面技能数组同理
         if (this.last_directions_size !== this.directions.size) {
             this.move_toward(this.directions);
-            if (this.playground.store.state.mode_name === "multi mode") {
+            if (this.playground.store.state.game_mode === "multi mode") {
                 // *************************************************************************************
                 // 前后端传输消息的整个流程：
                 // 玩家在进行操作的时候首先判断当前是多人游戏模式，于是调用mps相应的函数

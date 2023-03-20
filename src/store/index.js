@@ -1,18 +1,17 @@
 import { tagEmits } from 'element-plus';
 import { createStore } from 'vuex'
 
-// game_state: waiting -> fighting -> over
+// game_state: waiting -> fighting -> win/lose
 export default createStore({
     state: {
         score: 0,
         record: 0,
-        restart: true,
         AcWingOS: "AcWingOS",
         ranklist: false,
         username: "",
         photo: "",
         platform: "WEB",
-        mode_name: "single mode",
+        game_mode: "no mode",
         game_state: "waiting",
         chatting: false,
         show_history: false,
@@ -29,9 +28,6 @@ export default createStore({
                 state.record = score;
             }
         },
-        updateRestart: (state, restart) => {
-            state.restart = restart;
-        },
         updateRanklist: (state, ranklist) => {
             state.ranklist = ranklist;
         },
@@ -44,8 +40,8 @@ export default createStore({
         updatePlatform: (state, platform) => {
             state.platform = platform;
         },
-        updateModeName: (state, mode_name) => {
-            state.mode_name = mode_name;
+        updateGameMode: (state, game_mode) => {
+            state.game_mode = game_mode;
         },
         updateGameState: (state, game_state) => {
             state.game_state = game_state;
@@ -53,9 +49,6 @@ export default createStore({
         updateChatting: (state, chatting) => {
             state.chatting = chatting;
         },
-        // updatePlaygroundFocusing: (state, flag) => {
-        //     state.playground_focusing = flag;
-        // },
         updateShowHistory: (state, show_history) => {
             state.show_history = show_history;
         },

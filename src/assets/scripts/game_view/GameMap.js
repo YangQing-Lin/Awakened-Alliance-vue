@@ -15,7 +15,10 @@ export class GameMap extends AcGameObject {
         this.nx = Math.ceil(this.width / this.cube_side_len);  // 20
         this.ny = Math.ceil(this.height / this.cube_side_len);  // 20
 
-        this.console_flag = true;
+        this.grids = [];
+        this.walls = [];
+        this.wall_img = new Image();
+        this.wall_img.src = "https://s3.bmp.ovh/imgs/2021/11/837412e46f4f61a6.jpg";
     }
 
     start() {
@@ -32,21 +35,18 @@ export class GameMap extends AcGameObject {
     }
 
     generate_grid() {
-        this.grids = [];
         for (let i = 0; i < this.ny; i++) {
             for (let j = 0; j < this.nx; j++) {
-                this.grids.push(new Grid(this.playground, this.ctx, j, i, this.cube_side_len, "rgb(222, 237, 225)"));
+                this.grids.push(new Grid(this, this.playground, this.ctx, j, i, this.cube_side_len, "rgb(222, 237, 225)"));
             }
         }
     }
 
     generate_wall() {
-        let wall_pic = "https://s3.bmp.ovh/imgs/2021/11/837412e46f4f61a6.jpg";
-        this.walls = [];
         for (let i = 0; i < this.ny; i++) {
             for (let j = 0; j < this.nx; j++) {
                 if (Math.random() < 20 / (this.nx * this.ny)) {
-                    this.walls.push(new Wall(this.playground, this.ctx, j, i, this.cube_side_len, wall_pic));
+                    this.walls.push(new Wall(this, this.playground, this.ctx, j, i, this.cube_side_len, this.wall_img));
                 }
             }
         }
@@ -79,6 +79,19 @@ export class GameMap extends AcGameObject {
     }
 
     restart() {
+    }
+
+    on_destroy() {
+        while (this.grids && this.grids.length > 0) {
+            this.grids[0].destroy();
+            console.log(this.grids.length);
+        }
+        this.grids = [];
+
+        while (this.walls && this.walls.length > 0) {
+            this.walls[0].destroy();
+            console.log(this.walls.length);
+        }
     }
 
     update() {
