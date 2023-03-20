@@ -62,6 +62,38 @@ export class PlayGround extends AcGameObject {
 
     }
 
+    restart(game_mode) {
+        let outer = this;
+        this.store.commit('updateScore', 0);
+        this.store.commit('updateGameState', "waiting");
+        let player = new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
+        this.players.push(player);
+        this.re_calculate_cx_cy(player.x, player.y);
+        this.focus_player = player;
+
+        this.ctx.canvas.focus();
+
+        if (game_mode === "single mode") {
+            for (let i = 0; i < 20; i++) {
+                let rand_x = Math.random() * this.virtual_map_width;
+                let rand_y = Math.random() * this.virtual_map_height;
+                this.players.push(new Player(this, rand_x, rand_y, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
+            }
+            this.store.commit('updateGameState', "fighting");  // 单人模式中，添加所有机器人之后要设置成“战斗模式”
+        } else if (game_mode === "multi mode") {
+            this.notice_board = new NoticeBoard(this);
+            this.chat_field = new ChatField(this, this.chat_field_ref);
+            this.mps = new MultiPlayerSocket(this);  // 创建连接
+            this.mps.uuid = this.players[0].uuid;  // 将连接的uuid设置为玩家的uuid，方便之后分辨窗口归属
+
+            // 当连接创建成功时发送消息
+            this.mps.ws.onopen = function () {
+                outer.mps.send_create_player(outer.store.state.username, outer.store.state.photo);
+            };
+        }
+        this.score_board = new ScoreBoard(this);
+    }
+
     create_uuid() {
         let res = "";
         for (let i = 0; i < 20; i++) {
@@ -142,75 +174,36 @@ export class PlayGround extends AcGameObject {
         });
     }
 
-    restart(game_mode) {
-        let outer = this;
-        this.store.commit('updateScore', 0);
-        let player = new Player(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
-        this.players.push(player);
-        this.re_calculate_cx_cy(player.x, player.y);
-        this.focus_player = player;
-
-        this.ctx.canvas.focus();
-
-        if (game_mode === "single mode") {
-            for (let i = 0; i < 20; i++) {
-                let rand_x = Math.random() * this.virtual_map_width;
-                let rand_y = Math.random() * this.virtual_map_height;
-                this.players.push(new Player(this, rand_x, rand_y, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
-            }
-            this.store.commit('updateGameState', "fighting");  // 单人模式中，添加所有机器人之后要设置成“战斗模式”
-            // this.store.commit('updateGameState', "win");  // 单人模式中，添加所有机器人之后要设置成“战斗模式”
-        } else if (game_mode === "multi mode") {
-            this.notice_board = new NoticeBoard(this);
-            this.chat_field = new ChatField(this, this.chat_field_ref);
-            this.mps = new MultiPlayerSocket(this);  // 创建连接
-            this.mps.uuid = this.players[0].uuid;  // 将连接的uuid设置为玩家的uuid，方便之后分辨窗口归属
-
-            // 当连接创建成功时发送消息
-            this.mps.ws.onopen = function () {
-                outer.mps.send_create_player(outer.store.state.username, outer.store.state.photo);
-            };
-        }
-        this.score_board = new ScoreBoard(this);
-    }
-
-    win() {
-        this.update_score();
-    }
-
-    lose() {
-        this.update_score();
-    }
-
     hide() {
-        console.log("playground show hide");
         while (this.players && this.players.length > 0) {
             this.players[0].destroy();
-            console.log(this.players.length);
         }
-        console.log("1");
+
+        while (this.fireballs && this.fireballs.length > 0) {
+            this.fireballs[0].destroy();
+        }
+
         if (this.game_map) {
             this.game_map.destroy();
             this.game_map = null;
         }
-        console.log("2");
 
         if (this.notice_board) {
             this.notice_board.destroy();
             this.notice_board = null;
         }
-        console.log("3");
 
         if (this.score_board) {
             this.score_board.destroy();
             this.score_board = null;
         }
 
-        console.log("playground show hide DONE")
+
+        console.log("playground hide DONE");
     }
 
     show_select_mode() {
-        console.log("playground show menu");
+        this.hide();
         router.push("/select_mode");
     }
 

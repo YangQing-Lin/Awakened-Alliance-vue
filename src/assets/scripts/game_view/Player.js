@@ -311,7 +311,7 @@ export class Player extends AcGameObject {
 
         this.health -= damage;
         if (this.health <= 0) {
-            this.lose();
+            this.player_lose();
             return false;
         }
     }
@@ -324,11 +324,14 @@ export class Player extends AcGameObject {
         this.is_attacked(angle, damage);
     }
 
-    lose() {
+    player_lose() {
         // 死一个新加入一个
         if (this.character === "me") {
-            this.playground.lose();
-        } else {
+            // 这里必须判断是否对战状态，因为胜利之后点击确定也会删除自己
+            if (this.playground.store.state.game_state === "fighting") {
+                this.playground.score_board.lose();
+            }
+        } else if (this.character === "robot") {
             this.playground.append_player();
         }
 
@@ -407,6 +410,7 @@ export class Player extends AcGameObject {
             // 只有当角色是自己并且游戏是对战状态才会更新技能冷却时间
             if (this.character === "me") {
                 this.update_coldtime();
+                this.update_win();
             }
             this.update_move();
             this.update_attack();
@@ -417,6 +421,12 @@ export class Player extends AcGameObject {
         // if (this.character === "me" && this.playground.focus_player === this) {
         //     this.playground.re_calculate_cx_cy(this.x, this.y);
         // }
+    }
+
+    update_win() {
+        if (this.playground.players.length === 1) {
+            this.playground.score_board.win();
+        }
     }
 
     update_move() {

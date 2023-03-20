@@ -14,7 +14,7 @@ export class ScoreBoard extends AcGameObject {
         this.lose_img.src = "https://cdn.acwing.com/media/article/image/2021/12/17/1_9254b5f95e-lose.png";
 
         this.start();
-        this.win();
+        // this.win();
     }
 
     start() {
@@ -22,7 +22,6 @@ export class ScoreBoard extends AcGameObject {
     }
 
     add_listening_events() {
-        console.log("score board in add listem", this.ctx.canvas);
         if (!this.ctx.canvas) {
             return false;
         }
@@ -32,6 +31,7 @@ export class ScoreBoard extends AcGameObject {
     }
 
     win() {
+        this.playground.update_score();
         this.store.commit('updateGameState', "win");
         // this.playground.win();
 
@@ -42,6 +42,7 @@ export class ScoreBoard extends AcGameObject {
     }
 
     lose() {
+        this.playground.update_score();
         this.store.commit('updateGameState', "lose");
         // this.playground.lose();
 
