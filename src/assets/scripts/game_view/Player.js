@@ -20,7 +20,7 @@ export class Player extends AcGameObject {
         this.username = username;
         this.photo = photo;
 
-        this.health = 20;
+        this.health = 100;
         this.eps = 0.001;
         this.directions = new Set();  // 用户的操作列表
         this.last_directions_size = 0;  // 操作列表的长度（每当directions长度更改的时候向后端发送数据，长度不变就不发送，降低服务器压力）
@@ -244,7 +244,7 @@ export class Player extends AcGameObject {
         let color = "orange";
         let speed = this.playground.height * 0.5 / this.playground.scale;
         let move_length = this.playground.height * 1.5 / this.playground.scale;
-        let fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 10);
+        let fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 50);
         this.playground.fireballs.push(fireball);
 
         return fireball;

@@ -205,6 +205,7 @@ export class PlayGround extends AcGameObject {
     show_select_mode() {
         this.hide();
         router.push("/select_mode");
+        this.destroy();
     }
 
     update() {
