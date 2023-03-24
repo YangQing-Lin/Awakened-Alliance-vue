@@ -8,6 +8,7 @@ export default createStore({
         record: 0,
         AcWingOS: "AcWingOS",
         ranklist: false,
+        single_mode_list: false,
         username: "",
         photo: "",
         platform: "WEB",
@@ -30,6 +31,9 @@ export default createStore({
         },
         updateRanklist: (state, ranklist) => {
             state.ranklist = ranklist;
+        },
+        updateSingleModeList: (state, single_mode_list) => {
+            state.single_mode_list = single_mode_list;
         },
         udpateUsername: (state, username) => {
             state.username = username;

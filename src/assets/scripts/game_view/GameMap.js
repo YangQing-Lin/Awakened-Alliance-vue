@@ -84,14 +84,14 @@ export class GameMap extends AcGameObject {
     on_destroy() {
         while (this.grids && this.grids.length > 0) {
             this.grids[0].destroy();
-            console.log(this.grids.length);
         }
         this.grids = [];
 
         while (this.walls && this.walls.length > 0) {
             this.walls[0].destroy();
-            console.log(this.walls.length);
         }
+
+        console.log("game map destroy DONE");
     }
 
     update() {

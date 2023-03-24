@@ -2,10 +2,18 @@
     <div class="select_mode">
         <img src="" alt="" />
         <button @click="start('single mode')">单人模式</button>
+        <button @click="show_ranklist('single mode')">人机排行榜</button>
         <button @click="start('multi mode')">联机对战</button>
-        <button @click="show_ranklist()">排行榜</button>
+        <button @click="show_ranklist('multi mode')">联机排行榜</button>
         <button @click="logout_on_remote_jwt()">登出</button>
-        <RankList v-if="$store.state.ranklist" />
+        <RankList
+            v-if="$store.state.single_mode_list"
+            v-bind:select_type="'single mode score'"
+        />
+        <RankList
+            v-if="$store.state.ranklist"
+            v-bind:select_type="'rank score'"
+        />
     </div>
 </template>
 
@@ -37,8 +45,12 @@ export default {
             router.push("/playground");
         };
 
-        const show_ranklist = () => {
-            store.commit("updateRanklist", true);
+        const show_ranklist = (mode_name) => {
+            if (mode_name === "single mode") {
+                store.commit("updateSingleModeList", true);
+            } else if (mode_name === "multi mode") {
+                store.commit("updateRanklist", true);
+            }
         };
 
         // 使用jwt验证的登出（直接清空access和refresh即可）
