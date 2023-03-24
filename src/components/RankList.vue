@@ -18,11 +18,21 @@ import Cookies from "js-cookie";
 
 export default {
     name: "RankList",
-    setup() {
+    props: {
+        select_type: {
+            type: String,
+            required: true,
+        },
+    },
+    setup(props) {
+        console.log("in rank list: ", props.select_type);
+        console.log(Cookies.get("access"));
         const store = useStore();
         let players = ref([]);
         $.ajax({
-            url: "https://app4689.acapp.acwing.com.cn:4436/get_ranklist/",
+            url:
+                "https://app4689.acapp.acwing.com.cn:4436/get_ranklist/?select_type=" +
+                props.select_type,
             type: "get",
             headers: {
                 Authorization: "Bearer " + Cookies.get("access"),
@@ -39,7 +49,11 @@ export default {
         });
 
         const close_ranklist = () => {
-            store.commit("updateRanklist", false);
+            if (props.select_type === "single mode score") {
+                store.commit("updateSingleModeList", false);
+            } else if (props.select_type === "rank score") {
+                store.commit("updateRanklist", false);
+            }
         };
 
         return {

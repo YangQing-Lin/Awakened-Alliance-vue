@@ -166,7 +166,7 @@ export class PlayGround extends AcGameObject {
             url: "https://app4689.acapp.acwing.com.cn:4436/update_score/",
             type: "post",
             data: {
-                score: this.store.state.score,
+                rank_score: this.store.state.score,
             },
             headers: {
                 'Authorization': "Bearer " + Cookies.get("access"),
