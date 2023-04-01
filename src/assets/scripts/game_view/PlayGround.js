@@ -1,5 +1,6 @@
 import { AcGameObject } from "./AcGameObject";
 import { GameMap } from "./GameMap";
+import { MultiGameMap } from "./MultiGameMap";
 import { Player } from "./Player";
 import { MultiPlayerSocket } from "./socket/multiplayer";
 import { NoticeBoard } from "./NoticeBoard";
@@ -29,7 +30,7 @@ export class PlayGround extends AcGameObject {
         this.ctx_x = 0.5 * this.width / this.scale;
         this.ctx_y = 0.5 * this.height / this.scale;
 
-        this.game_map = new GameMap(this, this.canvas);
+        this.game_map = new MultiGameMap(this, this.canvas);
 
     }
 
@@ -162,11 +163,13 @@ export class PlayGround extends AcGameObject {
 
     // 更新分数到服务器
     update_score() {
+        console.log("update score: ", this.store.state.score);
         $.ajax({
             url: "https://app4689.acapp.acwing.com.cn:4436/update_score/",
             type: "post",
             data: {
                 rank_score: this.store.state.score,
+                game_mode: this.store.state.game_mode,
             },
             headers: {
                 'Authorization': "Bearer " + Cookies.get("access"),

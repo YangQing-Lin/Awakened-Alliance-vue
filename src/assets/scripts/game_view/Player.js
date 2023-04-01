@@ -244,7 +244,12 @@ export class Player extends AcGameObject {
         let color = "orange";
         let speed = this.playground.height * 0.5 / this.playground.scale;
         let move_length = this.playground.height * 1.5 / this.playground.scale;
-        let fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 50);
+        let fireball = null;
+        if (this.character === "me") {
+            fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 50);
+        } else {
+            fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 10);
+        }
         this.playground.fireballs.push(fireball);
 
         return fireball;

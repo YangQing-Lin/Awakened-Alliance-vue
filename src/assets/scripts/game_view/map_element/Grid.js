@@ -9,18 +9,19 @@ export class Grid extends AcGameObject {
         this.i = i;
         this.j = j;
         this.cube_side_len = cube_side_len;
-        this.x = this.i * this.cube_side_len;
-        this.y = this.j * this.cube_side_len;
+        // 因为canvas的xy坐标轴和二维数组是相反的，所以在使用下标计算坐标的时候要反一下
+        // 这样在外面New的时候就可以正常使用i和j这样的数组下标
+        this.y = this.i * this.cube_side_len;
+        this.x = this.j * this.cube_side_len;
 
         // 相对画布的坐标
         this.relative_position_x = 0;
         this.relative_position_y = 0;
 
         this.stroke_color = stroke_color;  // 网格线的颜色
-        this.has_grass = false; // 格子上有草否
         this.is_poisoned = false; // 格子是否在毒圈
-
-        this.grass_color = "rgb(213, 198, 76)"; // 黄色玻璃（草丛的功能）
+        this.base_fill_color = null;
+        this.fill_color = this.base_fill_color;
     }
 
     start() { }
@@ -39,10 +40,6 @@ export class Grid extends AcGameObject {
     }
 
     update() {
-        this.render();
-    }
-
-    render() {
         let scale = this.playground.scale;
         let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
         let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
@@ -56,22 +53,30 @@ export class Grid extends AcGameObject {
             return;
         }
 
-        this.render_grid(ctx_x, ctx_y, scale);
-
-        // 玩家进入草丛之后草丛颜色变浅
-        if (this.has_grass && this.playground.players.length > 0) {
-            let player = this.playground.players[0];
-            if (player.character === "me" && this.get_manhattan_dist(this.x + this.cube_side_len / 2, this.y + this.cube_side_len / 2, player.x, player.y) < 1.5 * this.cube_side_len)
-                this.grass_color = "rgba(213, 198, 76, 0.3)";
-            else
-                this.grass_color = "rgb(213, 198, 76)";
-            this.render_grass(ctx_x, ctx_y, scale);
-        }
-
-
+        this.set_player_point_color();
+        this.set_color();
+        this.render_grid_stroke(ctx_x, ctx_y, scale);
+        this.render(ctx_x, ctx_y, scale);
     }
 
-    render_grid(ctx_x, ctx_y, scale) {
+    set_color() {
+    }
+
+    set_player_point_color() {
+        if (this.playground.players.length > 0) {
+            let player = this.playground.players[0];
+            if (player.character === "me" && this.get_manhattan_dist(this.x + this.cube_side_len / 2, this.y + this.cube_side_len / 2, player.x, player.y) < 0.5 * this.cube_side_len) {
+                this.fill_color = "rgb(56, 93, 56)";
+            } else {
+                this.fill_color = this.base_fill_color;
+            }
+        }
+    }
+
+    render(ctx_x, ctx_y, scale) {
+    }
+
+    render_grid_stroke(ctx_x, ctx_y, scale) {
         this.ctx.save();
         this.ctx.beginPath();
         this.ctx.lineWidth = this.cube_side_len * 0.03 * scale;
@@ -84,7 +89,6 @@ export class Grid extends AcGameObject {
     render_grass(ctx_x, ctx_y, scale) {
         this.ctx.save();
         this.ctx.beginPath();
-        // this.ctx.lineWidth = this.cube_side_len * 0.03 * scale;
         this.ctx.lineWidth = 0;
         this.ctx.rect(ctx_x * scale, ctx_y * scale, this.cube_side_len * scale, this.cube_side_len * scale);
         this.ctx.fillStyle = this.grass_color;

@@ -1,10 +1,10 @@
 import { Grid } from "./Grid";
 
-export class Grass extends Grid {
+export class Floor extends Grid {
     constructor(game_map, playground, ctx, i, j, cube_side_len, stroke_color) {
         super(game_map, playground, ctx, i, j, cube_side_len, stroke_color);
         this.state = ""; // 格子里画什么
-        this.base_fill_color = "rgb(213, 198, 76)"; // grass yellow
+        this.base_fill_color = "rgb(136, 188, 194)"; // floor light_blue
         this.fill_color = this.base_fill_color;
     }
 
@@ -13,13 +13,6 @@ export class Grass extends Grid {
     }
 
     set_color() {
-        // 玩家进入草丛之后草丛颜色变浅
-        if (this.playground.players.length > 0) {
-            let player = this.playground.players[0];
-            if (player.character === "me" && this.get_manhattan_dist(this.x + this.cube_side_len / 2, this.y + this.cube_side_len / 2, player.x, player.y) < 1.5 * this.cube_side_len) {
-                this.fill_color = "rgb(255, 115, 119)";
-            }
-        }
     }
 
     render(ctx_x, ctx_y, scale) {
