@@ -12,11 +12,21 @@ export class Wall extends Grid {
 
     }
 
+    is_collision(player) {
+        let real_dist = this.get_manhattan_dist(this.x + this.cube_side_len / 2, this.y + this.cube_side_len / 2, player.x, player.y);
+        let limit_dist = 0.5 * this.cube_side_len + player.radius
+        // if (real_dist < limit_dist && ) {
+
+        // }
+    }
+
     set_color() {
-        // 玩家进入草丛之后草丛颜色变浅
         if (this.playground.players.length > 0) {
             let player = this.playground.players[0];
-            if (player.character === "me" && this.get_manhattan_dist(this.x + this.cube_side_len / 2, this.y + this.cube_side_len / 2, player.x, player.y) < 1.5 * this.cube_side_len) {
+            // 玩家周围九个格子的墙会变色（开发测试用）
+            let real_dist = this.get_manhattan_dist(this.x + this.cube_side_len / 2, this.y + this.cube_side_len / 2, player.x, player.y);
+            let limit_dist = 1.5 * this.cube_side_len;
+            if (player.character === "me" && real_dist < limit_dist) {
                 this.fill_color = "rgb(255, 115, 119)";
             }
         }
