@@ -61,6 +61,9 @@ export default {
                 // 清除access和refresh，并跳转到登陆界面
                 Cookies.remove("access");
                 Cookies.remove("refresh");
+                if (window.refresh_id != -1) {
+                    clearInterval(window.refresh_id);
+                }
                 router.push("/login");
             }
         };
