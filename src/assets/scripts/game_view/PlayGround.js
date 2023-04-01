@@ -201,7 +201,6 @@ export class PlayGround extends AcGameObject {
             this.score_board = null;
         }
 
-
         console.log("playground hide DONE");
     }
 

@@ -18,10 +18,6 @@ export class MultiGameMap extends AcGameObject {
         this.ny = Math.ceil(this.height / this.cube_side_len);  // 20
 
         this.grids = [];
-        this.grasses = [];
-
-        this.floors = [];
-        this.walls = [];
         this.wall_img = new Image();
         this.wall_img.src = "https://s3.bmp.ovh/imgs/2021/11/837412e46f4f61a6.jpg";
         this.background_color = "gray";
@@ -44,34 +40,13 @@ export class MultiGameMap extends AcGameObject {
         for (let i = 0; i < this.nx; i++) {
             for (let j = 0; j < this.ny; j++) {
                 if (this.map[i][j] === 1) {
-                    this.floors.push(new Floor(this, this.playground, this.ctx, i, j, this.cube_side_len, this.stroke_color));
+                    this.grids.push(new Floor(this, this.playground, this.ctx, i, j, this.cube_side_len, this.stroke_color));
                 } else if (this.map[i][j] === 0) {
-                    this.walls.push(new Wall(this, this.playground, this.ctx, i, j, this.cube_side_len, this.stroke_color));
+                    this.grids.push(new Wall(this, this.playground, this.ctx, i, j, this.cube_side_len, this.stroke_color));
                 }
             }
         }
     }
-
-    // generate_wall() {
-    //     for (let i = 0; i < this.nx; i++) {
-    //         for (let j = 0; j < this.ny; j++) {
-    //             if (Math.random() < 20 / (this.nx * this.ny)) {
-    //                 this.walls.push(new Wall(this, this.playground, this.ctx, j, i, this.cube_side_len, this.wall_img));
-    //             }
-    //         }
-    //     }
-    // }
-
-    // generate_grass() {
-    //     for (let i = 0; i < this.nx; i++) {
-    //         for (let j = 0; j < this.ny; j++) {
-    //             // 根据坐标将对应的grid改成grass，不需要用到Grass.js
-    //             if (this.map[i][j] === 0) {
-    //                 this.grids[i * this.nx + j].has_grass = true;
-    //             }
-    //         }
-    //     }
-    // }
 
     win() {
 
@@ -88,10 +63,6 @@ export class MultiGameMap extends AcGameObject {
             this.grids[0].destroy();
         }
         this.grids = [];
-
-        while (this.walls && this.walls.length > 0) {
-            this.walls[0].destroy();
-        }
 
         console.log("game map destroy DONE");
     }

@@ -334,6 +334,7 @@ export class Player extends AcGameObject {
         if (this.character === "me") {
             // 这里必须判断是否对战状态，因为胜利之后点击确定也会删除自己
             if (this.playground.store.state.game_state === "fighting") {
+                console.log("me LOST");
                 this.playground.score_board.lose();
             }
         } else if (this.character === "robot") {
