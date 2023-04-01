@@ -66,7 +66,7 @@ export class Grid extends AcGameObject {
         if (this.playground.players.length > 0) {
             let player = this.playground.players[0];
             if (player.character === "me" && this.get_manhattan_dist(this.x + this.cube_side_len / 2, this.y + this.cube_side_len / 2, player.x, player.y) < 0.5 * this.cube_side_len) {
-                this.fill_color = "rgb(56, 93, 56)";
+                this.fill_color = "rgba(56, 93, 56, 0.2)";
             } else {
                 this.fill_color = this.base_fill_color;
             }
