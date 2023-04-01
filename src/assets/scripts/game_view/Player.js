@@ -452,7 +452,7 @@ export class Player extends AcGameObject {
                 // 后端move_toward函数会将消息广播给组里的所有人，其他人通过async def group_send_event(self, data)函数将信息发送给每个人对应的前端
                 // 前端在multiplayer.js里通过receive()函数的this.ws.onmessage接收后端发来的信息，并进行路由
                 // *************************************************************************************
-                this.playground.mps.send_move_toward(this.directions);
+                this.playground.mps.send_move_toward(this.directions, this.x, this.y);
                 console.log("send move toward");
             }
 
