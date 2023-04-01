@@ -29,7 +29,7 @@ export class MultiPlayerSocket {
                 // 后端通过wss连接要求前端创建新的玩家，于是这里调用相应的创建玩家的函数
                 outer.receive_create_player(uuid, data.username, data.photo);
             } else if (event === "move_toward") {
-                outer.receive_move_toward(uuid, data.directions_array);
+                outer.receive_move_toward(uuid, data.directions_array, data.x, data.y);
             } else if (event === "shoot_fireball") {
                 outer.receive_shoot_fireball(uuid, data.ball_uuid, data.tx, data.ty);
             } else if (event === "attack") {
@@ -82,7 +82,8 @@ export class MultiPlayerSocket {
         this.playground.players.push(player);
     }
 
-    send_move_toward(directions) {
+    // 同步操作数组的同时也要同步位置，这样玩家就可以主动更新自己在其他玩家眼中的位置，更加合理
+    send_move_toward(directions, x, y) {
         let outer = this;
         // 因为JSON.stringify()无法将Set()对象转换为字符串（转换后会丢失所有内容）
         // 所以需要先用[...directions]将Set()对象解包并转换成数组的形式，然后才能转换成字符串
@@ -92,14 +93,18 @@ export class MultiPlayerSocket {
             'event': "move_toward",
             'uuid': outer.uuid,
             'directions_array': directions_array,
+            'x': x,
+            'y': y,
         }));
     }
 
-    receive_move_toward(uuid, directions_array) {
+    receive_move_toward(uuid, directions_array, x, y) {
         let player = this.get_player(uuid);
 
         if (player) {
             let directions = new Set(directions_array);
+            player.x = x;
+            player.y = y;
             player.move_toward(directions);
         }
     }

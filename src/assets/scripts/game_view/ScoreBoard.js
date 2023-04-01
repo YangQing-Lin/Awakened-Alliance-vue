@@ -26,6 +26,7 @@ export class ScoreBoard extends AcGameObject {
             return false;
         }
         this.ctx.canvas.addEventListener('mouseup', e => {
+            console.log("typeof plg: ", typeof this.playground);
             this.playground.show_select_mode();
         })
     }
@@ -50,6 +51,8 @@ export class ScoreBoard extends AcGameObject {
         setTimeout(function () {
             outer.add_listening_events();
         }, 500);
+
+        console.log("score_board add_listenint_events DONE");
     }
 
     late_late_update() {

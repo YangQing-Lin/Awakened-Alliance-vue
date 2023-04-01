@@ -25,8 +25,6 @@ export default {
         },
     },
     setup(props) {
-        console.log("in rank list: ", props.select_type);
-        console.log(Cookies.get("access"));
         const store = useStore();
         let players = ref([]);
         $.ajax({

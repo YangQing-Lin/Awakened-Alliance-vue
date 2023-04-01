@@ -3,6 +3,7 @@ import router from "@/router";
 import Cookies from "js-cookie";
 
 export const init = (store) => {
+    window.refresh_id = -1;
     // const vw = window.innerWidth;
     // const vh = window.innerHeight;
     // AcWingOS.api.window.resize(59.5 * vh / vw, 64.5);
@@ -37,7 +38,11 @@ export const init = (store) => {
     const set_auto_refresh_jwt_token = () => {
         // 先执行一次，然后设置4.5分钟的自动更新
         refresh_jwt_token();
-        setInterval(refresh_jwt_token, 4.5 * 60 * 1000);
+        if (window.refresh_id != -1) {
+            clearInterval(window.refresh_id);
+            window.refresh_id = -1;
+        }
+        window.refresh_id = setInterval(refresh_jwt_token, 4.5 * 60 * 1000);
     };
 
     const refresh_jwt_token = () => {

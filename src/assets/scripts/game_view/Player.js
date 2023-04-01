@@ -244,7 +244,12 @@ export class Player extends AcGameObject {
         let color = "orange";
         let speed = this.playground.height * 0.5 / this.playground.scale;
         let move_length = this.playground.height * 1.5 / this.playground.scale;
-        let fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 50);
+        let fireball = null;
+        if (this.character === "me") {
+            fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 50);
+        } else {
+            fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 10);
+        }
         this.playground.fireballs.push(fireball);
 
         return fireball;
@@ -329,6 +334,7 @@ export class Player extends AcGameObject {
         if (this.character === "me") {
             // 这里必须判断是否对战状态，因为胜利之后点击确定也会删除自己
             if (this.playground.store.state.game_state === "fighting") {
+                console.log("me LOST");
                 this.playground.score_board.lose();
             }
         } else if (this.character === "robot") {
@@ -446,7 +452,7 @@ export class Player extends AcGameObject {
                 // 后端move_toward函数会将消息广播给组里的所有人，其他人通过async def group_send_event(self, data)函数将信息发送给每个人对应的前端
                 // 前端在multiplayer.js里通过receive()函数的this.ws.onmessage接收后端发来的信息，并进行路由
                 // *************************************************************************************
-                this.playground.mps.send_move_toward(this.directions);
+                this.playground.mps.send_move_toward(this.directions, this.x, this.y);
                 console.log("send move toward");
             }
 
