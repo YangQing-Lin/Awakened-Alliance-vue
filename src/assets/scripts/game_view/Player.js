@@ -442,7 +442,7 @@ export class Player extends AcGameObject {
         this.x += this.vx * this.timedelta / 1000;
         this.y += this.vy * this.timedelta / 1000;
 
-        this.update_move_toward();
+        // this.update_move_toward();
     }
 
     update_move_toward() {
