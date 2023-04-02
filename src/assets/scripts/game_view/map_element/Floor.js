@@ -6,6 +6,8 @@ export class Floor extends Grid {
         this.state = ""; // 格子里画什么
         this.base_fill_color = "rgb(136, 188, 194)"; // floor light_blue
         this.fill_color = this.base_fill_color;
+
+        this.character = "floor";
     }
 
     start() {

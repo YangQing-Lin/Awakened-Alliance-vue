@@ -14,6 +14,8 @@ export class Grid extends AcGameObject {
         this.y = this.i * this.cube_side_len;
         this.x = this.j * this.cube_side_len;
 
+        this.character = "grid";
+
         // 相对画布的坐标
         this.relative_position_x = 0;
         this.relative_position_y = 0;
@@ -37,6 +39,13 @@ export class Grid extends AcGameObject {
 
     get_manhattan_dist(x1, y1, x2, y2) {
         return Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));
+    }
+
+    // 计算两点间欧几里得距离
+    get_dist(x1, y1, x2, y2) {
+        let dx = x1 - x2;
+        let dy = y1 - y2;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     update() {

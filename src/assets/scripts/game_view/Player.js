@@ -398,11 +398,56 @@ export class Player extends AcGameObject {
     move_to(tx, ty) {
         this.move_length = this.get_dist(this.x, this.y, tx, ty);
         this.speed_angle = Math.atan2(ty - this.y, tx - this.x);
+        // this.check_collision();
         this.vx = Math.cos(this.speed_angle);
         // robot的Y轴移动和player不同，player为了更加直观用的是角度方向
         // 如Math.PI / 2这个角度就是向上移动，那么vy就是负数
         // 而机器人在移动的时候还需要用到this.move_length，比player更加复杂，所以不能用this.update_move();代替
         this.vy = Math.sin(this.speed_angle);
+    }
+
+    update_move() {
+        this.check_collision();
+        this.vx = this.speed * Math.cos(this.speed_angle);
+        this.vy = -this.speed * Math.sin(this.speed_angle);  // 这个负号很精髓
+        this.x += this.vx * this.timedelta / 1000;
+        this.y += this.vy * this.timedelta / 1000;
+    }
+
+    check_collision() {
+        let grids = this.playground.game_map.grids;
+        for (let i = 0; i < grids.length; i++) {
+            if (grids[i].character === "wall") {
+                let new_angle = grids[i].is_collision(this);
+                if (new_angle) {
+                    // console.log("collision!", new_angle);
+                    // this.speed_angle = new_angle;
+                }
+            }
+        }
+    }
+
+    update_move_toward() {
+        // 只有当前操作数组的长度改变时才会调用里面的操作，下面技能数组同理
+        // 这么做是为了减少调用同步函数的次数，因为一直按着一个键会连续触发监听函数
+        if (this.last_directions_size !== this.directions.size) {
+            this.update_speed_angle(this.directions);
+            if (this.playground.store.state.game_mode === "multi mode") {
+                // *************************************************************************************
+                // 前后端传输消息的整个流程：
+                // 玩家在进行操作的时候首先判断当前是多人游戏模式，于是调用mps相应的函数
+                // mps的相关逻辑在multiplayer.js里，这会调用相应的send_move_toward函数开始向后端发送数据
+                // 其中'event'字段的作用就是为了在后端完成路由
+                // 后端用async def receive(self, text_data)函数对接收到的信息进行路由，跳转到对应的后端move_toward函数
+                // 后端move_toward函数会将消息广播给组里的所有人，其他人通过async def group_send_event(self, data)函数将信息发送给每个人对应的前端
+                // 前端在multiplayer.js里通过receive()函数的this.ws.onmessage接收后端发来的信息，并进行路由
+                // *************************************************************************************
+                this.playground.mps.send_move_toward(this.directions, this.x, this.y);
+                console.log("send move toward");
+            }
+
+            this.last_directions_size = this.directions.size;
+        }
     }
 
     update_coldtime() {
@@ -443,36 +488,6 @@ export class Player extends AcGameObject {
     update_win() {
         if (this.playground.players.length === 1) {
             this.playground.score_board.win();
-        }
-    }
-
-    update_move() {
-        this.vx = this.speed * Math.cos(this.speed_angle);
-        this.vy = -this.speed * Math.sin(this.speed_angle);  // 这个负号很精髓
-        this.x += this.vx * this.timedelta / 1000;
-        this.y += this.vy * this.timedelta / 1000;
-    }
-
-    update_move_toward() {
-        // 只有当前操作数组的长度改变时才会调用里面的操作，下面技能数组同理
-        // 这么做是为了减少调用同步函数的次数，因为一直按着一个键会连续触发监听函数
-        if (this.last_directions_size !== this.directions.size) {
-            this.update_speed_angle(this.directions);
-            if (this.playground.store.state.game_mode === "multi mode") {
-                // *************************************************************************************
-                // 前后端传输消息的整个流程：
-                // 玩家在进行操作的时候首先判断当前是多人游戏模式，于是调用mps相应的函数
-                // mps的相关逻辑在multiplayer.js里，这会调用相应的send_move_toward函数开始向后端发送数据
-                // 其中'event'字段的作用就是为了在后端完成路由
-                // 后端用async def receive(self, text_data)函数对接收到的信息进行路由，跳转到对应的后端move_toward函数
-                // 后端move_toward函数会将消息广播给组里的所有人，其他人通过async def group_send_event(self, data)函数将信息发送给每个人对应的前端
-                // 前端在multiplayer.js里通过receive()函数的this.ws.onmessage接收后端发来的信息，并进行路由
-                // *************************************************************************************
-                this.playground.mps.send_move_toward(this.directions, this.x, this.y);
-                console.log("send move toward");
-            }
-
-            this.last_directions_size = this.directions.size;
         }
     }
 
