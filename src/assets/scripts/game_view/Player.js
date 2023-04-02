@@ -15,7 +15,9 @@ export class Player extends AcGameObject {
         this.vy = 0;
         this.radius = radius;
         this.color = color;
-        this.speed = speed;
+        this.base_speed = speed;
+        this.speed = 0;
+        this.speed_angle = 0;  // 速度角度，弧度制，用于控制玩家移动方向，在检测到碰撞的时候用于计算新的速度向量
         this.character = character;
         this.username = username;
         this.photo = photo;
@@ -70,9 +72,9 @@ export class Player extends AcGameObject {
         if (this.character === "me") {
             this.add_listening_events();
         } else if (this.character === "robot") {
-            let tx = Math.random() * this.playground.virtual_map_width;
-            let ty = Math.random() * this.playground.virtual_map_height;
-            this.move_to(tx, ty);
+            this.move_length = 0;
+            this.speed = this.base_speed;
+            this.robot_update();
 
             // 机器人使用的移动方法是随机一个目的地坐标，方向向量集合暂时用不到
             // for (let i = 0; i < 4; i++) {
@@ -80,13 +82,6 @@ export class Player extends AcGameObject {
             //     this.rand_directions.add(Math.round(Math.random() * 4));
             // }
         }
-    }
-
-    move_to(tx, ty) {
-        this.move_length = this.get_dist(this.x, this.y, tx, ty);
-        let angle = Math.atan2(ty - this.y, tx - this.x);
-        this.vx = Math.cos(angle);
-        this.vy = Math.sin(angle);
     }
 
     add_listening_events() {
@@ -115,7 +110,7 @@ export class Player extends AcGameObject {
             }
             // 操作方式：wasd / 上下左右
             if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
-                // 保证不会重复输入，后面的完全清楚只是保险起见
+                // 保证不会重复输入，后面的delete只是保险起见
                 this.directions.add(0);
                 e.preventDefault();  // 取消默认行为
             } else if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') {
@@ -282,26 +277,29 @@ export class Player extends AcGameObject {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    move_toward(directions) {
-        if (directions.has(0) && !directions.has(2)) {
-            this.vy = -this.speed;
-        } else if (!directions.has(0) && directions.has(2)) {
-            this.vy = this.speed;
+    update_speed_angle(directions) {
+        // 根据操作数组来计算速度角度
+        this.speed = this.base_speed;
+        if (directions.size === 1 || directions.size === 3) {
+            if (directions.has(0) && !directions.has(2))
+                this.speed_angle = Math.PI / 2;
+            else if (directions.has(1) && !directions.has(3))
+                this.speed_angle = 0;
+            else if (directions.has(2) && !directions.has(0))
+                this.speed_angle = -Math.PI / 2;
+            else if (directions.has(3) && !directions.has(1))
+                this.speed_angle = Math.PI;
+        } else if (directions.size === 2) {
+            if (directions.has(0) && directions.has(1))
+                this.speed_angle = Math.PI / 4;
+            else if (directions.has(1) && directions.has(2))
+                this.speed_angle = -Math.PI / 4;
+            else if (directions.has(2) && directions.has(3))
+                this.speed_angle = -Math.PI * 3 / 4;
+            else if (directions.has(3) && directions.has(0))
+                this.speed_angle = Math.PI * 3 / 4;
         } else {
-            this.vy = 0;
-        }
-
-        if (directions.has(1) && !directions.has(3)) {
-            this.vx = this.speed;
-        } else if (!directions.has(1) && directions.has(3)) {
-            this.vx = -this.speed;
-        } else {
-            this.vx = 0;
-        }
-
-        if (this.vx !== 0 && this.vy !== 0) {
-            this.vx /= Math.sqrt(2);
-            this.vy /= Math.sqrt(2);
+            this.speed = 0;
         }
     }
 
@@ -397,6 +395,16 @@ export class Player extends AcGameObject {
         }
     }
 
+    move_to(tx, ty) {
+        this.move_length = this.get_dist(this.x, this.y, tx, ty);
+        this.speed_angle = Math.atan2(ty - this.y, tx - this.x);
+        this.vx = Math.cos(this.speed_angle);
+        // robot的Y轴移动和player不同，player为了更加直观用的是角度方向
+        // 如Math.PI / 2这个角度就是向上移动，那么vy就是负数
+        // 而机器人在移动的时候还需要用到this.move_length，比player更加复杂，所以不能用this.update_move();代替
+        this.vy = Math.sin(this.speed_angle);
+    }
+
     update_coldtime() {
         this.fireball_coldtime -= this.timedelta / 1000;
         this.fireball_coldtime = Math.max(this.fireball_coldtime, 0);
@@ -439,16 +447,17 @@ export class Player extends AcGameObject {
     }
 
     update_move() {
+        this.vx = this.speed * Math.cos(this.speed_angle);
+        this.vy = -this.speed * Math.sin(this.speed_angle);  // 这个负号很精髓
         this.x += this.vx * this.timedelta / 1000;
         this.y += this.vy * this.timedelta / 1000;
-
-        // this.update_move_toward();
     }
 
     update_move_toward() {
         // 只有当前操作数组的长度改变时才会调用里面的操作，下面技能数组同理
+        // 这么做是为了减少调用同步函数的次数，因为一直按着一个键会连续触发监听函数
         if (this.last_directions_size !== this.directions.size) {
-            this.move_toward(this.directions);
+            this.update_speed_angle(this.directions);
             if (this.playground.store.state.game_mode === "multi mode") {
                 // *************************************************************************************
                 // 前后端传输消息的整个流程：
