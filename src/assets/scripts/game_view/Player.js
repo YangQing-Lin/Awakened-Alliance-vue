@@ -133,6 +133,8 @@ export class Player extends AcGameObject {
                 }
                 console.log(this.cur_skill);
             }
+
+            this.update_move_toward();
         });
 
         this.ctx.canvas.addEventListener('keyup', e => {
@@ -149,6 +151,7 @@ export class Player extends AcGameObject {
                 this.directions.delete(3);
                 e.preventDefault();  // 取消默认行为
             }
+            this.update_move_toward();
         });
 
         this.ctx.canvas.addEventListener('mousedown', e => {
@@ -439,6 +442,10 @@ export class Player extends AcGameObject {
         this.x += this.vx * this.timedelta / 1000;
         this.y += this.vy * this.timedelta / 1000;
 
+        this.update_move_toward();
+    }
+
+    update_move_toward() {
         // 只有当前操作数组的长度改变时才会调用里面的操作，下面技能数组同理
         if (this.last_directions_size !== this.directions.size) {
             this.move_toward(this.directions);
