@@ -3,6 +3,7 @@ import { routeLocationKey } from "vue-router";
 import { AcGameObject } from "./AcGameObject";
 import { Particle } from "./Particle";
 import { FireBall } from "./skill/FireBall";
+import { HealthBar } from "./player_component/HealthBar";
 
 export class Player extends AcGameObject {
     constructor(playground, x, y, radius, color, speed, character, username, photo) {
@@ -55,6 +56,8 @@ export class Player extends AcGameObject {
             this.blink_img = new Image();
             this.blink_img.src = "https://cdn.acwing.com/media/article/image/2021/12/02/1_daccabdc53-blink.png";
         }
+
+        this.health_bar = new HealthBar(this.playground, this);
     }
 
     start() {
@@ -215,7 +218,6 @@ export class Player extends AcGameObject {
 
     blink(tx, ty) {
         let d = this.get_dist(this.x, this.y, tx, ty);
-        console.log("d: ", d);
         d = Math.min(d, 0.6);
         let angle = Math.atan2(ty - this.y, tx - this.x);
         this.x += d * Math.cos(angle);
@@ -346,6 +348,11 @@ export class Player extends AcGameObject {
     }
 
     on_destroy() {
+        if (this.health_bar) {
+            this.health_bar.destroy();
+        }
+        this.health_bar = null;
+
         for (let i = 0; i < this.playground.players.length; i++) {
             if (this.playground.players[i] === this) {
                 this.playground.players.splice(i, 1);
@@ -407,7 +414,7 @@ export class Player extends AcGameObject {
     }
 
     update_move() {
-        this.check_collision();
+        // this.check_collision();
         this.vx = this.speed * Math.cos(this.speed_angle);
         this.vy = -this.speed * Math.sin(this.speed_angle);  // 这个负号很精髓
         this.x += this.vx * this.timedelta / 1000;
