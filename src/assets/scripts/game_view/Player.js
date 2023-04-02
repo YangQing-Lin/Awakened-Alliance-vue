@@ -4,6 +4,8 @@ import { AcGameObject } from "./AcGameObject";
 import { Particle } from "./Particle";
 import { FireBall } from "./skill/FireBall";
 import { HealthBar } from "./player_component/HealthBar";
+import { FireBallSkill } from "./skill/FireBallSkill";
+import { BlinkSkill } from "./skill/BlinkSkill";
 
 export class Player extends AcGameObject {
     constructor(playground, x, y, radius, color, speed, character, username, photo) {
@@ -45,18 +47,8 @@ export class Player extends AcGameObject {
             this.img.src = this.photo;
         }
 
-        if (this.character === "me") {
-            this.base_fireball_coldtime = 1;  // 冷却时间，单位：秒
-            this.fireball_coldtime = this.base_fireball_coldtime;
-            this.fireball_img = new Image();
-            this.fireball_img.src = "https://cdn.acwing.com/media/article/image/2021/12/02/1_9340c86053-fireball.png";
-
-            this.base_blink_coldtime = 3;
-            this.blink_coldtime = this.base_blink_coldtime;
-            this.blink_img = new Image();
-            this.blink_img.src = "https://cdn.acwing.com/media/article/image/2021/12/02/1_daccabdc53-blink.png";
-        }
-
+        this.general_skill = new FireBallSkill(this.playground, this, 0.6, 0.9, 0.04);  // 英雄普攻
+        this.summoner_skill = new BlinkSkill(this.playground, this, 0.8, 0.9, 0.04);  // 召唤师技能
         this.health_bar = new HealthBar(this.playground, this);
     }
 
@@ -126,9 +118,7 @@ export class Player extends AcGameObject {
                 this.directions.add(3);
                 e.preventDefault();  // 取消默认行为
             } else if (e.key === 'f' || e.key === 'F') {
-                if (this.blink_coldtime < this.eps) {
-                    this.cur_skill = this.cur_skill === "blink" ? null : "blink";
-                }
+                this.cur_skill = this.cur_skill === "summoner_skill" ? null : "summoner_skill";
                 console.log(this.cur_skill);
             }
 
@@ -162,9 +152,9 @@ export class Player extends AcGameObject {
             if (e.which === 1) {
                 this.my_calculate_tx_ty();
                 if (this.cur_skill === null) {
-                    this.start_shoot_fireball();
-                } else if (this.cur_skill === "blink") {
-                    this.start_blink();
+                    this.use_general_skill();
+                } else if (this.cur_skill === "summoner_skill") {
+                    this.use_summoner_skill();
                     this.cur_skill = null;
                 }
                 // 鼠标点击在地图外面将无效
@@ -204,55 +194,12 @@ export class Player extends AcGameObject {
         console.log("scan_skills(directions)");
     }
 
-    start_blink() {
-        if (this.blink_coldtime < this.eps) {
-            this.blink(this.tx, this.ty);
-            this.blink_coldtime = this.base_blink_coldtime;
-
-            if (this.playground.store.state.game_mode === "multi mode") {
-                this.playground.mps.send_blink(this.tx, this.ty);
-                console.log("send blink");
-            }
-        }
+    use_general_skill() {
+        this.general_skill.use_skill(this.tx, this.ty);
     }
 
-    blink(tx, ty) {
-        let d = this.get_dist(this.x, this.y, tx, ty);
-        d = Math.min(d, 0.6);
-        let angle = Math.atan2(ty - this.y, tx - this.x);
-        this.x += d * Math.cos(angle);
-        this.y += d * Math.sin(angle);
-    }
-
-    start_shoot_fireball() {
-        // 只有当火球不在CD才会成功发射
-        if (this.fireball_coldtime < this.eps) {
-            let fireball = this.shoot_fireball(this.tx, this.ty);
-            this.fireball_coldtime = this.base_fireball_coldtime;
-
-            if (this.playground.store.state.game_mode === "multi mode") {
-                this.playground.mps.send_shoot_fireball(fireball.uuid, this.tx, this.ty);
-                console.log("send shoot fireball");
-            }
-        }
-    }
-
-    shoot_fireball(tx, ty) {
-        let radius = this.playground.height * 0.01 / this.playground.scale;
-        let angle = Math.atan2(ty - this.y, tx - this.x);
-        let vx = Math.cos(angle), vy = Math.sin(angle);
-        let color = "orange";
-        let speed = this.playground.height * 0.5 / this.playground.scale;
-        let move_length = this.playground.height * 1.5 / this.playground.scale;
-        let fireball = null;
-        if (this.character === "me") {
-            fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 50);
-        } else {
-            fireball = new FireBall(this.playground, this, this.x, this.y, radius, vx, vy, color, speed, move_length, 10);
-        }
-        this.playground.fireballs.push(fireball);
-
-        return fireball;
+    use_summoner_skill() {
+        this.summoner_skill.use_skill(this.tx, this.ty);
     }
 
     // 将监听事件里的位置临时变量存储到玩家的类中，用于后续计算
@@ -371,7 +318,7 @@ export class Player extends AcGameObject {
     //     }
     // }
 
-    auto_shoot_fireball() {
+    auto_use_general_skill() {
         let players = this.playground.players;
 
         if (this.spent_time > 3 && Math.random() < 1 / 180.0 && players.length >= 2) {
@@ -379,13 +326,12 @@ export class Player extends AcGameObject {
             for (let i = 0; player === this && i < 1000; i++) {
                 player = players[Math.floor(Math.random() * players.length)];
             }
-            this.shoot_fireball(player.x, player.y);
+            this.general_skill.use_skill(player.x, player.y);
         }
-
     }
 
     robot_update() {
-        this.auto_shoot_fireball();
+        this.auto_use_general_skill();
 
         if (this.move_length < this.eps) {
             this.move_length = 0;
@@ -457,14 +403,6 @@ export class Player extends AcGameObject {
         }
     }
 
-    update_coldtime() {
-        this.fireball_coldtime -= this.timedelta / 1000;
-        this.fireball_coldtime = Math.max(this.fireball_coldtime, 0);
-
-        this.blink_coldtime -= this.timedelta / 1000;
-        this.blink_coldtime = Math.max(this.blink_coldtime, 0);
-    }
-
     late_update() {
         this.spent_time += this.timedelta / 1000;
 
@@ -478,7 +416,6 @@ export class Player extends AcGameObject {
         if (this.character !== "robot" && this.playground.store.state.game_state === "fighting") {
             // 只有当角色是自己并且游戏是对战状态才会更新技能冷却时间
             if (this.character === "me") {
-                this.update_coldtime();
                 this.update_win();
             }
             this.update_move();
@@ -506,49 +443,6 @@ export class Player extends AcGameObject {
         }
     }
 
-    render_skill_coldtime() {
-        let x = 0.6, y = 0.9;
-        let r = 0.04;
-        let scale = this.playground.scale;
-
-        // 绘制火球图片
-        this.ctx.save();
-        this.ctx.beginPath();
-        this.ctx.arc(x * scale, y * scale, r * scale, 0, Math.PI * 2, false);
-        this.ctx.stroke();
-        this.ctx.clip();
-        this.ctx.drawImage(this.fireball_img, (x - r) * scale, (y - r) * scale, r * 2 * scale, r * 2 * scale);
-        this.ctx.restore();
-        // 绘制蒙板
-        if (this.fireball_coldtime > 0) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(x * scale, y * scale);
-            this.ctx.arc(x * scale, y * scale, r * scale, 0 - Math.PI / 2, Math.PI * 2 * (1 - this.fireball_coldtime / this.base_fireball_coldtime) - Math.PI / 2, true);
-            this.ctx.lineTo(x * scale, y * scale);
-            this.ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
-            this.ctx.fill();
-        }
-
-
-        x = 0.8, y = 0.9;
-        this.ctx.save();
-        this.ctx.beginPath();
-        this.ctx.arc(x * scale, y * scale, r * scale, 0, Math.PI * 2, false);
-        this.ctx.stroke();
-        this.ctx.clip();
-        this.ctx.drawImage(this.blink_img, (x - r) * scale, (y - r) * scale, r * 2 * scale, r * 2 * scale);
-        this.ctx.restore();
-        if (this.blink_coldtime > 0) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(x * scale, y * scale);
-            this.ctx.arc(x * scale, y * scale, r * scale, 0 - Math.PI / 2, Math.PI * 2 * (1 - this.blink_coldtime / this.base_blink_coldtime) - Math.PI / 2, true);
-            this.ctx.lineTo(x * scale, y * scale);
-            this.ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
-            this.ctx.fill();
-        }
-
-    }
-
     render() {
         // 把虚拟地图中的坐标换算成canvas中的坐标
         let scale = this.playground.scale;
@@ -574,10 +468,6 @@ export class Player extends AcGameObject {
             this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
             this.ctx.fillStyle = this.color;
             this.ctx.fill();
-        }
-
-        if (this.character === "me" && this.playground.store.state.game_state === "fighting") {
-            this.render_skill_coldtime();
         }
     }
 }
