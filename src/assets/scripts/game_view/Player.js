@@ -404,6 +404,17 @@ export class Player extends AcGameObject {
         }
     }
 
+    update() {
+        for (let i = 0; i < this.playground.players.length; i++) {
+            let player = this.playground.players[i];
+            if (player.character === "me") {
+                console.log("me: ", player.x, player.y);
+            } else {
+                console.log(player.x, player.y);
+            }
+        }
+    }
+
     late_update() {
         this.spent_time += this.timedelta / 1000;
 

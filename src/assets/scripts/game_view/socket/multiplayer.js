@@ -32,10 +32,10 @@ export class MultiPlayerSocket {
                 outer.receive_move_toward(uuid, data.directions_array, data.x, data.y);
             } else if (event === "use_general_skill") {
                 outer.receive_use_general_skill(uuid, data.skill_data);
+            } else if (event === "use_summoner_skill") {
+                outer.receive_use_summoner_skill(uuid, data.skill_data);
             } else if (event === "attack") {
                 outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
-            } else if (event === "blink") {
-                outer.receive_blink(uuid, data.tx, data.ty);
             } else if (event === "message") {
                 outer.receive_chat_message(uuid, data.username, data.text);
             }
@@ -126,6 +126,23 @@ export class MultiPlayerSocket {
         console.log("receive use general skill");
     }
 
+    send_use_summoner_skill(skill_data) {
+        let outer = this;
+        this.ws.send(JSON.stringify({
+            'event': "summoner_skill",
+            'uuid': outer.uuid,
+            'skill_data': skill_data,
+        }));
+    }
+
+    receive_use_summoner_skill(uuid, skill_data) {
+        let player = this.get_player(uuid);
+        if (player) {
+            player.summoner_skill.receive_use_skill(skill_data);
+        }
+        console.log("receive use summoner skill");
+    }
+
     // x, y: 被攻击者的位置，用于同步
     // angle: 攻击的角度（暂时用不到）
     // ball_uuid: 广播这个炮弹已经击中人了
@@ -149,16 +166,6 @@ export class MultiPlayerSocket {
         if (attacker && attackee) {
             attackee.receive_attack(x, y, angle, damage, ball_uuid, attacker);
         }
-    }
-
-    send_blink(tx, ty) {
-        let outer = this;
-        this.ws.send(JSON.stringify({
-            'event': "blink",
-            'uuid': outer.uuid,
-            'tx': tx,
-            'ty': ty,
-        }))
     }
 
     receive_blink(uuid, tx, ty) {

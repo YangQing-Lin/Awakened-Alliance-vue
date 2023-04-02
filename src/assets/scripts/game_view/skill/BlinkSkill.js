@@ -17,12 +17,20 @@ export class BlinkSkill extends Skill {
             this.blink(tx, ty);
             this.cold_time = this.base_cold_time;
 
-            // TODO
-            // if (this.playground.store.state.game_mode === "multi mode") {
-            //     this.playground.mps.send_use_summoner_skill(tx, ty);
-            //     console.log("send use summoner skill");
-            // }
+            if (this.playground.store.state.game_mode === "multi mode") {
+                let skill_data = {
+                    "tx": tx,
+                    "ty": ty,
+                };
+                this.playground.mps.send_use_summoner_skill(skill_data);
+                console.log("send use summoner skill");
+            }
         }
+    }
+
+    receive_use_skill(skill_data) {
+        this.blink(skill_data["tx"], skill_data["ty"]);
+        console.log("receive blink");
     }
 
     blink(tx, ty) {

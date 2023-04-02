@@ -18,7 +18,6 @@ export class FireBallSkill extends Skill {
             let fireball = this.shoot_fireball(tx, ty);
             this.cold_time = this.base_cold_time;
 
-            // TODO 编写对应的同步函数
             if (this.player.character === "me" && this.playground.store.state.game_mode === "multi mode") {
                 let skill_data = {
                     "ball_uuid": fireball.uuid,
