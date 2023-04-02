@@ -19,11 +19,22 @@ export class FireBallSkill extends Skill {
             this.cold_time = this.base_cold_time;
 
             // TODO 编写对应的同步函数
-            // if (this.playground.store.state.game_mode === "multi mode") {
-            //     this.playground.mps.send_use_general_skill(fireball.uuid, tx, ty);
-            //     console.log("send use general attack");
-            // }
+            if (this.player.character === "me" && this.playground.store.state.game_mode === "multi mode") {
+                let skill_data = {
+                    "ball_uuid": fireball.uuid,
+                    "tx": tx,
+                    "ty": ty,
+                };
+                this.playground.mps.send_use_general_skill(skill_data);
+                console.log("send use general attack");
+            }
         }
+    }
+
+    receive_use_skill(skill_data) {
+        let fireball = this.shoot_fireball(skill_data["tx"], skill_data["ty"]);
+        fireball.uuid = skill_data["ball_uuid"];
+        console.log("receive shoot fireball");
     }
 
     shoot_fireball(tx, ty) {

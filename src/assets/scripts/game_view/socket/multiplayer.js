@@ -30,8 +30,8 @@ export class MultiPlayerSocket {
                 outer.receive_create_player(uuid, data.username, data.photo);
             } else if (event === "move_toward") {
                 outer.receive_move_toward(uuid, data.directions_array, data.x, data.y);
-            } else if (event === "shoot_fireball") {
-                outer.receive_shoot_fireball(uuid, data.ball_uuid, data.tx, data.ty);
+            } else if (event === "use_general_skill") {
+                outer.receive_use_general_skill(uuid, data.skill_data);
             } else if (event === "attack") {
                 outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
             } else if (event === "blink") {
@@ -105,28 +105,25 @@ export class MultiPlayerSocket {
             let directions = new Set(directions_array);
             player.x = x;
             player.y = y;
-            player.move_toward(directions);
+            player.update_speed_angle(directions);
         }
     }
 
-    send_shoot_fireball(ball_uuid, tx, ty) {
+    send_use_general_skill(skill_data) {
         let outer = this;
         this.ws.send(JSON.stringify({
-            'event': "shoot_fireball",
+            'event': "general_skill",
             'uuid': outer.uuid,
-            'ball_uuid': ball_uuid,
-            'tx': tx,
-            'ty': ty,
+            'skill_data': skill_data,
         }));
     }
 
-    receive_shoot_fireball(uuid, ball_uuid, tx, ty) {
+    receive_use_general_skill(uuid, skill_data) {
         let player = this.get_player(uuid);
         if (player) {
-            let fireball = player.shoot_fireball(tx, ty);
-            fireball.uuid = ball_uuid;
+            player.general_skill.receive_use_skill(skill_data);
         }
-        console.log("receive shoot fireball");
+        console.log("receive use general skill");
     }
 
     // x, y: 被攻击者的位置，用于同步

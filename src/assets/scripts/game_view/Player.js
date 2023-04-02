@@ -179,6 +179,14 @@ export class Player extends AcGameObject {
         })
     }
 
+    use_general_skill() {
+        this.general_skill.use_skill(this.tx, this.ty);
+    }
+
+    use_summoner_skill() {
+        this.summoner_skill.use_skill(this.tx, this.ty);
+    }
+
     // 根据uuid来删除火球
     destroy_fireball(uuid) {
         for (let i = 0; i < this.playground.fireballs.length; i++) {
@@ -192,14 +200,6 @@ export class Player extends AcGameObject {
 
     scan_skills(directions) {
         console.log("scan_skills(directions)");
-    }
-
-    use_general_skill() {
-        this.general_skill.use_skill(this.tx, this.ty);
-    }
-
-    use_summoner_skill() {
-        this.summoner_skill.use_skill(this.tx, this.ty);
     }
 
     // 将监听事件里的位置临时变量存储到玩家的类中，用于后续计算
@@ -318,18 +318,6 @@ export class Player extends AcGameObject {
     //     }
     // }
 
-    auto_use_general_skill() {
-        let players = this.playground.players;
-
-        if (this.spent_time > 3 && Math.random() < 1 / 180.0 && players.length >= 2) {
-            let player = this;
-            for (let i = 0; player === this && i < 1000; i++) {
-                player = players[Math.floor(Math.random() * players.length)];
-            }
-            this.general_skill.use_skill(player.x, player.y);
-        }
-    }
-
     robot_update() {
         this.auto_use_general_skill();
 
@@ -345,6 +333,19 @@ export class Player extends AcGameObject {
             this.x += this.vx * moved;
             this.y += this.vy * moved;
             this.move_length -= moved;
+        }
+    }
+
+    // 人机会自动使用普攻
+    auto_use_general_skill() {
+        let players = this.playground.players;
+
+        if (this.spent_time > 3 && Math.random() < 1 / 180.0 && players.length >= 2) {
+            let player = this;
+            for (let i = 0; player === this && i < 1000; i++) {
+                player = players[Math.floor(Math.random() * players.length)];
+            }
+            this.general_skill.use_skill(player.x, player.y);
         }
     }
 

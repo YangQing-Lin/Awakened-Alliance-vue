@@ -23,6 +23,10 @@ export class Skill extends AcGameObject {
 
     }
 
+    receive_use_skill() {
+
+    }
+
     late_late_update() {
         this.update_code_time();
         if (this.player.character === "me") {
