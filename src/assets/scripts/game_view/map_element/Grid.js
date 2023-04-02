@@ -55,10 +55,7 @@ export class Grid extends AcGameObject {
         let cx = ctx_x + this.cube_side_len * 0.5, cy = ctx_y + this.cube_side_len * 0.5; // grid的中心坐标
 
         // 处于屏幕范围外，则不渲染
-        if (cx * scale < -0.2 * this.playground.width ||
-            cx * scale > 1.2 * this.playground.width ||
-            cy * scale < -0.2 * this.playground.height ||
-            cy * scale > 1.2 * this.playground.height) {
+        if (this.playground.is_element_out_of_screen(cx, cy)) {
             return;
         }
 

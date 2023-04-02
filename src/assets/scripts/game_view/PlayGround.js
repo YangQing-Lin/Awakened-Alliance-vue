@@ -177,6 +177,16 @@ export class PlayGround extends AcGameObject {
         });
     }
 
+    is_element_out_of_screen(ctx_x, ctx_y) {
+        if (ctx_x < -0.2 * this.width / this.scale ||
+            ctx_x > 1.2 * this.width / this.scale ||
+            ctx_y < -0.2 * this.height / this.scale ||
+            ctx_y > 1.2 * this.height / this.scale) {
+            return true;
+        }
+        return false;
+    }
+
     hide() {
         while (this.players && this.players.length > 0) {
             this.players[0].destroy();

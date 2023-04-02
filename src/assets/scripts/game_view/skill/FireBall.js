@@ -97,6 +97,10 @@ export class FireBall extends AcGameObject {
         let scale = this.playground.scale;
         let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
         let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
+        // 处于屏幕范围外，则不渲染
+        if (this.playground.is_element_out_of_screen(cx, cy)) {
+            return;
+        }
 
         if (ctx_x < -0.1 * this.playground.width / scale ||
             ctx_x > 1.1 * this.playground.width / scale ||

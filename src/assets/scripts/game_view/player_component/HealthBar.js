@@ -26,7 +26,7 @@ export class HealthBar extends AcGameObject {
         }
     }
 
-    late_late_update() {
+    late_update() {
         this.x = this.player.x;
         this.y = this.player.y;
 
@@ -37,6 +37,10 @@ export class HealthBar extends AcGameObject {
         let scale = this.playground.scale;
         let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
         let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
+
+        if (this.playground.is_element_out_of_screen(ctx_x, ctx_y)) {
+            return;
+        }
 
         this.ctx.beginPath();
         this.ctx.moveTo((ctx_x - this.half_line * 1.1) * scale, (ctx_y - this.botton_on_player) * scale);
@@ -52,6 +56,7 @@ export class HealthBar extends AcGameObject {
         this.ctx.strokeStyle = this.color;
         this.ctx.stroke();
 
+        this.ctx.strokeStyle = "black";
         this.ctx.lineWidth = 1;
     }
 }

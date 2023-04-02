@@ -555,10 +555,7 @@ export class Player extends AcGameObject {
         let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
         let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
 
-        if (ctx_x < -0.2 * this.playground.width / scale ||
-            ctx_x > 1.2 * this.playground.width / scale ||
-            ctx_y < -0.2 * this.playground.height / scale ||
-            ctx_y > 1.2 * this.playground.height / scale) {
+        if (this.playground.is_element_out_of_screen(ctx_x, ctx_y)) {
             if (this.character != "me") { // 一个隐藏的bug，如果是玩家自己并且return，会导致技能图标渲染不出来
                 return;
             }
