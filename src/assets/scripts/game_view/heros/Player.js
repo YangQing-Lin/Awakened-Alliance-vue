@@ -1,12 +1,12 @@
 import { isMemoSame, readonly } from "vue";
 import { routeLocationKey } from "vue-router";
-import { AcGameObject } from "./AcGameObject";
-import { Particle } from "./Particle";
-import { FireBall } from "./skill/FireBall";
-import { HealthBar } from "./player_component/HealthBar";
-import { FireBallSkill } from "./skill/FireBallSkill";
-import { BlinkSkill } from "./skill/BlinkSkill";
-import { ShieldSkill } from "./skill/ShieldSkill";
+import { AcGameObject } from "../AcGameObject";
+import { Particle } from "../Particle";
+import { FireBall } from "../skill/FireBall";
+import { HealthBar } from "../player_component/HealthBar";
+import { FireBallSkill } from "../skill/FireBallSkill";
+import { BlinkSkill } from "../skill/BlinkSkill";
+import { ShieldSkill } from "../skill/ShieldSkill";
 
 export class Player extends AcGameObject {
     constructor(playground, x, y, radius, color, speed, character, username, photo) {
@@ -304,6 +304,21 @@ export class Player extends AcGameObject {
         }
         this.health_bar = null;
 
+        if (this.general_skill) {
+            this.general_skill.destroy();
+        }
+        this.general_skill = null;
+
+        if (this.awakened_skill) {
+            this.awakened_skill.destroy();
+        }
+        this.awakened_skill = null;
+
+        if (this.summoner_skill) {
+            this.summoner_skill.destroy();
+        }
+        this.summoner_skill = null;
+
         for (let i = 0; i < this.playground.players.length; i++) {
             if (this.playground.players[i] === this) {
                 this.playground.players.splice(i, 1);
@@ -422,20 +437,24 @@ export class Player extends AcGameObject {
     late_update() {
         this.spent_time += this.timedelta / 1000;
 
-        if (this.character === "robot" && this.playground.store.state.game_state === "fighting") {
-            this.robot_update();
+        if (this.character === "robot") {
+            if (this.playground.store.state.game_state === "fighting") {
+                this.robot_update();
+            }
             this.render();
         }
     }
 
     late_late_update() {
-        if (this.character !== "robot" && this.playground.store.state.game_state === "fighting") {
-            // 只有当角色是自己并且游戏是对战状态才会更新技能冷却时间
-            if (this.character === "me") {
-                this.update_win();
+        if (this.character !== "robot") {
+            if (this.playground.store.state.game_state === "fighting") {
+                // 只有当角色是自己并且游戏是对战状态才会检查胜利状态
+                if (this.character === "me") {
+                    this.update_win();
+                }
+                this.update_move();
+                this.update_attack();
             }
-            this.update_move();
-            this.update_attack();
             this.render();
         }
 

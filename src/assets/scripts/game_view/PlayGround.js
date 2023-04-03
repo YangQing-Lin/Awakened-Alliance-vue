@@ -1,7 +1,7 @@
 import { AcGameObject } from "./AcGameObject";
 import { GameMap } from "./GameMap";
 import { MultiGameMap } from "./MultiGameMap";
-import { Player } from "./Player";
+import { Player } from "./heros/Player";
 import { MultiPlayerSocket } from "./socket/multiplayer";
 import { NoticeBoard } from "./NoticeBoard";
 import $ from 'jquery';

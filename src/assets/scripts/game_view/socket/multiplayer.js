@@ -1,4 +1,4 @@
-import { Player } from "../Player";
+import { Player } from "../heros/Player";
 
 export class MultiPlayerSocket {
     constructor(playground) {

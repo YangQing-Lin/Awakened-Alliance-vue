@@ -67,8 +67,7 @@ export class ShieldSkill extends Skill {
         if (this.duration_time < this.eps) {
             return;
         }
-        for (let i = 0; i < this.playground.fireballs.length; i++) {
-            let fireball = this.playground.fireballs[i];
+        for (let fireball of this.playground.fireballs) {
             if (fireball.player !== this.player && this.is_collision(fireball)) {
                 fireball.destroy();
             }

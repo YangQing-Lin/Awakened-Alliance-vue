@@ -26,11 +26,13 @@ export class HealthBar extends AcGameObject {
         }
     }
 
-    late_update() {
+    health_bar_update() {
         this.x = this.player.x;
         this.y = this.player.y;
 
-        this.render();
+        if (this.playground.store.state.game_state === "fighting") {
+            this.render();
+        }
     }
 
     render() {
@@ -46,7 +48,7 @@ export class HealthBar extends AcGameObject {
         this.ctx.moveTo((ctx_x - this.half_line * 1.13) * scale, (ctx_y - this.botton_on_player) * scale);
         this.ctx.lineTo((ctx_x + this.half_line * 1.13) * scale, (ctx_y - this.botton_on_player) * scale);
         this.ctx.lineWidth = 11;
-        this.ctx.strokeStyle = this.black;
+        this.ctx.strokeStyle = "black";
         this.ctx.stroke();
 
         this.ctx.beginPath();
