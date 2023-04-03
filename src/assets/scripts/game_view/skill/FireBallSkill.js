@@ -2,13 +2,12 @@ import { FireBall } from "./FireBall";
 import { Skill } from "./Skill";
 
 export class FireBallSkill extends Skill {
-    constructor(playground, player, x, y, r) {
-        super(playground, player, x, y, r);
+    constructor(playground, player, icon_x, icon_y, icon_r) {
+        super(playground, player, icon_x, icon_y, icon_r);
 
         this.name = "FireBall";
         this.base_cold_time = 1;  // 冷却时间，单位：秒
         this.cold_time = this.base_cold_time;
-        this.img = new Image();
         this.img.src = "https://cdn.acwing.com/media/article/image/2021/12/02/1_9340c86053-fireball.png";
     }
 

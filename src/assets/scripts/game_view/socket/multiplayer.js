@@ -32,6 +32,8 @@ export class MultiPlayerSocket {
                 outer.receive_move_toward(uuid, data.directions_array, data.x, data.y);
             } else if (event === "use_general_skill") {
                 outer.receive_use_general_skill(uuid, data.skill_data);
+            } else if (event === "use_awakened_skill") {
+                outer.receive_use_awakened_skill(uuid, data.skill_data);
             } else if (event === "use_summoner_skill") {
                 outer.receive_use_summoner_skill(uuid, data.skill_data);
             } else if (event === "attack") {
@@ -124,6 +126,23 @@ export class MultiPlayerSocket {
             player.general_skill.receive_use_skill(skill_data);
         }
         console.log("receive use general skill");
+    }
+
+    send_use_awakened_skill(skill_data) {
+        let outer = this;
+        this.ws.send(JSON.stringify({
+            'event': "awakened_skill",
+            'uuid': outer.uuid,
+            'skill_data': skill_data,
+        }))
+    }
+
+    receive_use_awakened_skill(uuid, skill_data) {
+        let player = this.get_player(uuid);
+        if (player) {
+            player.awakened_skill.receive_use_skill(skill_data);
+        }
+        console.log("receive use awakened skill");
     }
 
     send_use_summoner_skill(skill_data) {

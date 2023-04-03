@@ -43,6 +43,13 @@ export class HealthBar extends AcGameObject {
         }
 
         this.ctx.beginPath();
+        this.ctx.moveTo((ctx_x - this.half_line * 1.13) * scale, (ctx_y - this.botton_on_player) * scale);
+        this.ctx.lineTo((ctx_x + this.half_line * 1.13) * scale, (ctx_y - this.botton_on_player) * scale);
+        this.ctx.lineWidth = 11;
+        this.ctx.strokeStyle = this.black;
+        this.ctx.stroke();
+
+        this.ctx.beginPath();
         this.ctx.moveTo((ctx_x - this.half_line * 1.1) * scale, (ctx_y - this.botton_on_player) * scale);
         this.ctx.lineTo((ctx_x + this.half_line * 1.1) * scale, (ctx_y - this.botton_on_player) * scale);
         this.ctx.lineWidth = 9;

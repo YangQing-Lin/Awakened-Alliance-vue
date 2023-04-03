@@ -6,6 +6,7 @@ import { FireBall } from "./skill/FireBall";
 import { HealthBar } from "./player_component/HealthBar";
 import { FireBallSkill } from "./skill/FireBallSkill";
 import { BlinkSkill } from "./skill/BlinkSkill";
+import { ShieldSkill } from "./skill/ShieldSkill";
 
 export class Player extends AcGameObject {
     constructor(playground, x, y, radius, color, speed, character, username, photo) {
@@ -48,7 +49,8 @@ export class Player extends AcGameObject {
         }
 
         this.general_skill = new FireBallSkill(this.playground, this, 0.6, 0.9, 0.04);  // 英雄普攻
-        this.summoner_skill = new BlinkSkill(this.playground, this, 0.8, 0.9, 0.04);  // 召唤师技能
+        this.awakened_skill = new ShieldSkill(this.playground, this, 0.8, 0.9, 0.04);  // 英雄觉醒技能
+        this.summoner_skill = new BlinkSkill(this.playground, this, 1.0, 0.9, 0.04);  // 召唤师技能
         this.health_bar = new HealthBar(this.playground, this);
     }
 
@@ -120,6 +122,8 @@ export class Player extends AcGameObject {
             } else if (e.key === 'f' || e.key === 'F') {
                 this.cur_skill = this.cur_skill === "summoner_skill" ? null : "summoner_skill";
                 console.log(this.cur_skill);
+            } else if (e.key === ' ') {
+                this.awakened_skill.use_skill();
             }
 
             this.update_move_toward();
@@ -405,14 +409,14 @@ export class Player extends AcGameObject {
     }
 
     update() {
-        for (let i = 0; i < this.playground.players.length; i++) {
-            let player = this.playground.players[i];
-            if (player.character === "me") {
-                console.log("me: ", player.x, player.y);
-            } else {
-                console.log(player.x, player.y);
-            }
-        }
+        // for (let i = 0; i < this.playground.players.length; i++) {
+        //     let player = this.playground.players[i];
+        //     if (player.character === "me") {
+        //         console.log("me: ", player.x, player.y);
+        //     } else {
+        //         console.log(player.x, player.y);
+        //     }
+        // }
     }
 
     late_update() {
