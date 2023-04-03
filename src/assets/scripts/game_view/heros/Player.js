@@ -26,6 +26,7 @@ export class Player extends AcGameObject {
         this.username = username;
         this.photo = photo;
 
+        this.hero_name = "Player";
         this.health = 100;
         this.eps = 0.001;
         this.directions = new Set();  // 用户的操作列表
@@ -68,6 +69,7 @@ export class Player extends AcGameObject {
         // 机器人的运动和玩家的不一样，玩家是通过键盘操作指定移动方向，机器人是直线移动到随机的坐标点
         if (this.character === "me") {
             this.add_listening_events();
+            console.log("Hero Name:", this.hero_name);
         } else if (this.character === "robot") {
             this.move_length = 0;
             this.speed = this.base_speed;

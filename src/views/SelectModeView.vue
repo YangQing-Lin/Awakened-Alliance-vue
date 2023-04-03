@@ -111,9 +111,7 @@ div.select_mode {
     position: absolute;
 
     /* 溢出隐藏 */
-    height: 100vh;
     overflow-x: hidden;
-    display: flex;
     /* 渐变方向从左到右 */
     background: linear-gradient(
         to right,
