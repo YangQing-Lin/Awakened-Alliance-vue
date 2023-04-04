@@ -21,11 +21,26 @@
             <div class="chat"></div>
         </div>
         <div class="players">
-            <div class="player"></div>
-            <div class="player"></div>
-            <div class="player"></div>
-            <div class="player"></div>
-            <div class="player"></div>
+            <div class="player">
+                <div class="user_photo"></div>
+                <div class="user_name"></div>
+            </div>
+            <div class="player">
+                <div class="user_photo"></div>
+                <div class="user_name"></div>
+            </div>
+            <div class="player">
+                <div class="user_photo"></div>
+                <div class="user_name"></div>
+            </div>
+            <div class="player">
+                <div class="user_photo"></div>
+                <div class="user_name"></div>
+            </div>
+            <div class="player">
+                <div class="user_photo"></div>
+                <div class="user_name"></div>
+            </div>
         </div>
     </div>
 </template>
@@ -42,6 +57,15 @@ export default {};
     /* justify-content: center;
     align-items: center;
     position: absolute; */
+
+    /* 溢出隐藏 */
+    overflow-x: hidden;
+    /* 渐变方向从左到右 */
+    background: linear-gradient(
+        to right,
+        rgb(247, 209, 215),
+        rgb(191, 227, 241)
+    );
 }
 
 .select_hero > div {
@@ -78,16 +102,18 @@ export default {};
 
 .hero_image {
     display: flex;
+    align-items: flex-end;
     height: 48%;
     background-color: aquamarine;
 }
 
 .skills {
     display: flex;
+    align-items: flex-end;
     width: 21%;
     height: 17%;
     margin-left: 76%;
-    margin-top: 42%;
+    margin-bottom: 2%;
     background-color: black;
 }
 
@@ -95,7 +121,7 @@ export default {};
     width: 40%;
     padding-top: 40%;
     height: 0%;
-    margin-top: 1%;
+    margin-bottom: 1%;
     margin-left: 7%;
     background-color: beige;
 }
@@ -123,6 +149,26 @@ export default {};
 }
 
 .player {
+    display: flex;
+    flex-direction: column;
     height: 19%;
+}
+
+.player > div {
+    margin-left: 5%;
+}
+
+.user_photo {
+    width: 20%;
+    padding-top: 20%;
+    margin-top: 4%;
+    background-color: aliceblue;
+}
+
+.user_name {
+    width: 40%;
+    height: 13%;
+    margin-top: 5%;
+    background-color: burlywood;
 }
 </style>
