@@ -17,6 +17,9 @@ export default createStore({
         chatting: false,
         show_history: false,
         // playground_focusing: true,
+        select_hero_name: "太二",
+        select_hero_info: {},
+        which_introduce: "hero",
     },
     getters: {
     },
@@ -55,6 +58,16 @@ export default createStore({
         },
         updateShowHistory: (state, show_history) => {
             state.show_history = show_history;
+        },
+
+        updateSelectHeroName: (state, name) => {
+            state.select_hero_name = name;
+        },
+        updateSelectHeroInfo: (state, info) => {
+            state.select_hero_info = info;
+        },
+        updateWhichIntroduce: (state, which) => {
+            state.which_introduce = which;
         },
     },
     actions: {

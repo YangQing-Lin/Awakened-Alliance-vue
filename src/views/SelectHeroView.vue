@@ -1,52 +1,180 @@
 <template>
     <div class="select_hero">
         <div class="heros">
-            <div class="heros_hero"></div>
-            <div class="heros_hero"></div>
-            <div class="heros_hero"></div>
-            <div class="heros_hero"></div>
-            <div class="heros_hero"></div>
-            <div class="heros_hero"></div>
-            <div class="heros_hero"></div>
-            <div class="heros_hero"></div>
+            <div
+                class="heros_hero"
+                v-for="(value, index) in heros_info"
+                :key="index"
+                @click="chooseHero(value.name)"
+            >
+                <img v-bind:src="value.avatar" alt="" />
+            </div>
         </div>
-        <div class="hero_info">
+        <div class="heros_info">
             <div class="hero_image">
-                <div class="skills">
-                    <div class="skill"></div>
-                    <div class="skill"></div>
+                <img :src="store.state.select_hero_info.default_right" alt="" />
+                <div class="general_skill" ref="general_skill">
+                    <img
+                        :src="store.state.select_hero_info.general_skill.image"
+                        alt=""
+                    />
+                </div>
+                <div class="awakened_skill" ref="awakened_skill">
+                    <img
+                        :src="store.state.select_hero_info.awakened_skill.image"
+                        alt=""
+                    />
                 </div>
             </div>
-            <div class="hero_bio"></div>
+            <div class="hero_bio" v-if="store.state.which_introduce === 'hero'">
+                英雄：{{ store.state.select_hero_info.name }} <br />
+                定位：{{ store.state.select_hero_info.type }} <br />
+                故事：{{ store.state.select_hero_info.introduce }}
+            </div>
+            <div
+                class="hero_bio"
+                v-else-if="store.state.which_introduce === 'general_skill'"
+            >
+                技能名称：{{ store.state.select_hero_info.general_skill.name }}
+                <br />
+                操作按键：{{
+                    store.state.select_hero_info.general_skill.operation
+                }}
+                <br />
+                效果描述：{{
+                    store.state.select_hero_info.general_skill.introduce
+                }}
+            </div>
+            <div
+                class="hero_bio"
+                v-else-if="store.state.which_introduce === 'awakened_skill'"
+            >
+                技能名称：{{ store.state.select_hero_info.awakened_skill.name }}
+                <br />
+                操作按键：{{
+                    store.state.select_hero_info.awakened_skill.operation
+                }}
+                <br />
+                技能效果描述：{{
+                    store.state.select_hero_info.awakened_skill.introduce
+                }}
+            </div>
             <div class="chat"></div>
         </div>
         <div class="players">
             <div class="player">
-                <div class="user_photo"></div>
-                <div class="user_name"></div>
+                <div class="player_choose_hero">
+                    <img
+                        :src="store.state.select_hero_info.default_left"
+                        alt=""
+                    />
+                </div>
+                <div class="user_photo">
+                    <img
+                        src="https://project-static-file.oss-cn-hangzhou.aliyuncs.com/avatar/2.jpeg"
+                        alt=""
+                        class="photo"
+                    />
+                </div>
+                <div class="user_name">admin</div>
+            </div>
+
+            <div class="player">
+                <div class="user_photo">
+                    <img
+                        src="https://project-static-file.oss-cn-hangzhou.aliyuncs.com/avatar/3.jpeg"
+                        alt=""
+                        class="photo"
+                    />
+                </div>
+                <div class="user_name">yangqing</div>
             </div>
             <div class="player">
-                <div class="user_photo"></div>
-                <div class="user_name"></div>
+                <div class="user_photo">
+                    <img
+                        src="https://project-static-file.oss-cn-hangzhou.aliyuncs.com/avatar/4.jpeg"
+                        alt=""
+                        class="photo"
+                    />
+                </div>
+                <div class="user_name">123</div>
             </div>
             <div class="player">
-                <div class="user_photo"></div>
-                <div class="user_name"></div>
-            </div>
-            <div class="player">
-                <div class="user_photo"></div>
-                <div class="user_name"></div>
-            </div>
-            <div class="player">
-                <div class="user_photo"></div>
-                <div class="user_name"></div>
+                <div class="user_photo">
+                    <img
+                        src="https://project-static-file.oss-cn-hangzhou.aliyuncs.com/avatar/5.jpeg"
+                        alt=""
+                        class="photo"
+                    />
+                </div>
+                <div class="user_name">456</div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-export default {};
+import { ref, onMounted } from "vue";
+import heros_info from "../../static/HeroInfo.json";
+import { useStore } from "vuex";
+
+export default {
+    namespaced: true,
+    name: "SelectHero",
+    setup: () => {
+        const store = useStore();
+        const general_skill = ref(null);
+        const awakened_skill = ref(null);
+
+        onMounted(() => {
+            general_skill.value.addEventListener("mouseenter", function () {
+                store.commit("updateWhichIntroduce", "general_skill");
+            });
+            general_skill.value.addEventListener("mouseleave", function () {
+                store.commit("updateWhichIntroduce", "hero");
+                console.log("鼠标移出");
+            });
+
+            awakened_skill.value.addEventListener("mouseenter", function () {
+                store.commit("updateWhichIntroduce", "awakened_skill");
+                console.log("鼠标移入");
+            });
+            awakened_skill.value.addEventListener("mouseleave", function () {
+                store.commit("updateWhichIntroduce", "hero");
+                console.log("鼠标移出");
+            });
+        });
+
+        const chooseHero = (hero_name) => {
+            console.log(hero_name);
+            for (let hero_info of heros_info) {
+                if (hero_info.name === hero_name) {
+                    store.commit("updateSelectHeroName", hero_name);
+                    store.commit("updateSelectHeroInfo", hero_info);
+                    break;
+                }
+            }
+        };
+
+        return {
+            heros_info,
+            store,
+            general_skill,
+            awakened_skill,
+            chooseHero,
+        };
+    },
+    created() {
+        this.heros_info = heros_info;
+        this.store.commit("updateSelectHeroName", "太二");
+        for (let hero_info of this.heros_info) {
+            if (hero_info.name === this.store.state.select_hero_name) {
+                this.store.commit("updateSelectHeroInfo", hero_info);
+                break;
+            }
+        }
+    },
+};
 </script>
 
 <style scoped>
@@ -68,6 +196,10 @@ export default {};
     );
 }
 
+img {
+    -webkit-user-drag: none;
+}
+
 .select_hero > div {
     margin-top: 2%;
     margin-left: 1%;
@@ -81,20 +213,24 @@ export default {};
 
 .heros_hero {
     float: left;
-    width: 48%;
-    padding-top: 48%;
-    height: 0%;
+    width: 16vh;
+    height: 16vh;
     margin-left: 1%;
     margin-top: 1%;
-    background-color: darkorchid;
+    /* background-color: darkorchid; */
 }
 
-.hero_info {
+.heros_hero > img {
+    width: 100%;
+    height: 100%;
+}
+
+.heros_info {
     width: 51%;
     background-color: brown;
 }
 
-.hero_info > div {
+.heros_info > div {
     width: 98%;
     margin-top: 1%;
     margin-left: 1%;
@@ -107,6 +243,11 @@ export default {};
     background-color: aquamarine;
 }
 
+.hero_image > img {
+    object-fit: fill;
+    position: absolute;
+}
+
 .skills {
     display: flex;
     align-items: flex-end;
@@ -117,18 +258,29 @@ export default {};
     background-color: black;
 }
 
-.skill {
-    width: 40%;
-    padding-top: 40%;
-    height: 0%;
-    margin-bottom: 1%;
-    margin-left: 7%;
-    background-color: beige;
+.general_skill {
+    width: 6vh;
+    height: 6vh;
+    margin-left: 68vh;
+    margin-bottom: 3vh;
+    background-color: blueviolet;
+    z-index: 99;
+}
+
+.awakened_skill {
+    width: 6vh;
+    height: 6vh;
+    margin-left: 2vh;
+    margin-bottom: 3vh;
+    background-color: blueviolet;
+    z-index: 99;
 }
 
 .hero_bio {
     height: 24%;
     background-color: bisque;
+    overflow: auto;
+    /* white-space: pre-line; */
 }
 
 .chat {
@@ -154,21 +306,45 @@ export default {};
     height: 19%;
 }
 
-.player > div {
-    margin-left: 5%;
+.player_choose_hero {
+    /* float: left; */
+    width: 40vh;
+    height: 18vh;
+    position: absolute;
+    /* background-color: aqua; */
+}
+
+.player_choose_hero > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .user_photo {
-    width: 20%;
-    padding-top: 20%;
+    /* float: left; */
+    width: 8vh;
+    height: 8vh;
+    margin-left: 5%;
     margin-top: 4%;
     background-color: aliceblue;
+    z-index: 99;
+}
+
+.photo {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
 }
 
 .user_name {
     width: 40%;
     height: 13%;
+    /* line-height: 13%; */
+    vertical-align: bottom;
+    display: table-cell;
+    margin-left: 5%;
     margin-top: 5%;
     background-color: burlywood;
+    z-index: 99;
 }
 </style>
