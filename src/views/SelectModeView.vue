@@ -42,7 +42,7 @@ export default {
 
         const start = (game_mode) => {
             store.commit("updateGameMode", game_mode);
-            router.push("/playground");
+            router.push("/select_hero");
         };
 
         const show_ranklist = (mode_name) => {
@@ -119,7 +119,7 @@ div.select_mode {
         rgb(191, 227, 241)
     );
 }
-
+/* 
 .select_mode > button {
     background-color: #0d6efd;
     border: solid 0;
@@ -129,7 +129,7 @@ div.select_mode {
     padding: 3vh;
     cursor: pointer;
     margin: 0 0.5vh;
-}
+} */
 
 .select_mode > button {
     background-color: #0d6efd;

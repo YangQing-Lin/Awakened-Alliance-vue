@@ -2,6 +2,8 @@ import { tagEmits } from 'element-plus';
 import { createStore } from 'vuex'
 
 // game_state: waiting -> fighting -> win/lose
+// game_mode: no mode / single mode / multi mode
+// which_introduce: hero / general_skill / awakened_skill
 export default createStore({
     state: {
         score: 0,
@@ -12,7 +14,7 @@ export default createStore({
         username: "",
         photo: "",
         platform: "WEB",
-        game_mode: "no mode",
+        game_mode: "multi mode",
         game_state: "waiting",
         chatting: false,
         show_history: false,

@@ -61,53 +61,67 @@
             </div>
             <div class="chat"></div>
         </div>
-        <div class="players">
-            <div class="player">
-                <div class="player_choose_hero">
-                    <img
-                        :src="store.state.select_hero_info.default_left"
-                        alt=""
-                    />
+        <div class="right_box">
+            <div class="players">
+                <div class="player me">
+                    <div class="player_choose_hero">
+                        <img
+                            :src="store.state.select_hero_info.default_left"
+                            alt=""
+                        />
+                    </div>
+                    <div class="user_photo">
+                        <img
+                            src="https://project-static-file.oss-cn-hangzhou.aliyuncs.com/avatar/2.jpeg"
+                            alt=""
+                            class="photo"
+                        />
+                    </div>
+                    <div class="user_name">admin</div>
                 </div>
-                <div class="user_photo">
-                    <img
-                        src="https://project-static-file.oss-cn-hangzhou.aliyuncs.com/avatar/2.jpeg"
-                        alt=""
-                        class="photo"
-                    />
-                </div>
-                <div class="user_name">admin</div>
-            </div>
 
-            <div class="player">
-                <div class="user_photo">
-                    <img
-                        src="https://project-static-file.oss-cn-hangzhou.aliyuncs.com/avatar/3.jpeg"
-                        alt=""
-                        class="photo"
-                    />
+                <div
+                    class="player"
+                    v-if="store.state.game_mode === 'multi mode'"
+                >
+                    <div class="user_photo">
+                        <img
+                            src="https://project-static-file.oss-cn-hangzhou.aliyuncs.com/avatar/3.jpeg"
+                            alt=""
+                            class="photo"
+                        />
+                    </div>
+                    <div class="user_name">yangqing</div>
                 </div>
-                <div class="user_name">yangqing</div>
+                <div
+                    class="player"
+                    v-if="store.state.game_mode === 'multi mode'"
+                >
+                    <div class="user_photo">
+                        <img
+                            src="https://project-static-file.oss-cn-hangzhou.aliyuncs.com/avatar/4.jpeg"
+                            alt=""
+                            class="photo"
+                        />
+                    </div>
+                    <div class="user_name">123</div>
+                </div>
+                <div
+                    class="player"
+                    v-if="store.state.game_mode === 'multi mode'"
+                >
+                    <div class="user_photo">
+                        <img
+                            src="https://project-static-file.oss-cn-hangzhou.aliyuncs.com/avatar/5.jpeg"
+                            alt=""
+                            class="photo"
+                        />
+                    </div>
+                    <div class="user_name">456</div>
+                </div>
             </div>
-            <div class="player">
-                <div class="user_photo">
-                    <img
-                        src="https://project-static-file.oss-cn-hangzhou.aliyuncs.com/avatar/4.jpeg"
-                        alt=""
-                        class="photo"
-                    />
-                </div>
-                <div class="user_name">123</div>
-            </div>
-            <div class="player">
-                <div class="user_photo">
-                    <img
-                        src="https://project-static-file.oss-cn-hangzhou.aliyuncs.com/avatar/5.jpeg"
-                        alt=""
-                        class="photo"
-                    />
-                </div>
-                <div class="user_name">456</div>
+            <div class="button_box">
+                <button>开始游戏</button>
             </div>
         </div>
     </div>
@@ -288,22 +302,28 @@ img {
     background-color: darkgrey;
 }
 
-.players {
+.right_box {
     width: 25%;
+    height: 98%;
     background-color: coral;
 }
 
-.players > div {
+.players {
+    width: 100%;
+    height: 80% !important;
+    background-color: coral;
+    display: flex;
+    flex-direction: column;
+}
+
+.players > .player {
     width: 96%;
     margin-top: 2%;
     margin-left: 2%;
     background-color: chartreuse;
-}
-
-.player {
     display: flex;
     flex-direction: column;
-    height: 19%;
+    height: 24%;
 }
 
 .player_choose_hero {
@@ -346,5 +366,27 @@ img {
     margin-top: 5%;
     background-color: burlywood;
     z-index: 99;
+}
+
+.button_box {
+    width: 100%;
+    height: 19% !important;
+    display: flex;
+    /* background-color: green; */
+    margin-top: 1%;
+    justify-content: center;
+    align-items: center;
+}
+
+button {
+    background-color: #0d6efd;
+    border: solid 0;
+    border-radius: 5px;
+    font-size: 3vh;
+    color: white;
+    padding: 3vh;
+    cursor: pointer;
+    width: 94%;
+    height: 72%;
 }
 </style>
