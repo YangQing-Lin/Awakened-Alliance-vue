@@ -14,7 +14,7 @@ export default createStore({
         username: "",
         photo: "",
         platform: "WEB",
-        game_mode: "multi mode",
+        game_mode: "no mode",
         game_state: "waiting",
         chatting: false,
         show_history: false,

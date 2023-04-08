@@ -33,7 +33,7 @@ export class AcGameObject {
 
     }
 
-    health_bar_update() {
+    player_component_update() {
 
     }
 
@@ -75,7 +75,7 @@ const step = timestamp => {
     }
 
     for (let obj of AC_GAME_OBJECTS) {
-        obj.health_bar_update();
+        obj.player_component_update();
     }
 
     last_timestamp = timestamp;

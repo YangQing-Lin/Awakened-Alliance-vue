@@ -121,7 +121,7 @@
                 </div>
             </div>
             <div class="button_box">
-                <button>开始游戏</button>
+                <button @click="startGame()">开始游戏</button>
             </div>
         </div>
     </div>
@@ -131,6 +131,7 @@
 import { ref, onMounted } from "vue";
 import heros_info from "../../static/HeroInfo.json";
 import { useStore } from "vuex";
+import router from "@/router";
 
 export default {
     namespaced: true,
@@ -141,6 +142,12 @@ export default {
         const awakened_skill = ref(null);
 
         onMounted(() => {
+            console.log(store.state.game_mode);
+            if (store.state.game_mode === "no mode") {
+                router.push("/select_mode");
+                return;
+            }
+
             general_skill.value.addEventListener("mouseenter", function () {
                 store.commit("updateWhichIntroduce", "general_skill");
             });
@@ -170,12 +177,18 @@ export default {
             }
         };
 
+        const startGame = () => {
+            console.log(store.state.game_mode);
+            router.push("/playground");
+        };
+
         return {
             heros_info,
             store,
             general_skill,
             awakened_skill,
             chooseHero,
+            startGame,
         };
     },
     created() {
@@ -229,7 +242,7 @@ img {
     float: left;
     width: 16vh;
     height: 16vh;
-    margin-left: 1%;
+    margin-left: 2%;
     margin-top: 1%;
     /* background-color: darkorchid; */
 }

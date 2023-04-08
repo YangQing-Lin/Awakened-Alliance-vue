@@ -7,6 +7,8 @@ import { HealthBar } from "../player_component/HealthBar";
 import { FireBallSkill } from "../skill/FireBallSkill";
 import { BlinkSkill } from "../skill/BlinkSkill";
 import { ShieldSkill } from "../skill/ShieldSkill";
+import heros_info from "../../../../../static/HeroInfo.json"
+import { Arrow } from "../player_component/Arrow";
 
 export class Player extends AcGameObject {
     constructor(playground, x, y, radius, color, speed, character, username, photo) {
@@ -44,15 +46,13 @@ export class Player extends AcGameObject {
         this.last_rect_left = 0;
         this.last_rect_top = 0;  // 暂存rect.left和rect.top，用于计算AcWingOS小窗模式的鼠标位置
 
-        if (this.character !== "robot") {
-            this.img = new Image();
-            this.img.src = this.photo;
-        }
-
         this.general_skill = new FireBallSkill(this.playground, this, 0.6, 0.9, 0.04);  // 英雄普攻
         this.awakened_skill = new ShieldSkill(this.playground, this, 0.8, 0.9, 0.04);  // 英雄觉醒技能
         this.summoner_skill = new BlinkSkill(this.playground, this, 1.0, 0.9, 0.04);  // 召唤师技能
         this.health_bar = new HealthBar(this.playground, this);
+        if (this.character === "me") {
+            this.arrow = new Arrow(this.playground, this, 1);
+        }
     }
 
     start() {
@@ -65,6 +65,10 @@ export class Player extends AcGameObject {
         }
 
         this.ctx.canvas.focus();
+
+        if (this.character !== "robot") {
+            this.load_image();
+        }
 
         // 机器人的运动和玩家的不一样，玩家是通过键盘操作指定移动方向，机器人是直线移动到随机的坐标点
         if (this.character === "me") {
@@ -80,6 +84,19 @@ export class Player extends AcGameObject {
             //     // Math.round(Math.random())：随机生成0和1
             //     this.rand_directions.add(Math.round(Math.random() * 4));
             // }
+        }
+    }
+
+    load_image() {
+        this.img = new Image();
+        for (let hero_info of heros_info) {
+            if (hero_info.name === this.hero_name) {
+                this.img.src = hero_info.avatar;
+                break;
+            }
+        }
+        if (!this.img.src) {
+            this.img.src = this.photo;
         }
     }
 
@@ -181,7 +198,6 @@ export class Player extends AcGameObject {
         // （但是这会产生一个bug：鼠标不动玩家移动会造成攻击位置错误，所以在需要攻击的时候也要重新计算）
         this.ctx.canvas.addEventListener('mousemove', e => {
             this.save_clientX_clientY_rectLeft_rectRight(e);
-            this.my_calculate_tx_ty();
         })
     }
 
@@ -212,11 +228,6 @@ export class Player extends AcGameObject {
     save_clientX_clientY_rectLeft_rectRight(e) {
         this.last_clientX = e.clientX;
         this.last_clientY = e.clientY;
-
-        // 获取canvas左上角在整个屏幕上的坐标（主要用在acapp小窗口上，WEB端canvas左上角就是屏幕左上角）
-        const rect = this.ctx.canvas.getBoundingClientRect();
-        this.last_rect_left = rect.left;
-        this.last_rect_top = rect.top;
     }
 
     // 使用监听事件里的相对坐标计算在虚拟地图中的绝对坐标
@@ -448,6 +459,13 @@ export class Player extends AcGameObject {
     }
 
     late_late_update() {
+        this.my_calculate_tx_ty();
+
+        // 获取canvas左上角在整个屏幕上的坐标（主要用在acapp小窗口上，WEB端canvas左上角就是屏幕左上角）
+        const rect = this.ctx.canvas.getBoundingClientRect();
+        this.last_rect_left = rect.left;
+        this.last_rect_top = rect.top;
+
         if (this.character !== "robot") {
             if (this.playground.store.state.game_state === "fighting") {
                 // 只有当角色是自己并且游戏是对战状态才会检查胜利状态

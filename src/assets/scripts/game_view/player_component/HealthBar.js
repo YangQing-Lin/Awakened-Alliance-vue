@@ -26,7 +26,7 @@ export class HealthBar extends AcGameObject {
         }
     }
 
-    health_bar_update() {
+    player_component_update() {
         this.x = this.player.x;
         this.y = this.player.y;
 
