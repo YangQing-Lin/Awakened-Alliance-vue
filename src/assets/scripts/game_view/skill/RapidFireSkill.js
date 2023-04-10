@@ -9,9 +9,9 @@ export class RapidFireSkill extends Skill {
         this.skill_type = "general_skill";
         this.name = "RapidFireSkill";
         this.base_cold_time = 1;  // 冷却时间，单位：秒
-        this.cold_time = this.base_cold_time;
+        this.cold_time = 0;
 
-        this.base_fire_interval = 0.2;  // 射击间隔，单位：秒
+        this.base_fire_interval = 0.3;  // 射击间隔，单位：秒
         this.fire_interval = this.base_fire_interval;
         this.base_bullet = 7;
         this.bullet = this.base_bullet;  // 剩余子弹数量
@@ -19,6 +19,16 @@ export class RapidFireSkill extends Skill {
         this.img.src = "https://cdn.acwing.com/media/article/image/2021/12/02/1_9340c86053-fireball.png";
 
         // this.player.level = 10;
+    }
+
+    start() {
+        this.fresh_cold_time();
+    }
+
+    fresh_cold_time() {
+        this.cold_time = 0;
+        this.fire_interval = 0;
+        this.bullet = this.base_bullet;
     }
 
     use_skill(tx, ty) {

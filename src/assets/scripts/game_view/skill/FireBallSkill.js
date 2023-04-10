@@ -24,7 +24,6 @@ export class FireBallSkill extends Skill {
                     "ty": ty,
                 };
                 this.playground.mps.send_use_general_skill(skill_data);
-                console.log("send use general attack");
             }
         }
     }

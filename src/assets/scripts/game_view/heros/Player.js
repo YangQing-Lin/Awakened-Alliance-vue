@@ -31,6 +31,10 @@ export class Player extends AcGameObject {
         this.hero_name = "Player";
         this.health = 100;
         this.level = 1;  // 角色等级
+        // 角色状态：
+        // normal  displacement  vertigo  silent  poisoning
+        // 正常     位移          眩晕     沉默    中毒
+        this.state = "normal";
         this.eps = 0.001;
         this.directions = new Set();  // 用户的操作列表
         this.last_directions_size = 0;  // 操作列表的长度（每当directions长度更改的时候向后端发送数据，长度不变就不发送，降低服务器压力）
@@ -225,7 +229,6 @@ export class Player extends AcGameObject {
     scan_skills(directions) {
         if (directions.has("general_skill")) {
             this.use_general_skill();
-            console.log("use general skill");
         }
     }
 
@@ -289,8 +292,10 @@ export class Player extends AcGameObject {
         this.health -= damage;
         if (this.health <= 0) {
             this.player_lose();
-            return false;
+            return true;
         }
+
+        return false;
     }
 
     // 收到有人被攻击的广播（并不一定是窗口的主人被攻击）
@@ -398,7 +403,9 @@ export class Player extends AcGameObject {
     }
 
     update_move() {
-        // this.check_collision();
+        if (this.state !== "normal") {
+            return false;
+        }
         this.vx = this.speed * Math.cos(this.speed_angle);
         this.vy = -this.speed * Math.sin(this.speed_angle);  // 这个负号很精髓
         this.x += this.vx * this.timedelta / 1000;

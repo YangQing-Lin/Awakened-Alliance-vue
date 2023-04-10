@@ -3,6 +3,7 @@ import { FireBallSkill } from "../skill/FireBallSkill";
 import { BlinkSkill } from "../skill/BlinkSkill";
 import { ShieldSkill } from "../skill/ShieldSkill";
 import { RapidFireSkill } from "../skill/RapidFireSkill";
+import { RollingSkill } from "../skill/RollingSkill";
 
 export class TaiEr extends Player {
     constructor(playground, x, y, radius, color, speed, character, username, photo) {
@@ -10,7 +11,7 @@ export class TaiEr extends Player {
 
         this.hero_name = "太二";
         this.general_skill = new RapidFireSkill(this.playground, this, 0.6, 0.9, 0.04);  // 英雄普攻
-        this.awakened_skill = new ShieldSkill(this.playground, this, 0.8, 0.9, 0.04);  // 英雄觉醒技能
+        this.awakened_skill = new RollingSkill(this.playground, this, 0.8, 0.9, 0.04);  // 英雄觉醒技能
         this.summoner_skill = new BlinkSkill(this.playground, this, 1.0, 0.9, 0.04);  // 召唤师技能
     }
 
