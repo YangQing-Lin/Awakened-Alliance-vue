@@ -17,6 +17,13 @@ export class XiaoYe extends Player {
         this.summoner_skill = new BlinkSkill(this.playground, this, 1.0, 0.9, 0.04);  // 召唤师技能
     }
 
+    level_up() {
+        this.level += 1;
+        this.awakened_skill.base_bullet = 2;
+        this.awakened_skill.bullet = this.awakened_skill.base_bullet;
+        this.health = this.base_health;
+    }
+
     // load_image() {
     //     this.img = new Image();
     //     this.img.src = this.playground.store.state.select_hero_info.avatar;

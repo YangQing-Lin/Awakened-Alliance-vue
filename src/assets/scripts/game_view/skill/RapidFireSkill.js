@@ -17,8 +17,6 @@ export class RapidFireSkill extends Skill {
         this.bullet = this.base_bullet;  // 剩余子弹数量
 
         this.img.src = "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/taier/general_skill.png";
-
-        // this.player.level = 10;
     }
 
     start() {
@@ -96,7 +94,7 @@ export class RapidFireSkill extends Skill {
         let angle = Math.atan2(ty - this.player.y, tx - this.player.x);
         angle += delta_angle;
         let vx = Math.cos(angle), vy = Math.sin(angle);
-        let color = "orange";
+        let color = "red";
         let speed = this.playground.height * 0.8 / this.playground.scale;
         let move_length = this.playground.height * 0.4 / this.playground.scale;
         let fireball = null;

@@ -81,7 +81,7 @@ export class FireBall extends AcGameObject {
 
         if (flag) {
             // 如果返回值是true，说明被攻击者死亡
-            this.player.level += 1;
+            this.player.level_up();
             console.log("LEVEL UP: ", this.player.level);
             // 调用广播函数
             if (this.playground.store.state.game_mode === "multi mode") {

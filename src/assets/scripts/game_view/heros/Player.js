@@ -30,7 +30,8 @@ export class Player extends AcGameObject {
         this.photo = photo;
 
         this.hero_name = "Player";
-        this.health = 100;
+        this.base_health = 100;
+        this.health = this.base_health;
         this.level = 1;  // 角色等级
         // 角色状态：
         // normal  displacement  vertigo  silent  poisoning  transformation
@@ -91,6 +92,11 @@ export class Player extends AcGameObject {
             //     this.rand_directions.add(Math.round(Math.random() * 4));
             // }
         }
+    }
+
+    level_up() {
+        this.level += 1;
+        this.health = this.base_health;
     }
 
     load_image() {

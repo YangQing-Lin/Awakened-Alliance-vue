@@ -14,12 +14,18 @@ export class MagicalMagicSkill extends Skill {
 
         this.radius = this.playground.height * 0.11 / this.playground.scale;
         this.color = "pink";
+        this.base_bullet = 1;
+        this.bullet = this.base_bullet;
     }
 
     use_skill() {
         if (this.cold_time < this.eps) {
             this.magic(this.player.tx, this.player.ty);
-            this.cold_time = this.base_cold_time;
+            this.bullet -= 1;
+
+            if (this.bullet <= 0) {
+                this.cold_time = this.base_cold_time;
+            }
 
             if (this.playground.store.state.game_mode === "multi mode") {
                 let skill_data = {
@@ -52,6 +58,15 @@ export class MagicalMagicSkill extends Skill {
 
     magic(tx, ty) {
         this.magic_circle = new MagicCircle(this.playground, this.player, tx, ty, this.radius, this.color);
+    }
+
+    update_code_time() {
+        this.cold_time -= this.timedelta / 1000;
+        this.cold_time = Math.max(this.cold_time, 0);
+
+        if (this.bullet === 0 && this.cold_time < this.eps) {
+            this.bullet = this.base_bullet;
+        }
     }
 
     late_late_update() {

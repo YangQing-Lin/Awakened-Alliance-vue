@@ -38,7 +38,7 @@ export class FireBallSkill extends Skill {
         let radius = this.playground.height * 0.01 / this.playground.scale;
         let angle = Math.atan2(ty - this.player.y, tx - this.player.x);
         let vx = Math.cos(angle), vy = Math.sin(angle);
-        let color = "orange";
+        let color = "red";
         let speed = this.playground.height * 0.5 / this.playground.scale;
         let move_length = this.playground.height * 1.5 / this.playground.scale;
         let fireball = null;
