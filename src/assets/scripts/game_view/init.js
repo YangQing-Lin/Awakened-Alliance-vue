@@ -90,6 +90,7 @@ export const init = (store) => {
             },
             error: () => {
                 console.log("jwt登录报错");
+                router.push("/login");
             },
         });
     };

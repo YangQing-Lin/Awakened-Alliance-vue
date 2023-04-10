@@ -11,7 +11,6 @@ export class FireBall extends AcGameObject {
         this.vy = vy;
         this.radius = radius;
         this.color = color;
-        this.color = "red";
         this.speed = speed * 2;
         this.move_length = move_length;
         this.damage = damage;
@@ -73,11 +72,22 @@ export class FireBall extends AcGameObject {
 
     attack(player) {
         let angle = Math.atan2(player.y - this.y, player.x - this.x);
-        player.is_attacked(angle, this.damage);
+        let flag = player.is_attacked(angle, this.damage);
 
         // 调用广播函数
         if (this.playground.store.state.game_mode === "multi mode") {
             this.playground.mps.send_attack(player.uuid, player.x, player.y, angle, this.damage, this.uuid);
+        }
+
+        if (flag) {
+            // 如果返回值是true，说明被攻击者死亡
+            this.player.level_up();
+            console.log("LEVEL UP: ", this.player.level);
+            // 调用广播函数
+            if (this.playground.store.state.game_mode === "multi mode") {
+                // TODO：当本地被攻击者死亡的时候，在多人模式下，可能对方刚好释放了治疗术，没有死
+                // 为了保持一致，需要发送一个死亡同步函数，告诉对方他已经死了
+            }
         }
 
         this.destroy();
@@ -97,12 +107,8 @@ export class FireBall extends AcGameObject {
         let scale = this.playground.scale;
         let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
         let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
-
-        if (ctx_x < -0.1 * this.playground.width / scale ||
-            ctx_x > 1.1 * this.playground.width / scale ||
-            ctx_y < -0.1 * this.playground.height / scale ||
-            ctx_y > 1.1 * this.playground.height / scale) {
-
+        // 处于屏幕范围外，则不渲染
+        if (this.playground.is_element_out_of_screen(ctx_x, ctx_y)) {
             return;
         }
 

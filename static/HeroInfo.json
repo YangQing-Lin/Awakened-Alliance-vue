@@ -1,0 +1,117 @@
+[
+    {
+        "name": "太二",
+        "name_str": "taier",
+        "type": "突击",
+        "avatar": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/taier/taier_avatar.png",
+        "default_left": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/taier/taier_default_left.png",
+        "default_right": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/taier/taier_default_right.png",
+        "general_skill": {
+            "name": "快速射击（普攻）",
+            "operation": "鼠标左键",
+            "introduce": "极快的射击，最多可以连续打出7发子弹。",
+            "image": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/taier/general_skill.png"
+        },
+        "awakened_skill": {
+            "name": "战术翻滚（奥义）",
+            "operation": "空格键",
+            "introduce": "快速移动一段距离，并立刻填满普攻的弹夹。",
+            "image": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/taier/awakened_skill.png"
+        },
+        "Level_5_talent": "普攻：三发快速射击",
+        "Level_10_talent": "普攻：四发快速射击。",
+        "introduce": "来自奥拉星，天道无极的守护者，为人潇洒，具有侠客精神。平时懒散无拘束，外表痞痞的，说话痞痞的，但做起事来认真的气质和负责人的态度却让人着迷。\n虽然放荡不羁爱自由，却有着自己的信仰，那就是守护天道无极，这种不经意散发而出的迷人气息招来了大波迷妹。\n对于伊乐的控诉表示非常无奈，自己确实并非故）但渐渐发现看见伊乐的抓狂与跳脚成为了自己的一种乐趣。"
+    },
+    {
+        "name": "小耶",
+        "name_str": "xiaoye",
+        "type": "控制、治疗",
+        "avatar": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/xiaoye/xiaoye_avatar.png",
+        "default_left": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/xiaoye/xiaoye_default_left.png",
+        "default_right": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/xiaoye/xiaoye_default_right.png",
+        "general_skill": {
+            "name": "魔法光球（普攻）",
+            "operation": "鼠标左键",
+            "introduce": "释放魔法光球，魔法光球命中敌人将造成伤害，命中队友则恢复血量。",
+            "image": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/xiaoye/general_skill.png"
+        },
+        "awakened_skill": {
+            "name": "神奇魔术（奥义）",
+            "operation": "空格键",
+            "introduce": "令指定范围的敌人减速，并在1秒后将指定范围的敌人变成萌萌的奥比熊，奥比熊状态下无法攻击和使用技能，移动速度变为150。",
+            "image": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/xiaoye/awakened_skill.png"
+        },
+        "Level_5_talent": "普攻：魔法光球伤害和治疗提升。",
+        "Level_10_talent": "奥义：可连续2次使用神奇魔法。",
+        "introduce": "奥比家族可爱的小公主，备受家族疼爱，从小就喜爱看漫画，动漫，是个忠实的二次元粉丝。充满爱心，但似乎有点爱心泛滥，只要看到弱小的事物就会同情心暴涨。将无家可归的小猫小狗带回家，最后她父亲修了一座宠物园；将衰竭枯萎的花花草草带回家，最后她父亲修了一座植物园……甚至看到情侣吵架，她都要过去用爱感化他们。\n小耶最大的梦想是用爱拯救世界，并且为了这个梦想一直努力着，她认定事情就会坚持和和守护。虽然小公主经常爱心泛滥，但也因此超级具有感染力，受到大家的喜爱。"
+    },
+    {
+        "name": "诺亚",
+        "name_str": "nuoya",
+        "type": "输出",
+        "avatar": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/nuoya/nuoya_avatar.png",
+        "default_left": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/nuoya/nuoya_default_left.png",
+        "default_right": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/nuoya/nuoya_default_right.png",
+        "general_skill": {
+            "name": "导弹轰炸（普攻）",
+            "operation": "鼠标左键",
+            "introduce": "发射威力巨大的导弹，对目标区域内的敌人造成伤害。",
+            "image": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/nuoya/general_skill.png"
+        },
+        "awakened_skill": {
+            "name": "时空结界（奥义）",
+            "operation": "空格键",
+            "introduce": "在短暂的构造时间后，创造一个敌人无法通过的时空屏障。",
+            "image": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/nuoya/awakened_skill.png"
+        },
+        "Level_5_talent": "",
+        "Level_10_talent": "",
+        "introduce": "将友情视为一切，最害怕的就是孤独，因此他不停的结交更多的朋友。精力无限，非常自来熟，喜欢活跃气氛，他的手机里最多的就是社交APP，什么圈圈、摸摸、谈谈……应有尽有，当之无愧的社交达人。最大的心愿是五湖四海皆朋友和修尔一辈子都陪着他。\n大家都说，诺亚的朋友遍布世界每个角落，随便去哪都有人包吃包住包玩包喝。然而诺亚生命中最重要的人还是修尔，与修尔之间的友情是诺亚的一切，如果修尔因为某些事情需要离开一段时间，那么诺亚犹如失恋般的怨气就会喷涌而出。这个时候千万不要在诺亚面前秀恩爱，他会化为FFFFF团团长，将强大的怨念汇入火箭筒，毫不留情的向你开炮。"
+    },
+    {
+        "name": "龙炎",
+        "name_str": "longyan",
+        "type": "肉盾、控制",
+        "avatar": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/longyan/longyan_avatar.png",
+        "default_left": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/longyan/longyan_default_left.png",
+        "default_right": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/longyan/longyan_default_right.png",
+        "general_skill": {
+            "name": "开天神斧（普攻）",
+            "operation": "鼠标左键",
+            "introduce": "挥舞神斧攻击对手，命中3次英雄后龙炎将获得移速提升效果，效果持续1.5秒。",
+            "image": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/longyan/general_skill.png"
+        },
+        "awakened_skill": {
+            "name": "英雄冲锋（奥义）",
+            "operation": "空格键",
+            "introduce": "龙炎获得1次伤害免疫，并朝鼠标方向冲锋，冲锋将撞晕对手并将对手撞向目标点。",
+            "image": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/longyan/awakened_skill.png"
+        },
+        "Level_5_talent": "",
+        "Level_10_talent": "",
+        "introduce": "一个对力量的绝对崇拜者，从小经历了洗脑式的强者教育，人生信条就是成为追力量，成为最强，站在世界的力量之巅。强势霸道，不接受任何反驳，非常好战，认为武力可以解决一切问题，强者才有话语权。\n只有对着青梅竹马的末炎才会展现柔软的一面（在自己经历残酷模式化训练的童年时期，是末炎一直守护在他身旁），于是守护末炎似乎已成为生命中习以为常的事情。（虽然在奥奇里一开始没有交集就是了）最看不惯的人是帝释天，认为帝释天一肚子坏水，阴险腹黑，工于心计，强者应该是用实力说话的。"
+    },
+    {
+        "name": "帝释天",
+        "name_str": "dishitian",
+        "type": "输出",
+        "avatar": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/dishitian/dishitian_avatar.png",
+        "default_left": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/dishitian/dishitian_default_left.png",
+        "default_right": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/dishitian/dishitian_default_right.png",
+        "general_skill": {
+            "name": "寒冰箭（普攻）",
+            "operation": "鼠标左键",
+            "introduce": "寒冰箭命中敌人后，令敌人减速20%，减速效果可叠加，命中敌人3次后，三秒内必定暴击。",
+            "image": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/dishitian/general_skill.png"
+        },
+        "awakened_skill": {
+            "name": "万箭破苍穹（奥义）",
+            "operation": "空格键",
+            "introduce": "向前方的锥形范围射出箭矢，敌方单位可以一次性格挡多支箭矢，但只会受到一次伤害。",
+            "image": "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/dishitian/awakened_skill.png"
+        },
+        "Level_5_talent": "",
+        "Level_10_talent": "",
+        "introduce": "高贵的智慧家族的新一代继承人，拥有纯正的贵族血统。从小就非常聪明，能轻易看透别人的小心机，有点强迫症，什么事情都要追求极致，从小100分的卷子绝不会有99.5分，任何智力游戏一定要通关到底。同时极其高傲自大，对于自己轻松就能完成的东西嗤之以鼻。\n总是以自己作为标准来衡量别人，比自己差的都是庶民，比自己好的，不，这个世界已经没有比自己更聪明的了。最大的苦恼就是自己为什么要这么聪明，看透了这个世界，真是高处不胜寒，感叹自己太孤独，没有人可以理解聪明人的痛苦。但为了给自己找到更多的乐趣，他又是一个绝对腹黑的家伙，就是传说中卖了你你还给他数钱的存在。\n作为贵族，他很洁癖，喜欢用聪明的头脑解决问题，信奉能不动手就不动手。因此他很嫌弃龙炎头脑简单，总是用武力解决一切问题，但又喜欢捉弄龙炎，因此他、龙炎还有末炎形成了一种不可描述的三角关系。"
+    }
+]

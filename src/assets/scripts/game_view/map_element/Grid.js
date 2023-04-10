@@ -14,6 +14,8 @@ export class Grid extends AcGameObject {
         this.y = this.i * this.cube_side_len;
         this.x = this.j * this.cube_side_len;
 
+        this.character = "grid";
+
         // 相对画布的坐标
         this.relative_position_x = 0;
         this.relative_position_y = 0;
@@ -39,6 +41,13 @@ export class Grid extends AcGameObject {
         return Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));
     }
 
+    // 计算两点间欧几里得距离
+    get_dist(x1, y1, x2, y2) {
+        let dx = x1 - x2;
+        let dy = y1 - y2;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
     update() {
         let scale = this.playground.scale;
         let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
@@ -46,10 +55,7 @@ export class Grid extends AcGameObject {
         let cx = ctx_x + this.cube_side_len * 0.5, cy = ctx_y + this.cube_side_len * 0.5; // grid的中心坐标
 
         // 处于屏幕范围外，则不渲染
-        if (cx * scale < -0.2 * this.playground.width ||
-            cx * scale > 1.2 * this.playground.width ||
-            cy * scale < -0.2 * this.playground.height ||
-            cy * scale > 1.2 * this.playground.height) {
+        if (this.playground.is_element_out_of_screen(cx, cy)) {
             return;
         }
 

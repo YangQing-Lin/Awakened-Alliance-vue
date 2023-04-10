@@ -6,6 +6,8 @@ export class Grass extends Grid {
         this.state = ""; // 格子里画什么
         this.base_fill_color = "rgb(213, 198, 76)"; // grass yellow
         this.fill_color = this.base_fill_color;
+
+        this.character = "grass";
     }
 
     start() {

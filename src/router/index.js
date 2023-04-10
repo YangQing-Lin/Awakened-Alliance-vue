@@ -19,6 +19,11 @@ const routes = [
         path: '/select_mode',
         name: 'select_mode',
         component: () => import('../views/SelectModeView.vue')
+    },
+    {
+        path: '/select_hero',
+        name: 'select_hero',
+        component: () => import('../views/SelectHeroView.vue')
     }
 ]
 
