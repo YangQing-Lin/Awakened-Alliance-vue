@@ -30,6 +30,7 @@ export class Player extends AcGameObject {
 
         this.hero_name = "Player";
         this.health = 100;
+        this.level = 1;  // 角色等级
         this.eps = 0.001;
         this.directions = new Set();  // 用户的操作列表
         this.last_directions_size = 0;  // 操作列表的长度（每当directions长度更改的时候向后端发送数据，长度不变就不发送，降低服务器压力）
@@ -176,6 +177,7 @@ export class Player extends AcGameObject {
                 this.my_calculate_tx_ty();
                 if (this.cur_skill === null) {
                     this.use_general_skill();
+                    this.skill_directions.add("general_skill");
                 } else if (this.cur_skill === "summoner_skill") {
                     this.use_summoner_skill();
                     this.cur_skill = null;
@@ -190,7 +192,7 @@ export class Player extends AcGameObject {
 
         this.ctx.canvas.addEventListener('mouseup', e => {
             this.save_clientX_clientY_rectLeft_rectRight(e);
-            this.skill_directions.delete("fireball");
+            this.skill_directions.delete("general_skill");
             e.preventDefault();
         })
 
@@ -221,7 +223,10 @@ export class Player extends AcGameObject {
     }
 
     scan_skills(directions) {
-        console.log("scan_skills(directions)");
+        if (directions.has("general_skill")) {
+            this.use_general_skill();
+            console.log("use general skill");
+        }
     }
 
     // 将监听事件里的位置临时变量存储到玩家的类中，用于后续计算
@@ -491,11 +496,7 @@ export class Player extends AcGameObject {
     }
 
     update_attack() {
-        if (this.last_skill_directions_size !== this.skill_directions.size) {
-            this.scan_skills(this.skill_directions);
-
-            this.last_skill_directions_size = this.skill_directions.size;
-        }
+        this.scan_skills(this.skill_directions);
     }
 
     render() {

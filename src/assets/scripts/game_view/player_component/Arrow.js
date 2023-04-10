@@ -9,12 +9,8 @@ export class Arrow extends AcGameObject {
         this.max_length = max_length;
         this.angle = 0;
 
-        this.half_line = this.player.radius * 1.2;
-        this.botton_on_player = this.player.radius * 1.35;
         this.x = this.player.x;
         this.y = this.player.y;
-        this.background_color = "grey";
-        this.color = null;
 
         this.eps = 0.01;
     }
@@ -35,45 +31,24 @@ export class Arrow extends AcGameObject {
         this.tx = this.player.tx;
         this.ty = this.player.ty;
 
-        if (this.playground.store.state.game_state === "fighting") {
-            this.render();
-        }
-    }
-
-    render() {
         let scale = this.playground.scale;
         let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
         let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
         let ctx_tx = this.playground.my_calculate_relative_position_x(this.tx);
         let ctx_ty = this.playground.my_calculate_relative_position_y(this.ty);
+        this.angle = Math.atan2(ctx_y * scale, ctx_ty * scale, ctx_x * scale, ctx_tx * scale);
 
+        if (this.playground.store.state.game_state === "fighting") {
+            this.render(scale, ctx_x, ctx_y, ctx_tx, ctx_ty);
+        }
+    }
+
+    render(scale, ctx_x, ctx_y, ctx_tx, ctx_ty) {
         if (this.playground.is_element_out_of_screen(ctx_x, ctx_y)) {
             return;
         }
 
-        // this.drawArrow(this.ctx, this.x, this.y, this.ctx_x, this.ctx_y, )
         this.drawArrow(this.ctx, ctx_x * scale, ctx_y * scale, ctx_tx * scale, ctx_ty * scale, 30, this.player.radius * scale, this.player.radius * 0.2 * scale, 'yellow');
-
-        // this.ctx.beginPath();
-        // this.ctx.moveTo((ctx_x - this.half_line * 1.13) * scale, (ctx_y - this.botton_on_player) * scale);
-        // this.ctx.lineTo((ctx_x + this.half_line * 1.13) * scale, (ctx_y - this.botton_on_player) * scale);
-        // this.ctx.lineWidth = 11;
-        // this.ctx.strokeStyle = "black";
-        // this.ctx.stroke();
-
-        // this.ctx.beginPath();
-        // this.ctx.moveTo((ctx_x - this.half_line * 1.1) * scale, (ctx_y - this.botton_on_player) * scale);
-        // this.ctx.lineTo((ctx_x + this.half_line * 1.1) * scale, (ctx_y - this.botton_on_player) * scale);
-        // this.ctx.lineWidth = 9;
-        // this.ctx.strokeStyle = this.background_color;
-        // this.ctx.stroke();
-
-        // this.ctx.beginPath();
-        // this.ctx.moveTo((ctx_x - this.half_line) * scale, (ctx_y - this.botton_on_player) * scale);
-        // this.ctx.lineTo((ctx_x + (this.half_line * 2 * this.player.health / 100 - this.half_line)) * scale, (ctx_y - this.botton_on_player) * scale);
-        // this.ctx.lineWidth = 5;
-        // this.ctx.strokeStyle = this.color;
-        // this.ctx.stroke();
 
         this.ctx.strokeStyle = "black";
         this.ctx.lineWidth = 1;
