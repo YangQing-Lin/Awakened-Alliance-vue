@@ -19,7 +19,8 @@ export class Player extends AcGameObject {
         this.y = y;
         this.vx = 0;
         this.vy = 0;
-        this.radius = radius;
+        this.base_radis = radius;
+        this.radius = this.base_radis;
         this.color = color;
         this.base_speed = speed;
         this.speed = 0;
@@ -32,8 +33,8 @@ export class Player extends AcGameObject {
         this.health = 100;
         this.level = 1;  // 角色等级
         // 角色状态：
-        // normal  displacement  vertigo  silent  poisoning
-        // 正常     位移          眩晕     沉默    中毒
+        // normal  displacement  vertigo  silent  poisoning  transformation
+        // 正常     位移          眩晕     沉默    中毒        变身
         this.state = "normal";
         this.eps = 0.001;
         this.directions = new Set();  // 用户的操作列表
@@ -208,10 +209,18 @@ export class Player extends AcGameObject {
     }
 
     use_general_skill() {
+        // 部分状态无法使用技能
+        if (this.state === "transformation" || this.state === "silent") {
+            return;
+        }
         this.general_skill.use_skill(this.tx, this.ty);
     }
 
     use_summoner_skill() {
+        // 部分状态无法使用技能
+        if (this.state === "transformation" || this.state === "silent") {
+            return;
+        }
         this.summoner_skill.use_skill(this.tx, this.ty);
     }
 
@@ -240,6 +249,10 @@ export class Player extends AcGameObject {
 
     // 使用监听事件里的相对坐标计算在虚拟地图中的绝对坐标
     my_calculate_tx_ty() {
+        // 获取canvas左上角在整个屏幕上的坐标（主要用在acapp小窗口上，WEB端canvas左上角就是屏幕左上角）
+        const rect = this.ctx.canvas.getBoundingClientRect();
+        this.last_rect_left = rect.left;
+        this.last_rect_top = rect.top;
         this.tx = this.playground.my_calculate_tx(this.last_clientX - this.last_rect_left);
         this.ty = this.playground.my_calculate_ty(this.last_clientY - this.last_rect_top);
     }
@@ -306,6 +319,21 @@ export class Player extends AcGameObject {
         this.is_attacked(angle, damage);
     }
 
+    // 被小耶的神奇魔术变成小熊
+    transformation(transformation_radis_ratios) {
+        this.state = "transformation";
+        this.radius = this.base_radis * transformation_radis_ratios;
+        console.log(transformation_radis_ratios);
+        console.log(this.radius);
+    }
+
+    // 神奇魔术持续时间结束，变回来
+    restore() {
+        this.state = "normal";
+        this.radius = this.base_radis;
+        this.speed = this.base_speed;
+    }
+
     player_lose() {
         // 死一个新加入一个
         if (this.character === "me") {
@@ -361,21 +389,28 @@ export class Player extends AcGameObject {
     // }
 
     robot_update() {
-        this.auto_use_general_skill();
-
-        if (this.move_length < this.eps) {
-            this.move_length = 0;
-            this.vx = this.vy = 0;
-            // 机器人的运动永不停歇
-            let tx = Math.random() * this.playground.virtual_map_width;
-            let ty = Math.random() * this.playground.virtual_map_height;
-            this.move_to(tx, ty);
-        } else {
-            let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
-            this.x += this.vx * moved;
-            this.y += this.vy * moved;
-            this.move_length -= moved;
+        // “沉默”和“变身”不能使用技能
+        if (this.state !== "silent" && this.state !== "transformation") {
+            this.auto_use_general_skill();
         }
+
+        // “位移”和“眩晕”不能移动
+        if (this.state !== "displacement" && this.state !== "vertigo") {
+            if (this.move_length < this.eps) {
+                this.move_length = 0;
+                this.vx = this.vy = 0;
+                // 机器人的运动永不停歇
+                let tx = Math.random() * this.playground.virtual_map_width;
+                let ty = Math.random() * this.playground.virtual_map_height;
+                this.move_to(tx, ty);
+            } else {
+                let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
+                this.x += this.vx * moved;
+                this.y += this.vy * moved;
+                this.move_length -= moved;
+            }
+        }
+
     }
 
     // 人机会自动使用普攻
@@ -403,7 +438,8 @@ export class Player extends AcGameObject {
     }
 
     update_move() {
-        if (this.state !== "normal") {
+        // “位移”和“眩晕”不能移动
+        if (this.state === "displacement" || this.state === "vertigo") {
             return false;
         }
         this.vx = this.speed * Math.cos(this.speed_angle);
@@ -449,14 +485,7 @@ export class Player extends AcGameObject {
     }
 
     update() {
-        // for (let i = 0; i < this.playground.players.length; i++) {
-        //     let player = this.playground.players[i];
-        //     if (player.character === "me") {
-        //         console.log("me: ", player.x, player.y);
-        //     } else {
-        //         console.log(player.x, player.y);
-        //     }
-        // }
+
     }
 
     late_update() {
@@ -471,29 +500,20 @@ export class Player extends AcGameObject {
     }
 
     late_late_update() {
-        this.my_calculate_tx_ty();
-
-        // 获取canvas左上角在整个屏幕上的坐标（主要用在acapp小窗口上，WEB端canvas左上角就是屏幕左上角）
-        const rect = this.ctx.canvas.getBoundingClientRect();
-        this.last_rect_left = rect.left;
-        this.last_rect_top = rect.top;
-
-        if (this.character !== "robot") {
-            if (this.playground.store.state.game_state === "fighting") {
-                // 只有当角色是自己并且游戏是对战状态才会检查胜利状态
-                if (this.character === "me") {
-                    this.update_win();
-                }
-                this.update_move();
-                this.update_attack();
-            }
-            this.render();
+        if (this.character === "robot") {
+            return;
         }
 
-        // 如果是玩家，并且正在被聚焦，修改background的 (cx, cy)
-        // if (this.character === "me" && this.playground.focus_player === this) {
-        //     this.playground.re_calculate_cx_cy(this.x, this.y);
-        // }
+        this.my_calculate_tx_ty();
+        if (this.playground.store.state.game_state === "fighting") {
+            // 只有当角色是自己并且游戏是对战状态才会检查胜利状态
+            if (this.character === "me") {
+                this.update_win();
+            }
+            this.update_move();
+            this.update_attack();
+        }
+        this.render();
     }
 
     update_win() {

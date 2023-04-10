@@ -11,6 +11,7 @@ import { ScoreBoard } from "./ScoreBoard";
 import router from "@/router";
 import { FireMage } from "./heros/FireMage";
 import { TaiEr } from "./heros/TaiEr";
+import { XiaoYe } from "./heros/XiaoYe";
 
 export class PlayGround extends AcGameObject {
     constructor(canvas, ctx, div, store, chat_field_ref) {
@@ -69,7 +70,7 @@ export class PlayGround extends AcGameObject {
         let outer = this;
         this.store.commit('updateScore', 0);
         this.store.commit('updateGameState', "waiting");
-        let player = new TaiEr(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
+        let player = new XiaoYe(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
         this.players.push(player);
         this.re_calculate_cx_cy(player.x, player.y);
         this.focus_player = player;
