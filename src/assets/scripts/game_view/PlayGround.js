@@ -73,14 +73,15 @@ export class PlayGround extends AcGameObject {
         this.store.commit('updateGameState', "waiting");
 
         let player = null;
-        // if (this.store.state.select_hero_name === "太二") {
-        //     player = new TaiEr(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
-        // } else if (this.store.state.select_hero_name === "小耶") {
-        //     player = new XiaoYe(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
-        // } else {
-        //     player = new TaiEr(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
-        // }
-        player = new LongYan(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
+        if (this.store.state.select_hero_name === "太二") {
+            player = new TaiEr(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
+        } else if (this.store.state.select_hero_name === "小耶") {
+            player = new XiaoYe(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
+        } else if (this.store.state.select_hero_name === "龙炎") {
+            player = new LongYan(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
+        } else {
+            player = new TaiEr(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
+        }
         this.players.push(player);
         this.re_calculate_cx_cy(player.x, player.y);
         this.focus_player = player;
@@ -88,7 +89,7 @@ export class PlayGround extends AcGameObject {
         this.ctx.canvas.focus();
 
         if (game_mode === "single mode") {
-            for (let i = 0; i < 1; i++) {
+            for (let i = 0; i < 20; i++) {
                 let rand_x = Math.random() * this.virtual_map_width;
                 let rand_y = Math.random() * this.virtual_map_height;
                 this.players.push(new Player(this, rand_x, rand_y, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));

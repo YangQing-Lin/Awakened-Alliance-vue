@@ -29,6 +29,10 @@
             <div class="hero_bio" v-if="store.state.which_introduce === 'hero'">
                 英雄：{{ store.state.select_hero_info.name }} <br />
                 定位：{{ store.state.select_hero_info.type }} <br />
+                5级天赋：{{ store.state.select_hero_info.Level_5_talent }}
+                <br />
+                10级天赋：{{ store.state.select_hero_info.Level_10_talent }}
+                <br />
                 故事：{{ store.state.select_hero_info.introduce }}
             </div>
             <div

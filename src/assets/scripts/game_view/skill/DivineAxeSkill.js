@@ -40,7 +40,6 @@ export class DivineAxeSkill extends Skill {
 
     start() {
         this.fresh_cold_time();
-        this.playground.players[1].state = "vertigo";
     }
 
     fresh_cold_time() {
@@ -99,13 +98,17 @@ export class DivineAxeSkill extends Skill {
 
     restore_accelerate() {
         this.player.base_speed = this.player_base_speed;
-        this.player.speed = this.player.base_speed;
+        if (this.player.speed > this.eps) {
+            this.player.speed = this.player.base_speed;
+        }
         this.is_accelerating = false;
     }
 
     accelerate() {
         this.player.base_speed = this.player_base_speed * 2;
-        this.player.speed = this.player.base_speed;
+        if (this.player.speed > this.eps) {
+            this.player.speed = this.player.base_speed;
+        }
         this.is_accelerating = true;
         this.accelerate_time = this.base_accelerate_time;
     }

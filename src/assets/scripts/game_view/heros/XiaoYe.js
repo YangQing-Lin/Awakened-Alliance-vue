@@ -19,8 +19,13 @@ export class XiaoYe extends Player {
 
     level_up() {
         this.level += 1;
-        this.awakened_skill.base_bullet = 2;
-        this.awakened_skill.bullet = this.awakened_skill.base_bullet;
+        if (this.level === 5) {
+            this.general_skill.damage *= 1.5;
+        }
+        if (this.level === 10) {
+            this.awakened_skill.base_bullet = 2;
+        }
+        // this.awakened_skill.bullet = this.awakened_skill.base_bullet;
         this.health = this.base_health;
     }
 
