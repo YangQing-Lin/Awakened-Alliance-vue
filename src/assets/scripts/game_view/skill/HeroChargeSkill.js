@@ -84,7 +84,6 @@ export class HeroChargeSkill extends Skill {
         this.player.general_skill.fresh_cold_time();
         // 位移距离用屏幕高度的百分比来限制
         this.move_length = this.base_move_length;
-        // BUG：使用arrow.angle之后要+=vy，而使用player.angle要-=vy
         this.speed_angle = this.player.arrow.angle;
         console.log("speed angle", this.speed_angle);
         this.vx = Math.cos(this.speed_angle);
