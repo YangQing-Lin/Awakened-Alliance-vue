@@ -119,7 +119,7 @@ export class Player extends AcGameObject {
         });
 
         this.ctx.canvas.addEventListener('keydown', e => {
-            console.log("in [player]", e.key);
+            // console.log("in [player]", e.key);
             if (e.key === 'Enter') {
                 if (this.playground.store.state.game_mode === "multi mode") {
                     this.playground.chat_field.show_input();
@@ -216,7 +216,7 @@ export class Player extends AcGameObject {
 
     use_general_skill() {
         // 部分状态无法使用技能
-        if (this.state === "transformation" || this.state === "silent") {
+        if (this.state === "transformation" || this.state === "silent" || this.state === "vertigo") {
             return;
         }
         this.general_skill.use_skill(this.tx, this.ty);
@@ -224,7 +224,7 @@ export class Player extends AcGameObject {
 
     use_summoner_skill() {
         // 部分状态无法使用技能
-        if (this.state === "transformation" || this.state === "silent") {
+        if (this.state === "transformation" || this.state === "silent" || this.state === "vertigo") {
             return;
         }
         this.summoner_skill.use_skill(this.tx, this.ty);

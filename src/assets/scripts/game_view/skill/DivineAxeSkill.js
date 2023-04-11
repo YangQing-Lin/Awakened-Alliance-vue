@@ -40,6 +40,7 @@ export class DivineAxeSkill extends Skill {
 
     start() {
         this.fresh_cold_time();
+        this.playground.players[1].state = "vertigo";
     }
 
     fresh_cold_time() {
@@ -94,8 +95,6 @@ export class DivineAxeSkill extends Skill {
         }
 
         this.update_hit_player();
-
-        console.log(this.hit_numbers, this.player.speed);
     }
 
     restore_accelerate() {
@@ -125,9 +124,56 @@ export class DivineAxeSkill extends Skill {
     }
 
     hit_palyer() {
-        let is_hit = true;
+        let is_hit = false;
 
+        for (let player of this.playground.players) {
+            if (player === this.player) continue;
+            if (this.is_collision(player)) {
+                is_hit = true;
+                this.attack(player);
+            }
+        }
         return is_hit;
+    }
+
+    attack(player) {
+        let flag = player.is_attacked(this.new_angle, this.damage);
+
+        // 调用广播函数
+        // if (this.playground.store.state.game_mode === "multi mode") {
+        //     this.playground.mps.send_attack(player.uuid, player.x, player.y, angle, this.damage, this.uuid);
+        // }
+
+        if (flag) {
+            // 如果返回值是true，说明被攻击者死亡
+            this.player.level_up();
+            console.log("LEVEL UP: ", this.player.level);
+            // 调用广播函数
+            if (this.playground.store.state.game_mode === "multi mode") {
+                // TODO：当本地被攻击者死亡的时候，在多人模式下，可能对方刚好释放了治疗术，没有死
+                // 为了保持一致，需要发送一个死亡同步函数，告诉对方他已经死了
+            }
+        }
+    }
+
+    // 判断玩家是否和攻击的范围重叠，这里为了简化计算，模拟圆在矩形周围滚一圈，然后判断圆心是否在这个范围内
+    // 其中会把四个角扩展到直角，所以攻击范围比显示的大了四个角
+    is_collision(player) {
+        let ctx_x = this.playground.my_calculate_relative_position_x(this.player.x);
+        let ctx_y = this.playground.my_calculate_relative_position_y(this.player.y);
+        let ctx_tx = this.playground.my_calculate_relative_position_x(player.x);
+        let ctx_ty = this.playground.my_calculate_relative_position_y(player.y);
+        let center_point_x = ctx_x + this.axe_length / 2 * Math.cos(this.angle);
+        let center_point_y = ctx_y + this.axe_length / 2 * Math.sin(this.angle);
+        this.new_angle = Math.atan2(ctx_ty - center_point_y, ctx_tx - center_point_x);
+        let dist = this.get_dist(ctx_tx, ctx_ty, center_point_x, center_point_y);
+        let dist_x = Math.abs(dist * Math.cos(this.new_angle - this.angle));
+        let dist_y = Math.abs(dist * Math.sin(this.new_angle - this.angle));
+
+        if (dist_x <= this.axe_length / 2 + player.radius && dist_y <= this.axe_width / 2 + player.radius) {
+            return true;
+        }
+        return false;
     }
 
     axe(tx, ty) {

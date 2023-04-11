@@ -88,7 +88,7 @@ export class PlayGround extends AcGameObject {
         this.ctx.canvas.focus();
 
         if (game_mode === "single mode") {
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 1; i++) {
                 let rand_x = Math.random() * this.virtual_map_width;
                 let rand_y = Math.random() * this.virtual_map_height;
                 this.players.push(new Player(this, rand_x, rand_y, this.height * 0.05 / this.scale, this.get_random_color(), this.height * 0.3 / this.scale, "robot"));
