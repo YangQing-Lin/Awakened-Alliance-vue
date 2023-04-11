@@ -43,7 +43,7 @@ export class RollingSkill extends Skill {
         } else {
             let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
             this.player.x += this.vx * moved;
-            this.player.y -= this.vy * moved;
+            this.player.y += this.vy * moved;
             this.move_length -= moved;
         }
     }

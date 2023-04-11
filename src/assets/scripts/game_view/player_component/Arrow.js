@@ -26,12 +26,12 @@ export class Arrow extends AcGameObject {
     }
 
     late_update() {
+        // console.log(this.angle);
         let scale = this.playground.scale;
         let ctx_x = this.playground.my_calculate_relative_position_x(this.player.x);
         let ctx_y = this.playground.my_calculate_relative_position_y(this.player.y);
         let ctx_tx = this.playground.my_calculate_relative_position_x(this.player.tx);
         let ctx_ty = this.playground.my_calculate_relative_position_y(this.player.ty);
-        this.angle = Math.atan2(ctx_y * scale, ctx_ty * scale, ctx_x * scale, ctx_tx * scale);
 
         if (this.playground.store.state.game_state === "fighting") {
             this.render(scale, ctx_x, ctx_y, ctx_tx, ctx_ty);
@@ -43,6 +43,7 @@ export class Arrow extends AcGameObject {
             return;
         }
 
+        this.angle = Math.atan2(ctx_ty * scale - ctx_y * scale, ctx_tx * scale - ctx_x * scale);
         this.drawArrow(this.ctx, ctx_x * scale, ctx_y * scale, ctx_tx * scale, ctx_ty * scale, 30, this.player.radius * scale, this.player.radius * 0.2 * scale, 'yellow');
 
         this.ctx.strokeStyle = "black";
@@ -63,6 +64,7 @@ export class Arrow extends AcGameObject {
             topY = headlen * Math.sin(angle1),
             botX = headlen * Math.cos(angle2),
             botY = headlen * Math.sin(angle2);
+
 
         ctx.save();
         ctx.beginPath();
