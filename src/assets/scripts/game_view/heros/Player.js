@@ -119,7 +119,7 @@ export class Player extends AcGameObject {
         });
 
         this.ctx.canvas.addEventListener('keydown', e => {
-            console.log("in [player]", e.key);
+            // console.log("in [player]", e.key);
             if (e.key === 'Enter') {
                 if (this.playground.store.state.game_mode === "multi mode") {
                     this.playground.chat_field.show_input();
@@ -216,7 +216,7 @@ export class Player extends AcGameObject {
 
     use_general_skill() {
         // 部分状态无法使用技能
-        if (this.state === "transformation" || this.state === "silent") {
+        if (this.state === "transformation" || this.state === "silent" || this.state === "vertigo") {
             return;
         }
         this.general_skill.use_skill(this.tx, this.ty);
@@ -224,7 +224,7 @@ export class Player extends AcGameObject {
 
     use_summoner_skill() {
         // 部分状态无法使用技能
-        if (this.state === "transformation" || this.state === "silent") {
+        if (this.state === "transformation" || this.state === "silent" || this.state === "vertigo") {
             return;
         }
         this.summoner_skill.use_skill(this.tx, this.ty);
@@ -275,22 +275,22 @@ export class Player extends AcGameObject {
         this.speed = this.base_speed;
         if (directions.size === 1 || directions.size === 3) {
             if (directions.has(0) && !directions.has(2))
-                this.speed_angle = Math.PI / 2;
+                this.speed_angle = -Math.PI / 2;
             else if (directions.has(1) && !directions.has(3))
                 this.speed_angle = 0;
             else if (directions.has(2) && !directions.has(0))
-                this.speed_angle = -Math.PI / 2;
+                this.speed_angle = Math.PI / 2;
             else if (directions.has(3) && !directions.has(1))
                 this.speed_angle = Math.PI;
         } else if (directions.size === 2) {
             if (directions.has(0) && directions.has(1))
-                this.speed_angle = Math.PI / 4;
-            else if (directions.has(1) && directions.has(2))
                 this.speed_angle = -Math.PI / 4;
+            else if (directions.has(1) && directions.has(2))
+                this.speed_angle = Math.PI / 4;
             else if (directions.has(2) && directions.has(3))
-                this.speed_angle = -Math.PI * 3 / 4;
-            else if (directions.has(3) && directions.has(0))
                 this.speed_angle = Math.PI * 3 / 4;
+            else if (directions.has(3) && directions.has(0))
+                this.speed_angle = -Math.PI * 3 / 4;
         } else {
             this.speed = 0;
         }
@@ -449,7 +449,7 @@ export class Player extends AcGameObject {
             return false;
         }
         this.vx = this.speed * Math.cos(this.speed_angle);
-        this.vy = -this.speed * Math.sin(this.speed_angle);  // 这个负号很精髓
+        this.vy = this.speed * Math.sin(this.speed_angle);  // 这个负号很精髓
         this.x += this.vx * this.timedelta / 1000;
         this.y += this.vy * this.timedelta / 1000;
     }

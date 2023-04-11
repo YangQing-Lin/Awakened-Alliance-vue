@@ -26,17 +26,12 @@ export class Arrow extends AcGameObject {
     }
 
     late_update() {
-        this.x = this.player.x;
-        this.y = this.player.y;
-        this.tx = this.player.tx;
-        this.ty = this.player.ty;
-
+        // console.log(this.angle);
         let scale = this.playground.scale;
-        let ctx_x = this.playground.my_calculate_relative_position_x(this.x);
-        let ctx_y = this.playground.my_calculate_relative_position_y(this.y);
-        let ctx_tx = this.playground.my_calculate_relative_position_x(this.tx);
-        let ctx_ty = this.playground.my_calculate_relative_position_y(this.ty);
-        this.angle = Math.atan2(ctx_y * scale, ctx_ty * scale, ctx_x * scale, ctx_tx * scale);
+        let ctx_x = this.playground.my_calculate_relative_position_x(this.player.x);
+        let ctx_y = this.playground.my_calculate_relative_position_y(this.player.y);
+        let ctx_tx = this.playground.my_calculate_relative_position_x(this.player.tx);
+        let ctx_ty = this.playground.my_calculate_relative_position_y(this.player.ty);
 
         if (this.playground.store.state.game_state === "fighting") {
             this.render(scale, ctx_x, ctx_y, ctx_tx, ctx_ty);
@@ -48,6 +43,7 @@ export class Arrow extends AcGameObject {
             return;
         }
 
+        this.angle = Math.atan2(ctx_ty * scale - ctx_y * scale, ctx_tx * scale - ctx_x * scale);
         this.drawArrow(this.ctx, ctx_x * scale, ctx_y * scale, ctx_tx * scale, ctx_ty * scale, 30, this.player.radius * scale, this.player.radius * 0.2 * scale, 'yellow');
 
         this.ctx.strokeStyle = "black";
@@ -55,7 +51,6 @@ export class Arrow extends AcGameObject {
     }
 
     drawArrow(ctx, fromX, fromY, toX, toY, theta, headlen, width, color) {
-
         theta = typeof (theta) != 'undefined' ? theta : 30;
         headlen = typeof (theta) != 'undefined' ? headlen : 10;
         width = typeof (width) != 'undefined' ? width : 1;
@@ -69,6 +64,7 @@ export class Arrow extends AcGameObject {
             topY = headlen * Math.sin(angle1),
             botX = headlen * Math.cos(angle2),
             botY = headlen * Math.sin(angle2);
+
 
         ctx.save();
         ctx.beginPath();

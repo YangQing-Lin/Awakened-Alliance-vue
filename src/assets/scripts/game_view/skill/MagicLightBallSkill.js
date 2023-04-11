@@ -22,8 +22,7 @@ export class MagicLightBallSkill extends Skill {
         this.color = "pink";
         this.speed = this.playground.height * 0.8 / this.playground.scale;
         this.move_length = this.playground.height * 0.6 / this.playground.scale;
-        this.base_damage = 80;
-        this.damage = this.base_damage;
+        this.damage = 80;
 
         // this.player.level = 10;
     }
@@ -74,9 +73,6 @@ export class MagicLightBallSkill extends Skill {
     }
 
     fire(tx, ty) {
-        if (this.player.level >= 5) {
-            this.damage = 100;
-        }
         this.shoot_fireball(tx, ty, 0);
     }
 
