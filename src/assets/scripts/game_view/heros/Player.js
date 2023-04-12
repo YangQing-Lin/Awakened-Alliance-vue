@@ -9,6 +9,7 @@ import { BlinkSkill } from "../skill/BlinkSkill";
 import { ShieldSkill } from "../skill/ShieldSkill";
 import heros_info from "../../../../../static/HeroInfo.json"
 import { Arrow } from "../player_component/Arrow";
+import { timePanelSharedProps } from "element-plus/es/components/time-picker/src/props/shared";
 
 export class Player extends AcGameObject {
     constructor(playground, x, y, radius, color, speed, character, username, photo) {
@@ -28,6 +29,7 @@ export class Player extends AcGameObject {
         this.character = character;
         this.username = username;
         this.photo = photo;
+        this.decelerate_ratio = 0;  // 减速比例
 
         this.hero_name = "Player";
         this.base_health = 100;
@@ -83,7 +85,7 @@ export class Player extends AcGameObject {
             console.log("Hero Name:", this.hero_name);
         } else if (this.character === "robot") {
             this.move_length = 0;
-            this.speed = this.base_speed;
+            this.speed = this.get_speed();
             this.robot_update();
 
             // 机器人使用的移动方法是随机一个目的地坐标，方向向量集合暂时用不到
@@ -97,6 +99,57 @@ export class Player extends AcGameObject {
     level_up() {
         this.level += 1;
         this.health = this.base_health;
+    }
+
+    change_state(data) {
+        if (data["skill_name"] === "transformation") {
+            this.transformation(data["transformation_radis_ratio"]);
+        } else if (data["skill_name"] === "transformation_restore") {
+            this.transformation_restore();
+        } else if (data["skill_name"] === "ice_arrow") {
+            this.decelerate(data["decelerate_ratio"], data["time"]);
+        }
+    }
+
+    get_speed() {
+        return this.base_speed * (1 - this.decelerate_ratio);
+    }
+
+    decelerate(decelerate_ratio, time) {
+        let outer = this;
+        if (this.decelerate_id) {
+            clearTimeout(this.decelerate_id);
+        }
+
+        if (this.decelerate_ratio < 1) {
+            this.decelerate_ratio += decelerate_ratio;
+        }
+        if (this.decelerate_ratio > 1) {
+            this.decelerate_ratio = 1;
+        }
+        this.speed = this.get_speed();
+
+        console.log("time:", time * 1000);
+
+        this.decelerate_id = setTimeout(function () {
+            outer.decelerate_ratio = 0;
+            outer.decelerate_id = null;
+            outer.speed = outer.get_speed();
+            console.log("restore speed");
+        }, time * 1000);
+    }
+
+    // 被小耶的神奇魔术变成小熊
+    transformation(transformation_radis_ratios) {
+        this.state = "transformation";
+        this.radius = this.base_radis * transformation_radis_ratios;
+    }
+
+    // 神奇魔术持续时间结束，变回来
+    transformation_restore() {
+        this.state = "normal";
+        this.radius = this.base_radis;
+        this.speed = this.get_speed();
     }
 
     load_image() {
@@ -154,7 +207,7 @@ export class Player extends AcGameObject {
                 this.cur_skill = this.cur_skill === "summoner_skill" ? null : "summoner_skill";
                 console.log(this.cur_skill);
             } else if (e.key === ' ') {
-                this.awakened_skill.use_skill();
+                this.awakened_skill.use_skill(this.tx, this.ty);
             }
 
             this.update_move_toward();
@@ -272,7 +325,7 @@ export class Player extends AcGameObject {
 
     update_speed_angle(directions) {
         // 根据操作数组来计算速度角度
-        this.speed = this.base_speed;
+        this.speed = this.get_speed();
         if (directions.size === 1 || directions.size === 3) {
             if (directions.has(0) && !directions.has(2))
                 this.speed_angle = -Math.PI / 2;
@@ -323,21 +376,6 @@ export class Player extends AcGameObject {
         this.x = x;
         this.y = y;
         this.is_attacked(angle, damage);
-    }
-
-    // 被小耶的神奇魔术变成小熊
-    transformation(transformation_radis_ratios) {
-        this.state = "transformation";
-        this.radius = this.base_radis * transformation_radis_ratios;
-        console.log(transformation_radis_ratios);
-        console.log(this.radius);
-    }
-
-    // 神奇魔术持续时间结束，变回来
-    restore() {
-        this.state = "normal";
-        this.radius = this.base_radis;
-        this.speed = this.base_speed;
     }
 
     player_lose() {

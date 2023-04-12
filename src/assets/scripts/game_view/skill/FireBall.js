@@ -79,8 +79,8 @@ export class FireBall extends AcGameObject {
             this.playground.mps.send_attack(player.uuid, player.x, player.y, angle, this.damage, this.uuid);
         }
 
+        // 如果返回值是true，说明被攻击者死亡
         if (flag) {
-            // 如果返回值是true，说明被攻击者死亡
             this.player.level_up();
             console.log("LEVEL UP: ", this.player.level);
             // 调用广播函数

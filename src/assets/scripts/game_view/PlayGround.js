@@ -13,6 +13,7 @@ import { FireMage } from "./heros/FireMage";
 import { TaiEr } from "./heros/TaiEr";
 import { XiaoYe } from "./heros/XiaoYe";
 import { LongYan } from "./heros/LongYan";
+import { DiShiTian } from "./heros/DiShiTian";
 
 export class PlayGround extends AcGameObject {
     constructor(canvas, ctx, div, store, chat_field_ref) {
@@ -79,6 +80,8 @@ export class PlayGround extends AcGameObject {
             player = new XiaoYe(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
         } else if (this.store.state.select_hero_name === "龙炎") {
             player = new LongYan(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
+        } else if (this.store.state.select_hero_name === "帝释天") {
+            player = new DiShiTian(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
         } else {
             player = new TaiEr(this, 0.5 * this.width / this.scale, 0.5 * this.height / this.scale, this.height * 0.05 / this.scale, "white", this.height * 0.3 / this.scale, "me", this.store.state.username, this.store.state.photo);
         }
