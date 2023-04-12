@@ -1,31 +1,33 @@
+import { normalizeStyle } from "vue";
 import { FireBall } from "./FireBall";
 import { IceArrow } from "./IceArrow";
 import { Skill } from "./Skill";
 
-export class IceArrowSkill extends Skill {
+export class ThousandArrowsSkill extends Skill {
     constructor(playground, player, icon_x, icon_y, icon_r) {
         super(playground, player, icon_x, icon_y, icon_r);
 
         this.owner = "帝释天";
-        this.name = "IceArrowSkill";
-        this.skill_type = "general_skill";
-        this.base_cold_time = 0.5;  // 冷却时间，单位：秒
+        this.name = "ThousandArrowsSkill";
+        this.skill_type = "awakened_skill";
+        this.base_cold_time = 2;  // 冷却时间，单位：秒
         this.cold_time = 0;
 
-        this.decelerate_ratio = 0.2;  // 寒冰箭的减速比例
-        this.decelerate_time = 0.8;  // 寒冰箭的减速持续时间
-        this.damage = 50;
-        this.radius = this.playground.height * 0.02 / this.playground.scale;
-        this.speed = this.playground.height * 0.8 / this.playground.scale;
-        this.move_length = this.playground.height * 0.6 / this.playground.scale;
+        this.decelerate_ratio = this.player.general_skill.decelerate_ratio;  // 寒冰箭的减速比例
+        this.decelerate_time = this.player.general_skill.decelerate_time;  // 寒冰箭的减速持续时间
+        this.damage = this.player.general_skill.damage;
+        this.radius = this.player.general_skill.radius;
+        this.speed = this.player.general_skill.speed;
+        this.move_length = this.player.general_skill.move_length;
 
         this.base_fire_interval = 0;  // 射击间隔，单位：秒
         this.fire_interval = this.base_fire_interval;
         this.base_bullet = 1;
         this.bullet = this.base_bullet;  // 剩余子弹数量
 
+        this.scatter = 3;  // 散射量
 
-        this.img.src = "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/dishitian/general_skill.png";
+        this.img.src = "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/dishitian/awakened_skill.png";
     }
 
     start() {
@@ -73,9 +75,22 @@ export class IceArrowSkill extends Skill {
         }
     }
 
-    // 射箭
     archery(tx, ty) {
-        this.shoot_fireball(tx, ty);
+        let delta_angle = Math.PI / 10;
+
+        if (this.scatter === 3) {
+            this.shoot_fireball(tx, ty, delta_angle)
+            this.shoot_fireball(tx, ty, 0);
+            this.shoot_fireball(tx, ty, -delta_angle);
+        } else if (this.scatter === 5) {
+            this.shoot_fireball(tx, ty, delta_angle);
+            this.shoot_fireball(tx, ty, -delta_angle);
+            this.shoot_fireball(tx, ty, 0);
+            this.shoot_fireball(tx, ty, delta_angle * 2);
+            this.shoot_fireball(tx, ty, -delta_angle * 2);
+        } else {
+            console.log("[SCATTER ERROR]");
+        }
     }
 
     receive_use_skill(skill_data) {
@@ -84,11 +99,13 @@ export class IceArrowSkill extends Skill {
         console.log("receive shoot fireball");
     }
 
-    shoot_fireball(tx, ty) {
+    shoot_fireball(tx, ty, delta_angle) {
         let angle = Math.atan2(ty - this.player.y, tx - this.player.x);
+        angle += delta_angle;
         let vx = Math.cos(angle), vy = Math.sin(angle);
-        let color = "rgba(0, 0, 255, 0.8)";
+        let color = "red";
         let fireball = null;
+        console.log(this.radius, this.speed, this.move_length, this.damage, this.decelerate_time, this.decelerate_time);
         if (this.player.character === "me") {
             fireball = new IceArrow(this.playground, this.player, this.player.x, this.player.y, this.radius, vx, vy, color, this.speed, this.move_length, this.damage, this.decelerate_ratio, this.decelerate_time);
         } else {

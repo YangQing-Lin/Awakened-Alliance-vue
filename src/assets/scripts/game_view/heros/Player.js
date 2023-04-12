@@ -207,7 +207,7 @@ export class Player extends AcGameObject {
                 this.cur_skill = this.cur_skill === "summoner_skill" ? null : "summoner_skill";
                 console.log(this.cur_skill);
             } else if (e.key === ' ') {
-                this.awakened_skill.use_skill();
+                this.awakened_skill.use_skill(this.tx, this.ty);
             }
 
             this.update_move_toward();

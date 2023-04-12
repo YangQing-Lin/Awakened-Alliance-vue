@@ -12,11 +12,11 @@ export default class MagicCircle extends AcGameObject {
 
         this.eps = 0.001;
         this.ctx = this.playground.ctx;
-        this.decelerate_ratio = 0.4;  // 玩家进入魔法阵或被变身后的减速比例
+        this.decelerate_ratio = 0.6;  // 玩家进入魔法阵或被变身后的减速比例
         this.transformation_radis_ratio = 0.6;  // 玩家变成小熊之后的缩小比例
         this.base_circle_duration = 1;  // 法阵持续时间，法阵内的玩家减速
         this.circle_duration = this.base_circle_duration;
-        this.base_magic_duration = 2;  // 法阵持续时间结束后，法阵内的玩家变熊的持续时间
+        this.base_magic_duration = 1.5;  // 法阵持续时间结束后，法阵内的玩家变熊的持续时间
         this.magic_duration = this.base_magic_duration;
 
         this.transformation_players = new Set();  // 被变身的玩家
@@ -36,14 +36,14 @@ export default class MagicCircle extends AcGameObject {
         if (this.circle_duration >= this.eps) {
             for (let player of this.playground.players) {
                 if (player !== this.player && this.get_dist(player.x, player.y, this.x, this.y) < this.radius) {
-                    player.speed = player.base_speed * this.decelerate_ratio;
+                    player.speed = player.base_speed * (1 - this.decelerate_ratio);
                 } else if (player !== this.player && this.get_dist(player.x, player.y, this.x, this.y) >= this.radius) {
-                    player.speed = player.base_speed;
+                    player.speed = player.get_speed();
                 }
             }
-        } else if (this.transformation_players) {
+        } else if (this.transformation_players.size > 0) {
             for (let player of this.transformation_players) {
-                player.speed = player.base_speed * this.decelerate_ratio;
+                player.speed = player.base_speed * (1 - this.decelerate_ratio);
             }
         }
     }

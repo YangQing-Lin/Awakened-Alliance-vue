@@ -1,8 +1,11 @@
 import { FireBall } from "./FireBall";
 
 export class IceArrow extends FireBall {
-    constructor(playground, player, x, y, radius, vx, vy, color, speed, move_length, damage) {
+    constructor(playground, player, x, y, radius, vx, vy, color, speed, move_length, damage, decelerate_ratio, decelerate_time) {
         super(playground, player, x, y, radius, vx, vy, color, speed, move_length, damage);
+        this.decelerate_ratio = decelerate_ratio;
+        this.decelerate_time = decelerate_time;
+        this.color = "rgba(0, 0, 255, 0.8)";
     }
 
     attack(player) {
@@ -28,8 +31,8 @@ export class IceArrow extends FireBall {
             // 每次减速20%，可叠加至100%，持续0.8秒
             player.change_state({
                 "skill_name": "ice_arrow",
-                "decelerate_ratio": 0.2,
-                "time": 0.8,
+                "decelerate_ratio": this.decelerate_ratio,
+                "time": this.decelerate_time,
             });
         }
 

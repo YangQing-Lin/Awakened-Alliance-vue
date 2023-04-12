@@ -98,8 +98,9 @@ export class DivineAxeSkill extends Skill {
 
     restore_accelerate() {
         this.player.base_speed = this.player_base_speed;
+        // 如果速度为0，表示玩家没有移动，或者被“眩晕”了，那就不将加速结果更新到移速上
         if (this.player.speed > this.eps) {
-            this.player.speed = this.player.base_speed;
+            this.player.speed = this.player.get_speed();
         }
         this.is_accelerating = false;
     }
@@ -107,7 +108,7 @@ export class DivineAxeSkill extends Skill {
     accelerate() {
         this.player.base_speed = this.player_base_speed * 2;
         if (this.player.speed > this.eps) {
-            this.player.speed = this.player.base_speed;
+            this.player.speed = this.player.get_speed();
         }
         this.is_accelerating = true;
         this.accelerate_time = this.base_accelerate_time;
