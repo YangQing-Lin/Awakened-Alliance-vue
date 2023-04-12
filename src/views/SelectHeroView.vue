@@ -75,13 +75,9 @@
                         />
                     </div>
                     <div class="user_photo">
-                        <img
-                            src="https://project-static-file.oss-cn-hangzhou.aliyuncs.com/avatar/2.jpeg"
-                            alt=""
-                            class="photo"
-                        />
+                        <img :src="store.state.photo" alt="" class="photo" />
                     </div>
-                    <div class="user_name">admin</div>
+                    <div class="user_name">{{ store.state.username }}</div>
                 </div>
 
                 <div
@@ -136,6 +132,8 @@ import { ref, onMounted } from "vue";
 import heros_info from "../../static/HeroInfo.json";
 import { useStore } from "vuex";
 import router from "@/router";
+import ChatFieldSHVVue from "@/components/ChatFieldSHV.vue";
+import { ChatFieldSHV } from "@/assets/scripts/game_view/ChatFieldSHV";
 
 export default {
     namespaced: true,
@@ -144,6 +142,7 @@ export default {
         const store = useStore();
         const general_skill = ref(null);
         const awakened_skill = ref(null);
+        let chat_field = null;
 
         onMounted(() => {
             console.log(store.state.game_mode);
@@ -151,6 +150,8 @@ export default {
                 router.push("/select_mode");
                 return;
             }
+
+            // chat_field = new ChatFieldSHV();
 
             general_skill.value.addEventListener("mouseenter", function () {
                 store.commit("updateWhichIntroduce", "general_skill");
@@ -239,7 +240,7 @@ img {
 
 .heros {
     width: 20%;
-    background-color: aqua;
+    background-color: brown;
 }
 
 .heros_hero {
@@ -328,7 +329,7 @@ img {
 .players {
     width: 100%;
     height: 80% !important;
-    background-color: coral;
+    background-color: brown;
     display: flex;
     flex-direction: column;
 }
@@ -337,7 +338,7 @@ img {
     width: 96%;
     margin-top: 2%;
     margin-left: 2%;
-    background-color: chartreuse;
+    background-color: aquamarine;
     display: flex;
     flex-direction: column;
     height: 24%;
@@ -374,14 +375,15 @@ img {
 }
 
 .user_name {
-    width: 40%;
+    /* width: 40%; */
+    width: fit-content;
     height: 13%;
     /* line-height: 13%; */
     vertical-align: bottom;
     display: table-cell;
     margin-left: 5%;
     margin-top: 5%;
-    background-color: burlywood;
+    background-color: rgba(255, 255, 255, 0.658);
     z-index: 99;
 }
 

@@ -7,7 +7,7 @@
                 <h1>WELCOME</h1>
                 <p>JOIN US!</p>
                 <div class="img-box">
-                    <img :src="flag == true ? imgList[1] : imgList[0]" alt="" />
+                    <img :src="flag == true ? imgList[2] : imgList[4]" alt="" />
                 </div>
             </div>
             <!-- 注册盒子 -->
@@ -155,6 +155,10 @@ const preRef = ref("");
 const imgList = ref([
     require("@/assets/img/wuwu.jpeg"),
     require("@/assets/img/waoku.jpg"),
+    "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/taier/taier_avatar.png",
+    "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/xiaoye/xiaoye_avatar.png",
+    "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/longyan/longyan_avatar.png",
+    "https://project-static-file.oss-cn-hangzhou.aliyuncs.com/AwakenedAlliance/aoyi/dishitian/dishitian_avatar.png",
 ]);
 
 let flag = ref(true);
