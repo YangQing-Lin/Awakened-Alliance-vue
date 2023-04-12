@@ -54,7 +54,10 @@ export default class MagicCircle extends AcGameObject {
             if (player !== this.player && this.get_dist(player.x, player.y, this.x, this.y) < this.radius) {
                 // TODO
                 // 变小熊的影响暂时只有减速、减小半径、沉默，还没写更换图片的逻辑
-                player.transformation(this.transformation_radis_ratio);
+                player.change_state({
+                    "skill_name": "transformation",
+                    "transformation_radis_ratio": this.transformation_radis_ratio,
+                });
                 this.transformation_players.add(player);
             }
         }
@@ -63,7 +66,9 @@ export default class MagicCircle extends AcGameObject {
     // 变身时间结束，还原玩家
     restore_players() {
         for (let player of this.transformation_players) {
-            player.restore();
+            player.change_state({
+                "skill_name": "transformation_restore",
+            });
         }
     }
 
